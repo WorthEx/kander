@@ -1,9 +1,17 @@
+<script lang="ts" setup>
+
+</script>
+
 <template>
+  <VitePwaManifest/>
   <UApp>
 
     <UMain>
-      <NuxtPage />
+      <NuxtLayout>
+        <NuxtPage/>
+      </NuxtLayout>
     </UMain>
 
+    <GlobalFooter/>
   </UApp>
 </template>
