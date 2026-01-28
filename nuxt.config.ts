@@ -41,7 +41,7 @@ export default defineNuxtConfig({
   },
   pwa: {
     includeManifestIcons: true,
-    includeAssets: ["favicon.ico", "/images/kander_512.png", "/images/kander_192.png", "/images/kander_512_1.png", "/images/kander_512_2.png"],
+    includeAssets: ["favicon.ico", "/images/kander_512.png", "/images/kander_192.png"],
     strategies: "generateSW",
     registerType: "autoUpdate",
     manifest: {
@@ -53,16 +53,10 @@ export default defineNuxtConfig({
           src: '/images/kander_192.png',
           sizes: '192x192',
           type: 'image/png',
-          purpose: 'maskable'
+          purpose: 'any'
         },
         {
           src: '/images/kander_512.png',
-          sizes: '512x512',
-          type: 'image/png',
-          purpose: 'maskable'
-        },
-        {
-          src: '/images/kander_512_1.png',
           sizes: '512x512',
           type: 'image/png',
           purpose: 'any'
@@ -71,6 +65,8 @@ export default defineNuxtConfig({
       start_url: "/",
       display: "standalone",
       id: "/",
+      background_color: "#1c1917",
+      theme_color: "#1c1917"
     },
     workbox: {
       navigateFallback: '/',
