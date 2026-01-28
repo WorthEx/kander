@@ -9,7 +9,7 @@ export default defineNuxtConfig({
     head: {
       title: 'Kander',
       link: [
-        {rel: 'icon', type: 'image/x-icon', href: 'favicon.ico'},
+        {rel: 'icon', type: 'image/x-icon', href: 'kander_favicon.ico'},
         {rel: 'apple-touch-icon', href: '/images/kander_512.png', sizes: '512x512'},
       ],
       meta: [
