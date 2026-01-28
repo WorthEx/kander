@@ -5,6 +5,23 @@ export default defineNuxtConfig({
   },
   css: ['~/assets/css/main.css'],
   compatibilityDate: '2025-01-15',
+  app: {
+    head: {
+      title: 'Kander',
+      link: [
+        {rel: 'icon', type: 'image/x-icon', href: 'favicon.ico'},
+        {rel: 'apple-touch-icon', href: '/images/kander_512.png', sizes: '512x512'},
+      ],
+      meta: [
+        {name: "theme-color", content: '#ffffff', media: "(prefers-color-scheme: light)"},
+        {name: "theme-color", content: '#1c1917', media: "(prefers-color-scheme: dark)"},
+        {
+          name: 'description',
+          content: 'A reliable solution for order management powered by Nuxt 4.'
+        }
+      ],
+    },
+  },
   devServer: {
     port: 3000,
     host: '0.0.0.0'
@@ -24,7 +41,7 @@ export default defineNuxtConfig({
   },
   pwa: {
     includeManifestIcons: true,
-    includeAssets: ["favicon.ico", "/images/kander_512.png", "/images/kander_192.png"],
+    includeAssets: ["favicon.ico", "/images/kander_512.png", "/images/kander_192.png", "/images/kander_512_1.png", "/images/kander_512_2.png"],
     strategies: "generateSW",
     registerType: "autoUpdate",
     manifest: {
@@ -35,13 +52,21 @@ export default defineNuxtConfig({
         {
           src: '/images/kander_192.png',
           sizes: '192x192',
-          type: 'image/png'
+          type: 'image/png',
+          purpose: 'maskable'
         },
         {
           src: '/images/kander_512.png',
           sizes: '512x512',
-          type: 'image/png'
-        }
+          type: 'image/png',
+          purpose: 'maskable'
+        },
+        {
+          src: '/images/kander_512_1.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable'
+        },
       ],
       start_url: "/",
       display: "standalone",
