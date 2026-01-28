@@ -65,7 +65,7 @@ export default defineNuxtConfig({
           src: '/images/kander_512_1.png',
           sizes: '512x512',
           type: 'image/png',
-          purpose: 'maskable'
+          purpose: 'any'
         },
       ],
       start_url: "/",
