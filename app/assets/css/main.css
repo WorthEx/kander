@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tailwindcss-animated";
 @import "@nuxt/ui";
 
 :root {
@@ -17,7 +18,7 @@
   --ui-border-muted: var(--ui-color-neutral-200);
   --ui-border-accented: var(--ui-color-neutral-300);
   --ui-border-inverted: var(--ui-color-neutral-900);
-  --ui-primary: var(--ui-color-primary-400);
+  --ui-primary: var(--ui-color-primary-500);
   --ui-secondary: var(--ui-color-secondary-500);
   --ui-radius: 0.25rem;
   --ui-container: 90rem;
@@ -50,6 +51,6 @@
 }
 
 @theme {
-  --font-sans: "Open Sans";
+  --font-sans: "Inter";
   --breakpoint-xs: 500px;
 }

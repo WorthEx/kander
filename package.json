@@ -16,7 +16,8 @@
     "@nuxt/ui": "^4.4.0",
     "@vite-pwa/nuxt": "1.1.0",
     "nuxt": "^4.3.0",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "tailwindcss-animated": "^2.0.0"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
