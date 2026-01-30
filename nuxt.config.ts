@@ -24,7 +24,14 @@ export default defineNuxtConfig({
   },
   devServer: {
     port: 3000,
-    host: '0.0.0.0'
+    host: '0.0.0.0',
+  },
+  vite: {
+    server: {
+      hmr: {
+        host: '192.168.0.18'
+      }
+    }
   },
   icon: {
     mode: "css",
@@ -36,12 +43,12 @@ export default defineNuxtConfig({
   fonts: {
     processCSSVariables: true,
     families: [
-      {name: 'Open Sans', provider: 'google', weights: [200, 400, 600, 700, 900]},
+      {name: 'Inter', provider: 'google', weights: [200, 400, 600, 700, 900]},
     ],
   },
   pwa: {
     includeManifestIcons: true,
-    includeAssets: ["favicon.ico", "/images/kander_512.png", "/images/kander_192.png"],
+    includeAssets: ["favicon.ico", "/images/kander_logo_512.png", "/images/kander_192.png"],
     strategies: "generateSW",
     registerType: "autoUpdate",
     manifest: {
@@ -53,20 +60,19 @@ export default defineNuxtConfig({
           src: '/images/kander_192.png',
           sizes: '192x192',
           type: 'image/png',
-          purpose: 'any'
+          purpose: 'maskable'
         },
         {
-          src: '/images/kander_512.png',
+          src: '/images/kander_logo_512.png',
           sizes: '512x512',
           type: 'image/png',
-          purpose: 'any'
         },
       ],
       start_url: "/",
       display: "standalone",
       id: "/",
-      background_color: "#1c1917",
-      theme_color: "#1c1917"
+      background_color: "#171717",
+      theme_color: "#171717"
     },
     workbox: {
       navigateFallback: '/',
