@@ -14,7 +14,7 @@ export default defineNuxtConfig({
       ],
       meta: [
         {name: "theme-color", content: '#ffffff', media: "(prefers-color-scheme: light)"},
-        {name: "theme-color", content: '#1c1917', media: "(prefers-color-scheme: dark)"},
+        {name: "theme-color", content: '#171717', media: "(prefers-color-scheme: dark)"},
         {
           name: 'description',
           content: 'A reliable solution for order management powered by Nuxt 4.'
@@ -48,7 +48,7 @@ export default defineNuxtConfig({
   },
   pwa: {
     includeManifestIcons: true,
-    includeAssets: ["favicon.ico", "/images/kander_logo_512.png", "/images/kander_192.png"],
+    includeAssets: ["favicon.ico", "/images/kander_512.png", "/images/kander_192.png"],
     strategies: "generateSW",
     registerType: "autoUpdate",
     manifest: {
@@ -60,10 +60,9 @@ export default defineNuxtConfig({
           src: '/images/kander_192.png',
           sizes: '192x192',
           type: 'image/png',
-          purpose: 'maskable'
         },
         {
-          src: '/images/kander_logo_512.png',
+          src: '/images/kander_512.png',
           sizes: '512x512',
           type: 'image/png',
         },
@@ -71,6 +70,7 @@ export default defineNuxtConfig({
       start_url: "/",
       display: "standalone",
       id: "/",
+
       background_color: "#171717",
       theme_color: "#171717"
     },
