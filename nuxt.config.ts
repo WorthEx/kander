@@ -40,6 +40,19 @@ export default defineNuxtConfig({
       scan: true
     }
   },
+  ui: {
+    theme: {
+      colors: [
+        'primary',
+        'secondary',
+        'tertiary',
+        'info',
+        'success',
+        'warning',
+        'error'
+      ]
+    }
+  },
   fonts: {
     processCSSVariables: true,
     families: [
