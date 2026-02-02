@@ -15,10 +15,10 @@
     "@iconify-json/simple-icons": "^1.2.68",
     "@nuxt/ui": "^4.4.0",
     "@vite-pwa/nuxt": "1.1.0",
+    "lexorank": "^1.0.5",
     "nuxt": "^4.3.0",
     "tailwindcss": "^4.1.18",
     "tailwindcss-animated": "^2.0.0",
-    "vue-draggable-next": "^2.3.0",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
