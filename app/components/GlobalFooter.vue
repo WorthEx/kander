@@ -5,7 +5,8 @@
   <UFooter class="*:max-lg:space-y-6">
     <template #left>
       <div class="flex items-center gap-2">
-        <img alt="Kander logo" class="h-6 object-fit select-none pointer-events-none" src="/images/kander_192.png">
+        <img alt="Kander logo" class="h-6 object-fit select-none pointer-events-none rounded-md"
+             src="/images/kander_192.png">
         <p class="text-muted text-sm">
           Copyright Kander {{ new Date().getFullYear() }}
         </p>

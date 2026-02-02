@@ -9,7 +9,7 @@
   }" class="bg-transparent backdrop-blur-md border-none" mode="slideover">
     <template #title>
       <div class="flex items-center gap-2">
-        <img alt="Kander logo" class="lg:h-8 h-7 object-fit select-none pointer-events-none"
+        <img alt="Kander logo" class="lg:h-8 h-7 object-fit select-none pointer-events-none rounded-lg"
              src="/images/kander_192.png">
         <div class="font-bold leading-7 self-end">Kander</div>
       </div>
