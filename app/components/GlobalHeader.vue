@@ -13,11 +13,11 @@
     </template>
 
     <template #right>
-      <UColorModeButton/>
+      <UColorModeButton class="cursor-pointer" variant="naked"/>
       <UButton
         class="lg:flex hidden cursor-pointer px-4"
         color="neutral"
-        variant="ghost">
+        variant="naked">
         Create account
       </UButton>
       <UButton
