@@ -47,8 +47,19 @@
 }
 
 @layer base {
-  html {
+  html, .no-scrollbar {
     @apply [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth;
+  }
+
+  .paper {
+    background: white;
+    --size: 2rem;
+    --angle: 140deg;
+
+    mask: conic-gradient(
+      from calc(var(--angle) / -2) at bottom,
+      #000 var(--angle), #0000 0
+    ) 50% / var(--size) 100%;
   }
 }
 

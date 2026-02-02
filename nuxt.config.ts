@@ -26,13 +26,6 @@ export default defineNuxtConfig({
     port: 3000,
     host: '0.0.0.0',
   },
-  vite: {
-    server: {
-      hmr: {
-        host: '192.168.0.18'
-      }
-    }
-  },
   icon: {
     mode: "css",
     cssLayer: "base",

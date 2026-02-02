@@ -3,116 +3,219 @@ import Draggable from 'vuedraggable'
 
 const demoList1 = ref([
   {
+    id: 'adfhdfh',
     title: "Brand design for a new product",
-    positionCount: 5,
-    progressPercent: 0,
-    clientFullName: "Markiplier"
+    orderPositionCount: 5,
+    progressPercent: 5,
+    clientFullName: "Markiplier",
+    priority: Priority.Low,
+    due: new Date(new Date().setDate(new Date().getDate() - 2)),
+    numberOfLinks: 2
   },
   {
+    id: 'bgfjfjg',
     title: "Music video for a pop song",
-    positionCount: 1,
-    progressPercent: 0,
-    clientFullName: "Hatsune Miku"
+    orderPositionCount: 1,
+    progressPercent: 10,
+    clientFullName: "Hatsune Miku",
+    priority: Priority.Medium,
+    due: new Date(new Date().setDate(new Date().getDate() - 1)),
+    numberOfLinks: 3
   },
   {
+    id: 'cfgjfgj',
     title: "Advertisement video",
-    positionCount: 4,
+    orderPositionCount: 4,
     progressPercent: 0,
-    clientFullName: "Markiplier"
+    clientFullName: "Markiplier",
+    priority: Priority.Neutral,
+    due: new Date(new Date().setDate(new Date().getDate() - 3)),
+    numberOfLinks: 3
   },
 ])
 const demoList2 = ref([
   {
+    id: 'afkfhk',
     title: "Spaceship 3D model renders",
-    positionCount: 8,
+    orderPositionCount: 8,
     progressPercent: 75,
-    clientFullName: "Neil Armstrong"
+    clientFullName: "Neil Armstrong",
+    priority: Priority.High,
+    due: new Date(new Date().setDate(new Date().getDate() - 1)),
+    numberOfLinks: 4
   },
   {
+    id: 'bfhkfhk',
     title: "Search engine functionality",
-    positionCount: 12,
+    orderPositionCount: 12,
     progressPercent: 58,
-    clientFullName: "Sundar Pichai"
+    clientFullName: "Sundar Pichai",
+    priority: Priority.Urgent,
+    due: new Date(),
+    numberOfLinks: 2
+  },
+])
+const demoKanban = ref([
+  {
+    id: '3425345',
+    title: 'To do',
+    orders: [...demoList1.value]
+  },
+  {
+    id: '484684',
+    title: 'In progress',
+    orders: [...demoList2.value]
   },
 ])
 
-const log = (evt) => {
-  console.log(evt)
-}
+const features = ref([
+  {
+    title: 'Kanban styled',
+    description: 'We provide intuitive and, more importantly, super-convenient UI to guarantee smooth, high-level user experience.',
+    icon: 'i-ri-table-fill',
+  },
+  {
+    title: 'Mobile-first',
+    description: 'Kander was designed to be used from any preferred platform. You can even install it as a mobile app. We don\'t recommend using it while driving tho.',
+    icon: 'i-ri-mobile-download-fill',
+  },
+  {
+    title: 'Free of charge',
+    description: 'The project is sponsored by ads which helps keeping all of its features completely free to use. Please consider supporting us on Ko‑fi btw.',
+    icon: 'i-ri-price-tag-3-fill',
+    to: 'https://ko-fi.com/worthex'
+  }
+])
+
 </script>
 
 <template>
-  <UPage>
+  <UPage class="pb-20">
+    <div
+      class="absolute animate-pulse animate-duration-8500
+          bg-primary w-screen h-[5rem] inset-x-1/2 -translate-x-1/2 -top-[10rem] rounded-full drop-shadow-2xl drop-shadow-primary blur-[20rem]"/>
     <UPageHero
+      class="animate-fade-up animate-ease-out animate-duration-1000"
       description="A tool making order management as effortless as you can imagine with kanban-styled boards for ur team or your precious self"
       orientation="horizontal">
       <template #title>Kanbanize your workflow with ease</template>
       <template #links>
-        <div class="flex gap-2 *:w-fit max-[315px]:flex-col">
+        <div class="flex gap-2 *:w-fit max-[350px]:flex-col">
           <UButton class="cursor-pointer group" label="Get started" size="xl">
             <template #trailing>
               <UIcon class="size-6 border group-hover:translate-x-0.5 transition-transform"
                      name="i-ri-arrow-right-s-line"/>
             </template>
           </UButton>
-          <UButton class="cursor-pointer" color="neutral" label="Create organization" size="xl" variant="outline"/>
+          <UButton class="cursor-pointer" color="neutral" label="Learn more" size="xl" to="/somewhere"
+                   variant="outline"/>
         </div>
       </template>
       <template #default>
-        <div class="size-full dark:bg-muted bg-elevated rounded-2xl min-h-64 flex overflow-hidden">
-          <div class="basis-1/2 flex flex-col">
+        <div
+          class="z-1 size-full dark:bg-muted bg-accented/50 rounded-2xl min-h-64 overflow-x-auto overflow-y-hidden no-scrollbar
+                 animate-fade-up animate-ease-out md:flex hidden">
+          <div v-for="(column, columnIndex) in demoKanban"
+               :class="{'dark:border-r-neutral-700 border-r border-r-neutral-200': columnIndex + 1 < demoKanban.length}"
+               :style="{'animationDelay': `${columnIndex * 200}ms` }"
+               class="flex flex-col basis-1/2 animate-fade-up animate-ease-out animate-once">
             <div
-              class="w-full py-3 grid place-content-center font-semibold text-sm text-dimmed select-none dark:bg-elevated/30 bg-accented/60">
-              To be done
+              class="w-full pt-3 pb-1 ps-3 pe-2 select-none flex flex-row items-center justify-between gap-2">
+              <div class="flex gap-2 items-center">
+                <div v-if="columnIndex===1" class="rounded-full ring ring-neutral-500 size-2">
+                  <div class="bg-neutral-500 w-1 h-2 rounded-s-full"></div>
+                </div>
+                <div v-else class="rounded-full ring ring-neutral-500 size-2"/>
+                <span class="font-semibold text-sm text-muted">{{ column.title }}</span>
+                <div class="dark:bg-elevated/50 bg-muted rounded-lg px-2 py-0.5 text-sm font-semibold text-muted">
+                  {{ column.orders.length }}
+                </div>
+              </div>
+              <UButton class="cursor-pointer" color="neutral" leading-icon="i-ri-add-fill"
+                       variant="ghost"/>
             </div>
             <Draggable
-              v-model="demoList1"
+              v-model="column.orders"
               class="h-full p-2 space-y-2"
               drag-class="dragged"
               ghost-class="ghost"
               group="cards"
               item-key="id">
               <template #item="{element}">
-                <DemoCard :clientFullName="element.clientFullName" :column="0"
-                          :positionCount="element.positionCount" :progressPercent="element.progressPercent"
-                          :title="element.title"
-                          class="bg-tertiary/20 hover:bg-tertiary/30"/>
+                <DemoCard :clientFullName="element.clientFullName" :column="columnIndex"
+                          :due="element.due" :numberOfLinks="element.numberOfLinks"
+                          :orderPositionCount="element.orderPositionCount"
+                          :priority="element.priority"
+                          :progressPercent="element.progressPercent" :title="element.title"/>
               </template>
             </Draggable>
           </div>
-          <div class="w-px dark:bg-neutral-700 bg-border"/>
-          <div class="basis-1/2 flex flex-col">
+        </div>
+        <div
+          class="z-1 size-full dark:bg-muted bg-accented/50 rounded-2xl min-h-64 overflow-x-auto overflow-y-hidden no-scrollbar
+                 animate-fade-up animate-ease-out md:hidden flex">
+          <div v-for="(column, columnIndex) in [demoKanban[0]]"
+               :class="{'dark:border-r-neutral-700 border-r border-r-neutral-200': columnIndex + 1 < demoKanban.length}"
+               :style="{'animationDelay': `${columnIndex * 200}ms` }"
+               class="flex flex-col w-full animate-fade-up animate-ease-out animate-once">
             <div
-              class="w-full py-3 grid place-content-center font-semibold text-sm text-dimmed select-none dark:bg-elevated/30 bg-accented/60">
-              In progress
+              class="w-full pt-3 pb-1 ps-3 pe-2 select-none flex flex-row items-center justify-between gap-2">
+              <div class="flex gap-2 items-center">
+                <div v-if="columnIndex===1" class="rounded-full ring ring-neutral-500 size-2">
+                  <div class="bg-neutral-500 w-1 h-2 rounded-s-full"></div>
+                </div>
+                <div v-else class="rounded-full ring ring-neutral-500 size-2"/>
+                <span class="font-semibold text-sm text-muted">{{ column.title }}</span>
+                <div class="dark:bg-elevated/50 bg-muted rounded-lg px-2 py-0.5 text-sm font-semibold text-muted">
+                  {{ column.orders.length }}
+                </div>
+              </div>
+              <UButton class="cursor-pointer" color="neutral" leading-icon="i-ri-add-fill"
+                       variant="ghost"/>
             </div>
             <Draggable
-              v-model="demoList2"
+              v-model="column.orders"
               class="h-full p-2 space-y-2"
               drag-class="dragged"
               ghost-class="ghost"
               group="cards"
               item-key="id">
               <template #item="{element}">
-                <DemoCard :clientFullName="element.clientFullName" :column="1"
-                          :positionCount="element.positionCount" :progressPercent="element.progressPercent"
-                          :title="element.title"
-                          class="bg-secondary/20 hover:bg-secondary/30"/>
+                <DemoCard :clientFullName="element.clientFullName" :column="columnIndex"
+                          :due="element.due" :numberOfLinks="element.numberOfLinks"
+                          :orderPositionCount="element.orderPositionCount"
+                          :priority="element.priority"
+                          :progressPercent="element.progressPercent" :title="element.title"/>
               </template>
             </Draggable>
           </div>
         </div>
       </template>
     </UPageHero>
+    <!--    <UPageSection-->
+    <!--      :features="features"-->
+    <!--      class="*:*:*:*:*:nth-3:hover:scale-101 *:*:*:*:*:nth-3:hover:*:*:nth-3:text-primary-->
+    <!--              *:*:*:*:*:nth-3:*:*:nth-1:animate-pulse *:*:*:*:*:nth-3:hover:*:*:nth-1:animate-none lg:hidden *:nth-1:pt-0"-->
+    <!--      description="Kander was developed to solve a specific problem - to simplify the way you manage orders and track progress... for free!"-->
+    <!--      orientation="horizontal"-->
+    <!--      title="Enhance your working experience starting today"-->
+    <!--    />-->
+    <UPageSection
+      :features="features"
+      class="*:*:*:*:*:nth-3:hover:scale-101 *:*:*:*:*:nth-3:hover:*:*:nth-3:text-primary
+          *:*:*:*:*:nth-3:*:*:nth-1:animate-pulse *:*:*:*:*:nth-3:hover:*:*:nth-1:animate-none animate-fade-up animate-ease-out animate-duration-1000 animate-delay-400"
+      description="Kander was developed to solve a specific problem - to simplify the way you manage orders and track progress... for free!"
+      title="Enhance your working experience starting today"
+    />
   </UPage>
 </template>
 
 <style scoped>
-.ghost {
-  background: var(--ui-bg-muted);
+.ghost > * > * {
+  opacity: 0;
 }
 
-.ghost > * {
-  opacity: 0.1;
+.dragged > * {
+  @apply rotate-6;
 }
 </style>
