@@ -3,7 +3,10 @@
 </script>
 
 <template>
-  <UHeader class="bg-transparent backdrop-blur-md border-none" mode="slideover">
+  <UHeader :toggle="{
+    variant: 'naked',
+    class: 'cursor-pointer'
+  }" class="bg-transparent backdrop-blur-md border-none" mode="slideover">
     <template #title>
       <div class="flex items-center gap-2">
         <img alt="Kander logo" class="lg:h-8 h-7 object-fit select-none pointer-events-none"
@@ -35,8 +38,8 @@
           color="neutral"
           variant="ghost">
           <div class="flex flex-col items-start">
-            <span class="font-semibold text-lg">Log in</span>
-            <span class="text-muted">I have an organization token</span>
+            <span class="font-semibold text-lg">Log me in</span>
+            <span class="text-muted">I'm not a rookie y'know</span>
           </div>
           <UIcon class="size-7 group-hover:bg-secondary transition-colors" name="i-ri-login-circle-fill"></UIcon>
         </UButton>
@@ -46,22 +49,22 @@
           color="neutral"
           variant="ghost">
           <div class="flex flex-col items-start">
-            <span class="font-semibold text-lg">Sign me up</span>
-            <span class="text-muted">I'm a complete beginner here</span>
+            <span class="font-semibold text-lg">Create account</span>
+            <span class="text-muted">I'm a complete beginner</span>
           </div>
           <UIcon class="size-7 group-hover:bg-primary transition-colors" name="i-ri-rocket-2-fill"></UIcon>
         </UButton>
-        <USeparator class="h-px"/>
-        <UButton
-          class="cursor-pointer w-full flex items-center justify-between p-6 rounded-b-xl rounded-t-none group"
-          color="neutral"
-          variant="ghost">
-          <div class="flex flex-col items-start">
-            <span class="font-semibold text-lg">Create organization</span>
-            <span class="text-muted">I want to set up a Kander space</span>
-          </div>
-          <UIcon class="size-7 group-hover:bg-tertiary transition-colors" name="i-ri-function-add-fill"></UIcon>
-        </UButton>
+        <!--        <USeparator class="h-px"/>-->
+        <!--        <UButton-->
+        <!--          class="cursor-pointer w-full flex items-center justify-between p-6 rounded-b-xl rounded-t-none group"-->
+        <!--          color="neutral"-->
+        <!--          variant="ghost">-->
+        <!--          <div class="flex flex-col items-start">-->
+        <!--            <span class="font-semibold text-lg">Create organization</span>-->
+        <!--            <span class="text-muted">I want to set up a Kander space</span>-->
+        <!--          </div>-->
+        <!--          <UIcon class="size-7 group-hover:bg-tertiary transition-colors" name="i-ri-function-add-fill"></UIcon>-->
+        <!--        </UButton>-->
       </div>
     </template>
   </UHeader>
