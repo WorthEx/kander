@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <UHeader class="bg-default" mode="slideover">
+  <UHeader class="bg-transparent backdrop-blur-md border-none" mode="slideover">
     <template #title>
       <div class="flex items-center gap-2">
         <img alt="Kander logo" class="lg:h-8 h-7 object-fit select-none pointer-events-none"
@@ -16,8 +16,8 @@
       <UColorModeButton/>
       <UButton
         class="lg:flex hidden cursor-pointer px-4"
-        color="primary"
-        variant="soft">
+        color="neutral"
+        variant="ghost">
         Create account
       </UButton>
       <UButton
