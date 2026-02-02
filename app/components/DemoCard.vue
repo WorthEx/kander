@@ -1,10 +1,10 @@
 <script setup>
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     required: true
   },
-  positionCount: {
+  orderPositionCount: {
     type: Number,
     required: true
   },
@@ -18,30 +18,73 @@ defineProps({
   },
   column: {
     type: Number,
+  },
+  priority: {
+    type: Number,
+    required: true
+  },
+  due: {
+    type: Date,
+    required: true
+  },
+  numberOfLinks: {
+    type: Number,
   }
 })
+
+const getDate = computed(_ => {
+  const day = String(props.due.getDate()).padStart(2, '0')
+
+  const months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  ]
+
+  const month = months[props.due.getMonth()]
+  const year = props.due.getFullYear()
+
+  return `${day} ${month} ${year}`
+})
+const todayIsDueDate = computed(() => props.due.toDateString() === new Date().toDateString())
+
 </script>
 
 <template>
-  <div class="px-2 py-2 rounded-lg cursor-move transition-colors relative overflow-hidden">
-    <div :class="{'bg-tertiary/40': column ===  0, 'bg-secondary/40': column === 1}"
-         :style="{'width': `${progressPercent}%`}"
-         class="absolute inset-x-0 inset-y-0 h-full"/>
-    <div class="w-full justify-between flex gap-2 items-center relative">
-      <span class="text-sm">{{ title }}</span>
-      <span class="font-semibold lg:block hidden">{{ progressPercent }}%</span>
+  <div>
+    <div
+      class="paper px-4 pt-4 pb-5 dark:bg-elevated/50 bg-muted hover:dark:bg-elevated hover:bg-default rounded-lg cursor-grab active:cursor-grabbing transition-colors relative
+      overflow-hidden select-none flex flex-col gap-2">
+      <div class="w-full justify-between flex gap-2 items-center relative">
+        <span class="font-semibold text-sm">{{ title }}</span>
+        <span class="lg:block hidden text-sm">{{ progressPercent }}%</span>
+      </div>
+      <div class="w-full h-1 bg-accented rounded-full relative">
+        <div :class="{'bg-tertiary': column ===  0, 'bg-primary': column === 1}"
+             :style="{'width': `${progressPercent}%`}"
+             class="h-1 absolute rounded-full">
+        </div>
+      </div>
+      <div class="flex justify-between items-center">
+        <PriorityChip :priority/>
+        <UBadge v-if="todayIsDueDate" class="w-fit" color="error" icon="i-ri-flag-line">
+          <template #leading>
+            <UIcon name="i-ri-flag-line"/>
+          </template>
+          {{ getDate }}
+        </UBadge>
+        <div v-else class="text-xs text-toned flex items-center gap-1">
+          <UIcon class="text-dimmed" name="i-ri-flag-line"/>
+          <span>{{ getDate }}</span>
+        </div>
+      </div>
+      <USeparator class="h-px mt-4"/>
+      <div class="flex justify-between pt-1 text-sm">
+        <span class="text-toned">{{ clientFullName }}</span>
+        <div class="flex items-center gap-1">
+          <UIcon name="i-ri-link"/>
+          <span>{{ numberOfLinks }}</span>
+        </div>
+      </div>
     </div>
-    <div class="mt-6 flex items-center gap-2 relative">
-      <img v-if="positionCount < 4" alt="" class="w-6 rounded-full" src="https://i.pravatar.cc/150?img=32">
-      <img v-else-if="positionCount < 8" alt="" class="w-6 rounded-full" src="https://i.pravatar.cc/150?img=10">
-      <img v-else-if="positionCount < 12" alt="" class="w-6 rounded-full" src="https://i.pravatar.cc/150?img=13">
-      <img v-else alt="" class="w-6 rounded-full" src="https://i.pravatar.cc/150?img=14">
-      <span class="text-xs">{{ clientFullName }}</span>
-    </div>
-    <!--        <img alt="Demo client avatar" src="https://i.pravatar.cc/150?img=32">-->
   </div>
 </template>
-
-<style scoped>
-
-</style>
