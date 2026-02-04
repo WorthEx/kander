@@ -54,9 +54,22 @@ const todayIsDueDate = computed(() => props.due.toDateString() === new Date().to
     <div
       class="paper px-4 pt-4 pb-5 dark:bg-elevated/50 bg-muted hover:dark:bg-elevated hover:bg-default rounded-lg cursor-grab active:cursor-grabbing transition-colors relative
       overflow-hidden select-none flex flex-col gap-2">
+      <div class="flex justify-between items-center">
+        <UBadge v-if="todayIsDueDate" class="w-fit" color="error" icon="i-ri-flag-line">
+          <template #leading>
+            <UIcon name="i-ri-flag-line"/>
+          </template>
+          {{ getDate }}
+        </UBadge>
+        <div v-else class="text-xs text-muted flex items-center gap-1">
+          <UIcon class="text-dimmed" name="i-ri-flag-line"/>
+          <span>{{ getDate }}</span>
+        </div>
+        <PriorityChip :priority/>
+      </div>
       <div class="w-full justify-between flex gap-2 items-center relative">
-        <span class="font-semibold text-sm">{{ title }}</span>
-        <span class="lg:block hidden text-sm">{{ progressPercent }}%</span>
+        <span class="font-semibold text-sm line-clamp-1">{{ title }}</span>
+        <!--        <span class="lg:block hidden text-sm">{{ progressPercent }}%</span>-->
       </div>
       <div class="w-full h-1 bg-accented rounded-full relative">
         <div :class="{'bg-tertiary': column ===  0, 'bg-primary': column === 1}"
@@ -64,22 +77,9 @@ const todayIsDueDate = computed(() => props.due.toDateString() === new Date().to
              class="h-1 absolute rounded-full">
         </div>
       </div>
-      <div class="flex justify-between items-center">
-        <PriorityChip :priority/>
-        <UBadge v-if="todayIsDueDate" class="w-fit" color="error" icon="i-ri-flag-line">
-          <template #leading>
-            <UIcon name="i-ri-flag-line"/>
-          </template>
-          {{ getDate }}
-        </UBadge>
-        <div v-else class="text-xs text-toned flex items-center gap-1">
-          <UIcon class="text-dimmed" name="i-ri-flag-line"/>
-          <span>{{ getDate }}</span>
-        </div>
-      </div>
       <USeparator class="h-px mt-4"/>
       <div class="flex justify-between pt-1 text-sm">
-        <span class="text-toned">{{ clientFullName }}</span>
+        <span class="text-muted">{{ clientFullName }}</span>
         <div class="flex items-center gap-1">
           <UIcon name="i-ri-link"/>
           <span>{{ numberOfLinks }}</span>

@@ -36,5 +36,5 @@ switch (props.priority) {
 </script>
 
 <template>
-  <UBadge :color :leading-icon="icon" class="w-fit" variant="subtle">{{ Priority[priority] }}</UBadge>
+  <UBadge :color class="w-fit" variant="subtle">{{ Priority[priority] }}</UBadge>
 </template>
