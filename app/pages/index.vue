@@ -10,7 +10,8 @@ const demoList1 = ref([
     clientFullName: "Marisa Kirisame",
     priority: Priority.Low,
     due: new Date(new Date().setDate(new Date().getDate() - 2)),
-    numberOfLinks: 2
+    numberOfLinks: 2,
+    priceWithCurrency: "40 000 KZT"
   },
   {
     id: 'bgfjfjg',
@@ -20,7 +21,8 @@ const demoList1 = ref([
     clientFullName: "Hatsune Miku",
     priority: Priority.Medium,
     due: new Date(new Date().setDate(new Date().getDate() - 1)),
-    numberOfLinks: 3
+    numberOfLinks: 3,
+    priceWithCurrency: "20 000 KZT"
   },
   {
     id: 'cfgjfgj',
@@ -30,7 +32,8 @@ const demoList1 = ref([
     clientFullName: "Markiplier",
     priority: Priority.Neutral,
     due: new Date(new Date().setDate(new Date().getDate() - 3)),
-    numberOfLinks: 3
+    numberOfLinks: 3,
+    priceWithCurrency: "50 000 KZT"
   },
 ])
 const demoList2 = ref([
@@ -42,7 +45,8 @@ const demoList2 = ref([
     clientFullName: "Neil Armstrong",
     priority: Priority.High,
     due: new Date(new Date().setDate(new Date().getDate() - 1)),
-    numberOfLinks: 4
+    numberOfLinks: 4,
+    priceWithCurrency: "200 000 KZT"
   },
   {
     id: 'bfhkfhk',
@@ -52,7 +56,8 @@ const demoList2 = ref([
     clientFullName: "Sundar Pichai",
     priority: Priority.Urgent,
     due: new Date(),
-    numberOfLinks: 2
+    numberOfLinks: 2,
+    priceWithCurrency: "150 000 KZT"
   },
 ])
 const demoKanban = ref([
@@ -145,6 +150,7 @@ const features = ref([
                 <DemoCard :clientFullName="element.clientFullName" :column="columnIndex"
                           :due="element.due" :numberOfLinks="element.numberOfLinks"
                           :orderPositionCount="element.orderPositionCount"
+                          :priceWithCurrency="element.priceWithCurrency"
                           :priority="element.priority"
                           :progressPercent="element.progressPercent" :title="element.title"/>
               </template>

@@ -29,12 +29,12 @@ switch (props.priority) {
     color.value = "error"
     break
   default:
-    icon.value = "i-ri-arrow-up-double-fill"
+    icon.value = "i-ri-circle-line"
     color.value = "neutral"
     break;
 }
 </script>
 
 <template>
-  <UBadge :color class="w-fit" variant="subtle">{{ Priority[priority] }}</UBadge>
+  <UBadge :color :icon class="w-fit" variant="subtle">{{ Priority[priority] }}</UBadge>
 </template>

@@ -29,6 +29,9 @@ const props = defineProps({
   },
   numberOfLinks: {
     type: Number,
+  },
+  priceWithCurrency: {
+    type: String,
   }
 })
 
@@ -62,14 +65,13 @@ const todayIsDueDate = computed(() => props.due.toDateString() === new Date().to
           {{ getDate }}
         </UBadge>
         <div v-else class="text-xs text-muted flex items-center gap-1">
-          <UIcon class="text-dimmed" name="i-ri-flag-line"/>
+          <UIcon class="text-dimmed size-3" name="i-ri-flag-line"/>
           <span>{{ getDate }}</span>
         </div>
-        <PriorityChip :priority/>
+        <span class="uppercase font-semibold">{{ priceWithCurrency }}</span>
       </div>
       <div class="w-full justify-between flex gap-2 items-center relative">
         <span class="font-semibold text-sm line-clamp-1">{{ title }}</span>
-        <!--        <span class="lg:block hidden text-sm">{{ progressPercent }}%</span>-->
       </div>
       <div class="w-full h-1 bg-accented rounded-full relative">
         <div :class="{'bg-tertiary': column ===  0, 'bg-primary': column === 1}"
@@ -77,9 +79,12 @@ const todayIsDueDate = computed(() => props.due.toDateString() === new Date().to
              class="h-1 absolute rounded-full">
         </div>
       </div>
+      <div class="flex gap-1 flex-wrap">
+        <PriorityChip :priority/>
+      </div>
       <USeparator class="h-px mt-4"/>
-      <div class="flex justify-between pt-1 text-sm">
-        <span class="text-muted">{{ clientFullName }}</span>
+      <div class="flex justify-between pt-1 text-sm text-muted">
+        <span>{{ clientFullName }}</span>
         <div class="flex items-center gap-1">
           <UIcon name="i-ri-link"/>
           <span>{{ numberOfLinks }}</span>
