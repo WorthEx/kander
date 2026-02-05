@@ -1,5 +1,7 @@
-<script lang="ts" setup>
-
+<script setup>
+onMounted(async _ => {
+  await $fetch('/api/prismaworks')
+})
 </script>
 
 <template>
