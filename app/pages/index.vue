@@ -118,7 +118,7 @@ const features = ref([
       </template>
       <template #default>
         <div
-          class="z-1 size-full dark:bg-muted bg-accented/50 rounded-2xl overflow-x-auto overflow-y-hidden no-scrollbar
+          class="z-1 size-full max-h-161 dark:bg-muted bg-accented/50 rounded-2xl overflow-x-auto overflow-y-scroll no-scrollbar
                  animate-fade-up animate-ease-out flex">
           <div v-for="(column, columnIndex) in demoKanban"
                :class="{'dark:border-r-neutral-700 border-r border-r-neutral-200': columnIndex + 1 < demoKanban.length}"

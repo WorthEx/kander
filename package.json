@@ -17,6 +17,7 @@
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@vite-pwa/nuxt": "1.1.0",
+    "jsonwebtoken": "^9.0.3",
     "lexorank": "^1.0.5",
     "nuxt": "^4.3.0",
     "pg": "^8.18.0",
