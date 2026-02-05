@@ -98,9 +98,9 @@ const features = ref([
   <UPage class="pb-20">
     <div
       class="absolute animate-pulse animate-duration-8500
-          bg-primary w-screen h-[5rem] inset-x-1/2 -translate-x-1/2 -top-[10rem] rounded-full drop-shadow-2xl drop-shadow-primary blur-[20rem]"/>
+          bg-primary w-screen h-20 inset-x-1/2 -translate-x-1/2 -top-40 rounded-full drop-shadow-2xl drop-shadow-primary blur-[20rem]"/>
     <UPageHero
-      class="animate-fade-up animate-ease-out animate-duration-1000"
+      class="animate-fade-up animate-ease-out animate-duration-1000 *:lg:py-20"
       description="A tool making order management as effortless as you can imagine with kanban-styled boards for ur team or your precious self"
       orientation="horizontal">
       <template #title>Kanbanize your workflow with ease</template>
@@ -118,7 +118,7 @@ const features = ref([
       </template>
       <template #default>
         <div
-          class="z-1 size-full dark:bg-muted bg-accented/50 rounded-2xl min-h-64 overflow-x-auto overflow-y-hidden no-scrollbar
+          class="z-1 size-full dark:bg-muted bg-accented/50 rounded-2xl overflow-x-auto overflow-y-hidden no-scrollbar
                  animate-fade-up animate-ease-out flex">
           <div v-for="(column, columnIndex) in demoKanban"
                :class="{'dark:border-r-neutral-700 border-r border-r-neutral-200': columnIndex + 1 < demoKanban.length}"
