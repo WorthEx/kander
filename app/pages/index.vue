@@ -120,7 +120,7 @@ const logInLink = ref("/auth/login")
           class="z-1 size-full max-h-161 dark:bg-muted bg-accented/50 rounded-2xl overflow-x-auto overflow-y-scroll no-scrollbar
                  animate-fade-up animate-ease-out flex">
           <div v-for="(column, columnIndex) in demoKanban"
-               :class="{'dark:border-r-neutral-700 border-r border-r-neutral-200': columnIndex + 1 < demoKanban.length}"
+               :class="{'sm:border-r dark:border-r-neutral-700 border-r-neutral-200': columnIndex + 1 < demoKanban.length}"
                :style="{'animationDelay': `${columnIndex * 200}ms` }"
                class="flex flex-col sm:basis-1/2 basis-full animate-fade-up animate-ease-out animate-once nth-2:sm:flex nth-2:hidden">
             <div
