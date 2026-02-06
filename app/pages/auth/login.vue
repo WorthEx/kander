@@ -1,6 +1,5 @@
 <script setup>
 import * as z from 'zod'
-import crypto from 'crypto'
 
 import {useNotification} from "~/composables/useNotification.js";
 
@@ -53,12 +52,7 @@ defineShortcuts({
     submit()
   }
 })
-if (import.meta.server) {
-  console.log(crypto
-    .createHash('sha256')
-    .update("92a0448dc7cb8c16c7e95e3322b626cf68191e5a80734c92e92966583b864c9a")
-    .digest('hex'))
-}
+
 </script>
 
 <template>
