@@ -67,12 +67,13 @@ defineShortcuts({
                 color: 'primary',
                 loading,
                 disabled: emailSent,
-                class: 'cursor-pointer',
+                class: 'cursor-pointer py-2',
+                leadingIcon: emailSent ? '' : 'i-ri-send-plane-fill'
               }"
           class="max-w-lg w-full"
-          description="You'll get an email within 5 minutes. We hope."
+          description="You'll get an email with magic link to sign in. The link expires in 30 minutes, make sure to use it soon!"
           icon="i-ri-mail-open-fill"
-          title="Log in with email"
+          title="Log in via magic link"
           @submit="submit"
         >
         </UAuthForm>

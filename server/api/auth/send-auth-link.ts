@@ -26,11 +26,12 @@ export default defineEventHandler(async (event) => {
     data: {
       userId: user.id,
       tokenHash,
-      expiresAt: new Date(Date.now() + 15 * 60 * 1000)
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000)
     }
   })
 
-  const domain = process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : 'https://kander.space'
+  const url = event.node.req.headers.host
+  const domain = process.env.NODE_ENV === 'development' ? `http://${url}` : `https://${url}`
   const magicLink = `${domain}/auth/verify?token=${token}`
 
   await resend.emails.send({
