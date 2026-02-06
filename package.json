@@ -21,12 +21,15 @@
     "lexorank": "^1.0.5",
     "nuxt": "^4.3.0",
     "pg": "^8.18.0",
+    "resend": "^6.9.1",
     "tailwindcss": "^4.1.18",
     "tailwindcss-animated": "^2.0.0",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@iconify-json/ri": "^1.2.8",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/pg": "^8.16.0",
     "dotenv": "^17.2.3",
     "prisma": "^7.3.0",

@@ -1,5 +1,6 @@
 <script setup>
-
+// todo: change to Dashboard once logged in
+const logInLink = ref("/auth/login")
 </script>
 
 <template>
@@ -18,12 +19,7 @@
     <template #right>
       <UColorModeButton class="cursor-pointer" variant="naked"/>
       <UButton
-        class="lg:flex hidden cursor-pointer px-4"
-        color="neutral"
-        variant="naked">
-        Create account
-      </UButton>
-      <UButton
+        :to="logInLink"
         class="lg:flex hidden cursor-pointer px-4"
         color="primary"
         variant="solid">
@@ -34,36 +30,26 @@
     <template #body>
       <div class="flex flex-col ring dark:ring-neutral-800 ring-neutral-200 rounded-xl overflow-hidden">
         <UButton
+          :to="logInLink"
           class="cursor-pointer w-full flex items-center justify-between p-6 rounded-t-xl rounded-b-none group"
           color="neutral"
           variant="ghost">
           <div class="flex flex-col items-start">
-            <span class="font-semibold text-lg">Log me in</span>
-            <span class="text-muted">I'm not a rookie y'know</span>
+            <span class="font-semibold text-lg">Log in</span>
+            <!--            <span class="text-muted">I'm not a rookie y'know</span>-->
           </div>
           <UIcon class="size-7 group-hover:bg-secondary transition-colors" name="i-ri-login-circle-fill"></UIcon>
         </UButton>
         <USeparator class="h-px"/>
-        <UButton
-          class="cursor-pointer w-full flex items-center justify-between p-6 rounded-none group"
-          color="neutral"
-          variant="ghost">
-          <div class="flex flex-col items-start">
-            <span class="font-semibold text-lg">Create account</span>
-            <span class="text-muted">I'm a complete beginner</span>
-          </div>
-          <UIcon class="size-7 group-hover:bg-primary transition-colors" name="i-ri-rocket-2-fill"></UIcon>
-        </UButton>
-        <!--        <USeparator class="h-px"/>-->
         <!--        <UButton-->
-        <!--          class="cursor-pointer w-full flex items-center justify-between p-6 rounded-b-xl rounded-t-none group"-->
+        <!--          class="cursor-pointer w-full flex items-center justify-between p-6 rounded-none group"-->
         <!--          color="neutral"-->
         <!--          variant="ghost">-->
         <!--          <div class="flex flex-col items-start">-->
-        <!--            <span class="font-semibold text-lg">Create organization</span>-->
-        <!--            <span class="text-muted">I want to set up a Kander space</span>-->
+        <!--            <span class="font-semibold text-lg">Create account</span>-->
+        <!--            <span class="text-muted">I'm a complete beginner</span>-->
         <!--          </div>-->
-        <!--          <UIcon class="size-7 group-hover:bg-tertiary transition-colors" name="i-ri-function-add-fill"></UIcon>-->
+        <!--          <UIcon class="size-7 group-hover:bg-primary transition-colors" name="i-ri-rocket-2-fill"></UIcon>-->
         <!--        </UButton>-->
       </div>
     </template>

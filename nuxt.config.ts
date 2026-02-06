@@ -87,4 +87,8 @@ export default defineNuxtConfig({
       enabled: true,
     },
   },
+  runtimeConfig: {
+    resendKey: '',
+    jwtSecret: ''
+  }
 })

@@ -72,7 +72,6 @@ const demoKanban = ref([
     orders: [...demoList2.value]
   },
 ])
-
 const features = ref([
   {
     title: 'Kanban styled',
@@ -92,6 +91,8 @@ const features = ref([
   }
 ])
 
+// todo: change to Dashboard once logged in
+const logInLink = ref("/auth/login")
 </script>
 
 <template>
@@ -106,14 +107,12 @@ const features = ref([
       <template #title>Kanbanize your workflow with ease</template>
       <template #links>
         <div class="flex gap-2 *:w-fit max-[350px]:flex-col">
-          <UButton class="cursor-pointer group" label="Get started" size="xl">
+          <UButton :to="logInLink" class="cursor-pointer group" label="Get started" size="xl">
             <template #trailing>
               <UIcon class="size-6 border group-hover:translate-x-0.5 transition-transform"
                      name="i-ri-arrow-right-s-line"/>
             </template>
           </UButton>
-          <UButton class="cursor-pointer" color="neutral" label="Learn more" size="xl" to="/somewhere"
-                   variant="outline"/>
         </div>
       </template>
       <template #default>
