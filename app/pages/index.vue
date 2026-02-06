@@ -9,9 +9,9 @@ const demoList1 = ref([
     progressPercent: 5,
     clientFullName: "Marisa Kirisame",
     priority: Priority.Low,
-    due: new Date(new Date().setDate(new Date().getDate() - 2)),
+    due: new Date(new Date().setDate(new Date().getDate() - 13)),
     numberOfLinks: 2,
-    priceWithCurrency: "40 000 KZT"
+    price: "40 000"
   },
   {
     id: 'bgfjfjg',
@@ -20,9 +20,9 @@ const demoList1 = ref([
     progressPercent: 10,
     clientFullName: "Hatsune Miku",
     priority: Priority.Medium,
-    due: new Date(new Date().setDate(new Date().getDate() - 1)),
+    due: new Date(new Date().setDate(new Date().getDate() - 6)),
     numberOfLinks: 3,
-    priceWithCurrency: "20 000 KZT"
+    price: "20 000"
   },
   {
     id: 'cfgjfgj',
@@ -30,10 +30,10 @@ const demoList1 = ref([
     orderPositionCount: 4,
     progressPercent: 0,
     clientFullName: "Markiplier",
-    priority: Priority.Neutral,
-    due: new Date(new Date().setDate(new Date().getDate() - 3)),
+    priority: Priority.Low,
+    due: new Date(new Date().setDate(new Date().getDate() - 9)),
     numberOfLinks: 3,
-    priceWithCurrency: "50 000 KZT"
+    price: "50 000"
   },
 ])
 const demoList2 = ref([
@@ -46,7 +46,7 @@ const demoList2 = ref([
     priority: Priority.High,
     due: new Date(new Date().setDate(new Date().getDate() - 1)),
     numberOfLinks: 4,
-    priceWithCurrency: "200 000 KZT"
+    price: "120 000"
   },
   {
     id: 'bfhkfhk',
@@ -54,10 +54,10 @@ const demoList2 = ref([
     orderPositionCount: 12,
     progressPercent: 58,
     clientFullName: "Sundar Pichai",
-    priority: Priority.Urgent,
+    priority: Priority.High,
     due: new Date(),
     numberOfLinks: 2,
-    priceWithCurrency: "150 000 KZT"
+    price: "150 000"
   },
 ])
 const demoKanban = ref([
@@ -117,10 +117,9 @@ const logInLink = ref("/auth/login")
       </template>
       <template #default>
         <div
-          class="z-1 size-full max-h-161 dark:bg-muted bg-accented/50 rounded-2xl overflow-x-auto overflow-y-scroll no-scrollbar
-                 animate-fade-up animate-ease-out flex">
+          class="z-1 size-full max-h-162 dark:bg-muted bg-accented/50 rounded-2xl overflow-y-scroll overscroll-auto no-scrollbar
+                 animate-fade-up animate-ease-out flex relative">
           <div v-for="(column, columnIndex) in demoKanban"
-               :class="{'sm:border-r dark:border-r-neutral-700 border-r-neutral-200': columnIndex + 1 < demoKanban.length}"
                :style="{'animationDelay': `${columnIndex * 200}ms` }"
                class="flex flex-col sm:basis-1/2 basis-full animate-fade-up animate-ease-out animate-once nth-2:sm:flex nth-2:hidden">
             <div
@@ -140,6 +139,8 @@ const logInLink = ref("/auth/login")
             </div>
             <Draggable
               v-model="column.orders"
+              :delay="100"
+              :delay-on-touch-only="true"
               class="h-full p-2 space-y-2"
               drag-class="dragged"
               ghost-class="ghost"
@@ -149,7 +150,7 @@ const logInLink = ref("/auth/login")
                 <DemoCard :clientFullName="element.clientFullName" :column="columnIndex"
                           :due="element.due" :numberOfLinks="element.numberOfLinks"
                           :orderPositionCount="element.orderPositionCount"
-                          :priceWithCurrency="element.priceWithCurrency"
+                          :price="element.price"
                           :priority="element.priority"
                           :progressPercent="element.progressPercent" :title="element.title"/>
               </template>
@@ -168,9 +169,13 @@ const logInLink = ref("/auth/login")
   </UPage>
 </template>
 
-<style scoped>
+<style>
 .ghost > * > * {
-  opacity: 0;
+  opacity: 40%;
+}
+
+.ghost {
+  opacity: 50%;
 }
 
 .dragged > * {
