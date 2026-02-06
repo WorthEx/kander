@@ -12,7 +12,7 @@ defineProps({
     <UError
       :clear="{
       color: 'primary',
-      icon: 'i-ri-home-3-fill',
+      icon: 'i-ri-home-6-fill',
       class: 'rounded-full cursor-pointer',
       label: 'Take me home'
     }"
