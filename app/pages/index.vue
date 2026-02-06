@@ -1,6 +1,10 @@
 <script setup>
 import Draggable from 'vuedraggable'
 
+definePageMeta({
+  auth: false,
+})
+
 const demoList1 = ref([
   {
     id: 'adfhdfh',
@@ -80,7 +84,7 @@ const features = ref([
   },
   {
     title: 'Mobile-first',
-    description: 'Kander was designed to be used from any preferred platform. You can even install it as a mobile app. We don\'t recommend using it while driving tho.',
+    description: 'Kander was designed to be used from any preferred platform. We don\'t recommend using it while driving tho.',
     icon: 'i-ri-mobile-download-fill',
   },
   {
@@ -91,8 +95,11 @@ const features = ref([
   }
 ])
 
-// todo: change to Dashboard once logged in
-const logInLink = ref("/auth/login")
+const auth = useAuth()
+const logInLink = computed(_ => {
+  if (auth.initialized.value && auth.user.value) return '/overview'
+  else return '/auth/login'
+})
 </script>
 
 <template>
@@ -116,14 +123,13 @@ const logInLink = ref("/auth/login")
         </div>
       </template>
       <template #default>
-        <div
-          class="z-1 size-full max-h-162 dark:bg-muted bg-accented/50 rounded-2xl overflow-y-scroll overscroll-auto no-scrollbar
+        <div class="z-1 size-full max-h-163 dark:bg-muted bg-accented/50 rounded-2xl overflow-y-scroll overscroll-auto no-scrollbar
                  animate-fade-up animate-ease-out flex relative">
           <div v-for="(column, columnIndex) in demoKanban"
                :style="{'animationDelay': `${columnIndex * 200}ms` }"
                class="flex flex-col sm:basis-1/2 basis-full animate-fade-up animate-ease-out animate-once nth-2:sm:flex nth-2:hidden">
             <div
-              class="w-full pt-3 pb-1 ps-3 pe-2 select-none flex flex-row items-center justify-between gap-2">
+              class="w-full py-3 ps-3 pe-2 select-none flex flex-row items-center justify-between gap-2">
               <div class="flex gap-2 items-center">
                 <div v-if="columnIndex===1" class="rounded-full ring ring-neutral-500 size-2">
                   <div class="bg-neutral-500 w-1 h-2 rounded-s-full"></div>
@@ -141,7 +147,7 @@ const logInLink = ref("/auth/login")
               v-model="column.orders"
               :delay="100"
               :delay-on-touch-only="true"
-              class="h-full p-2 space-y-2"
+              class="h-full px-2 pb-2 space-y-2"
               drag-class="dragged"
               ghost-class="ghost"
               group="cards"

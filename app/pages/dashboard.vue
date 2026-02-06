@@ -1,9 +1,12 @@
-<script lang="ts" setup>
-
+<script setup>
+definePageMeta({
+  layout: 'dashboard',
+})
+if (import.meta.client) console.log(useAuth().user.value)
 </script>
 
 <template>
-  dash!
+  <div class="text-9xl text-red-500">dashboard</div>
 </template>
 
 <style scoped>

@@ -1,7 +1,10 @@
 <script setup>
 import * as z from 'zod'
-
 import {useNotification} from "~/composables/useNotification.js";
+
+definePageMeta({
+  auth: false,
+})
 
 const loading = ref(false)
 const emailSent = ref(false)

@@ -1,6 +1,10 @@
 <script setup>
-// todo: change to Dashboard once logged in
-const logInLink = ref("/auth/login")
+const auth = useAuth()
+const logInLink = computed(_ => {
+  if (auth.initialized.value && auth.user.value) return '/overview'
+  else return '/auth/login'
+})
+const userLoaded = computed(_ => auth.initialized.value && auth.user.value)
 </script>
 
 <template>
@@ -23,7 +27,7 @@ const logInLink = ref("/auth/login")
         class="lg:flex hidden cursor-pointer px-4"
         color="primary"
         variant="solid">
-        Log in
+        {{ userLoaded ? 'Overview' : 'Log in' }}
       </UButton>
     </template>
 
@@ -34,13 +38,11 @@ const logInLink = ref("/auth/login")
           class="cursor-pointer w-full flex items-center justify-between p-6 rounded-t-xl rounded-b-none group"
           color="neutral"
           variant="ghost">
-          <div class="flex flex-col items-start">
-            <span class="font-semibold text-lg">Log in</span>
-            <!--            <span class="text-muted">I'm not a rookie y'know</span>-->
-          </div>
-          <UIcon class="size-7 group-hover:bg-secondary transition-colors" name="i-ri-login-circle-fill"></UIcon>
+          <span class="font-semibold text-lg">{{ userLoaded ? 'Overview' : 'Log in' }}</span>
+          <UIcon :name="userLoaded ? 'i-ri-home-6-fill' : 'i-ri-door-open-fill'"
+                 class="size-7 group-hover:bg-secondary transition-colors"></UIcon>
         </UButton>
-        <USeparator class="h-px"/>
+        <!--        <USeparator class="h-px"/>-->
         <!--        <UButton-->
         <!--          class="cursor-pointer w-full flex items-center justify-between p-6 rounded-none group"-->
         <!--          color="neutral"-->

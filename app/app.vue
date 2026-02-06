@@ -4,7 +4,6 @@ const routesWithHeader = ['index', 'auth-login', 'auth-verify']
 </script>
 
 <template>
-  <VitePwaManifest/>
   <UApp :toaster="{position: 'top-right'}">
     <GlobalHeader v-if="routesWithHeader.includes(route.name)"/>
     <UMain>
