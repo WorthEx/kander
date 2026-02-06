@@ -39,14 +39,14 @@ export default defineEventHandler(async (event) => {
   const accessToken = jwt.sign(
     {
       userId: magicLink.user.id,
-      phone: magicLink.user.email,
+      email: magicLink.user.email,
     },
     jwtSecret, {expiresIn: '5m'})
 
   const refreshToken = jwt.sign(
     {
       userId: magicLink.user.id,
-      phone: magicLink.user.email,
+      email: magicLink.user.email,
     },
     jwtSecret, {expiresIn: '1w'})
 
@@ -57,5 +57,5 @@ export default defineEventHandler(async (event) => {
     expires: new Date(Date.now() + (1000 * 60 * 60 * 24 * 7)),
   })
 
-  return sendRedirect(event, '/dashboard')
+  return {ok: true}
 })
