@@ -16,7 +16,7 @@
     "@nuxt/ui": "^4.4.0",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
-    "@vite-pwa/nuxt": "1.1.0",
+    "@vueuse/core": "^14.2.0",
     "jsonwebtoken": "^9.0.3",
     "lexorank": "^1.0.5",
     "nuxt": "^4.3.0",

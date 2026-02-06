@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  modules: ['@nuxt/ui', '@vite-pwa/nuxt'],
+  modules: ['@nuxt/ui'],
   devtools: {
     enabled: true
   },
@@ -51,41 +51,6 @@ export default defineNuxtConfig({
     families: [
       {name: 'Inter', provider: 'google', weights: [200, 400, 600, 700, 900]},
     ],
-  },
-  pwa: {
-    includeManifestIcons: true,
-    includeAssets: ["favicon.ico", "/images/kander_512.png", "/images/kander_192.png"],
-    strategies: "generateSW",
-    registerType: "autoUpdate",
-    manifest: {
-      name: 'Kander',
-      short_name: 'Kander',
-      description: 'A reliable solution for order management powered by Nuxt 4.',
-      icons: [
-        {
-          src: '/images/kander_192.png',
-          sizes: '192x192',
-          type: 'image/png',
-        },
-        {
-          src: '/images/kander_512.png',
-          sizes: '512x512',
-          type: 'image/png',
-        },
-      ],
-      start_url: "/",
-      display: "standalone",
-      id: "/",
-
-      background_color: "#171717",
-      theme_color: "#171717"
-    },
-    workbox: {
-      navigateFallback: '/',
-    },
-    devOptions: {
-      enabled: true,
-    },
   },
   runtimeConfig: {
     resendKey: '',
