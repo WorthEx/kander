@@ -1,6 +1,15 @@
 <script setup>
+
 const route = useRoute()
 const routesWithHeaderAndFooter = ['index', 'auth-login', 'auth-verify']
+
+useSeoMeta({
+  title: 'Kander',
+  ogTitle: 'Kander: effortless order management',
+  description: 'A reliable order management solution for SMEs powered by Nuxt 4. Kanbanize your workflow starting today.',
+  ogDescription: 'A reliable order management solution for SMEs powered by Nuxt 4. Kanbanize your workflow starting today.',
+  ogImage: 'https://kander.space/images/kander_512.png',
+})
 </script>
 
 <template>

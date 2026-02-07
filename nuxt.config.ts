@@ -17,7 +17,7 @@ export default defineNuxtConfig({
         {name: "theme-color", content: '#171717', media: "(prefers-color-scheme: dark)"},
         {
           name: 'description',
-          content: 'A reliable order management solution for indie organizations powered by Nuxt 4.'
+          content: 'A reliable order management solution for SMEs powered by Nuxt 4. Kanbanize your workflow starting today.'
         }
       ],
     },
