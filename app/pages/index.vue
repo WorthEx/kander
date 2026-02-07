@@ -1,5 +1,6 @@
 <script setup>
 import Draggable from 'vuedraggable'
+import {useMediaQuery} from "@vueuse/core";
 
 definePageMeta({
   auth: false,
@@ -83,7 +84,7 @@ const features = ref([
     icon: 'i-ri-table-fill',
   },
   {
-    title: 'Mobile-first',
+    title: 'Fully responsive',
     description: 'Kander was designed to be used from any preferred platform. We don\'t recommend using it while driving tho.',
     icon: 'i-ri-mobile-download-fill',
   },
@@ -100,6 +101,8 @@ const logInLink = computed(_ => {
   if (auth.initialized.value && auth.user.value) return '/overview'
   else return '/auth/login'
 })
+
+const isMobile = useMediaQuery('(max-width: 1024px)')
 </script>
 
 <template>
@@ -123,13 +126,13 @@ const logInLink = computed(_ => {
         </div>
       </template>
       <template #default>
-        <div class="z-1 size-full max-h-163 dark:bg-muted bg-accented/50 rounded-2xl overflow-y-scroll overscroll-auto no-scrollbar
-                 animate-fade-up animate-ease-out flex relative">
+        <div
+          class="z-1 size-full dark:bg-muted bg-accented/50 rounded-2xl animate-fade-up animate-ease-out flex overflow-hidden">
           <div v-for="(column, columnIndex) in demoKanban"
                :style="{'animationDelay': `${columnIndex * 200}ms` }"
                class="flex flex-col sm:basis-1/2 basis-full animate-fade-up animate-ease-out animate-once nth-2:sm:flex nth-2:hidden">
             <div
-              class="w-full py-3 ps-3 pe-2 select-none flex flex-row items-center justify-between gap-2">
+              class="w-full ps-3 pe-2 py-3 select-none flex flex-row items-center justify-between gap-2">
               <div class="flex gap-2 items-center">
                 <div v-if="columnIndex===1" class="rounded-full ring ring-neutral-500 size-2">
                   <div class="bg-neutral-500 w-1 h-2 rounded-s-full"></div>
@@ -145,9 +148,8 @@ const logInLink = computed(_ => {
             </div>
             <Draggable
               v-model="column.orders"
-              :delay="100"
-              :delay-on-touch-only="true"
-              class="h-full px-2 pb-2 space-y-2"
+              :disabled="isMobile"
+              class="h-full px-2 pb-2 space-y-3 no-scrollbar max-h-150 overflow-y-auto"
               drag-class="dragged"
               ghost-class="ghost"
               group="cards"
@@ -183,6 +185,7 @@ const logInLink = computed(_ => {
 .ghost {
   opacity: 50%;
 }
+
 
 .dragged > * {
   @apply rotate-6;
