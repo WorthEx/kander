@@ -22,26 +22,30 @@ const userLoaded = computed(_ => auth.initialized.value && auth.user.value)
 
     <template #right>
       <UColorModeButton class="cursor-pointer" variant="naked"/>
-      <UButton
-        :to="logInLink"
-        class="lg:flex hidden cursor-pointer px-4"
-        color="primary"
-        variant="solid">
-        {{ userLoaded ? 'Overview' : 'Log in' }}
-      </UButton>
+      <ClientOnly>
+        <UButton
+          :to="logInLink"
+          class="lg:flex hidden cursor-pointer px-4"
+          color="primary"
+          variant="solid">
+          {{ userLoaded ? 'Overview' : 'Log in' }}
+        </UButton>
+      </ClientOnly>
     </template>
 
     <template #body>
       <div class="flex flex-col ring dark:ring-neutral-800 ring-neutral-200 rounded-xl overflow-hidden">
-        <UButton
-          :to="logInLink"
-          class="cursor-pointer w-full flex items-center justify-between p-6 rounded-t-xl rounded-b-none group"
-          color="neutral"
-          variant="ghost">
-          <span class="font-semibold text-lg">{{ userLoaded ? 'Overview' : 'Log in' }}</span>
-          <UIcon :name="userLoaded ? 'i-ri-home-6-fill' : 'i-ri-door-open-fill'"
-                 class="size-7 group-hover:bg-secondary transition-colors"></UIcon>
-        </UButton>
+        <ClientOnly>
+          <UButton
+            :to="logInLink"
+            class="cursor-pointer w-full flex items-center justify-between p-6 rounded-t-xl rounded-b-none group"
+            color="neutral"
+            variant="ghost">
+            <span class="font-semibold text-lg">{{ userLoaded ? 'Overview' : 'Log in' }}</span>
+            <UIcon :name="userLoaded ? 'i-ri-home-6-fill' : 'i-ri-door-open-fill'"
+                   class="size-7 group-hover:bg-secondary transition-colors"></UIcon>
+          </UButton>
+        </ClientOnly>
         <!--        <USeparator class="h-px"/>-->
         <!--        <UButton-->
         <!--          class="cursor-pointer w-full flex items-center justify-between p-6 rounded-none group"-->
