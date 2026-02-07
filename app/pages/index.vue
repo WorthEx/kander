@@ -125,6 +125,14 @@ const isMobile = computed(_ => {
                        name="i-ri-arrow-right-s-line"/>
               </template>
             </UButton>
+            <template #fallback>
+              <UButton class="cursor-pointer group" label="Get started" size="xl">
+                <template #trailing>
+                  <UIcon class="size-6 border group-hover:translate-x-0.5 transition-transform"
+                         name="i-ri-arrow-right-s-line"/>
+                </template>
+              </UButton>
+            </template>
           </ClientOnly>
         </div>
       </template>

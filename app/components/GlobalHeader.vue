@@ -30,6 +30,14 @@ const userLoaded = computed(_ => auth.initialized.value && auth.user.value)
           variant="solid">
           {{ userLoaded ? 'Overview' : 'Log in' }}
         </UButton>
+        <template #fallback>
+          <UButton
+            class="lg:flex hidden cursor-pointer px-4"
+            color="primary"
+            variant="solid">
+            <USkeleton class="h-4 w-16 bg-default/20 rounded-full"></USkeleton>
+          </UButton>
+        </template>
       </ClientOnly>
     </template>
 
