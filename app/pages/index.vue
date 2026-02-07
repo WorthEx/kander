@@ -1,6 +1,5 @@
 <script setup>
 import Draggable from 'vuedraggable'
-import {useMediaQuery} from "@vueuse/core";
 
 definePageMeta({
   auth: false,
@@ -86,7 +85,7 @@ const features = ref([
   {
     title: 'Fully responsive',
     description: 'Kander was designed to be used from any preferred platform. We don\'t recommend using it while driving tho.',
-    icon: 'i-ri-mobile-download-fill',
+    icon: 'i-ri-device-fill',
   },
   {
     title: 'Free of charge',
@@ -102,7 +101,9 @@ const logInLink = computed(_ => {
   else return '/auth/login'
 })
 
-const isMobile = useMediaQuery('(max-width: 1024px)')
+const isMobile = computed(_ => {
+  if (import.meta.client) return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+})
 </script>
 
 <template>
@@ -117,12 +118,14 @@ const isMobile = useMediaQuery('(max-width: 1024px)')
       <template #title>Kanbanize your workflow with ease</template>
       <template #links>
         <div class="flex gap-2 *:w-fit max-[350px]:flex-col">
-          <UButton :to="logInLink" class="cursor-pointer group" label="Get started" size="xl">
-            <template #trailing>
-              <UIcon class="size-6 border group-hover:translate-x-0.5 transition-transform"
-                     name="i-ri-arrow-right-s-line"/>
-            </template>
-          </UButton>
+          <ClientOnly>
+            <UButton :to="logInLink" class="cursor-pointer group" label="Get started" size="xl">
+              <template #trailing>
+                <UIcon class="size-6 border group-hover:translate-x-0.5 transition-transform"
+                       name="i-ri-arrow-right-s-line"/>
+              </template>
+            </UButton>
+          </ClientOnly>
         </div>
       </template>
       <template #default>
