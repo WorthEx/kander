@@ -1,7 +1,7 @@
 <script setup>
 
 const route = useRoute()
-const routesWithHeaderAndFooter = ['index', 'auth-login', 'auth-verify']
+const routesWithHeaderAndFooterAndBanner = ['index', 'auth-login', 'auth-verify']
 
 useSeoMeta({
   title: 'Kander',
@@ -14,13 +14,15 @@ useSeoMeta({
 
 <template>
   <UApp :toaster="{position: 'top-right'}">
-    <GlobalHeader v-if="routesWithHeaderAndFooter.includes(route.name)"/>
+    <UBanner v-if="routesWithHeaderAndFooterAndBanner.includes(route.name)" close
+             title="The app is currently under active development!"/>
+    <GlobalHeader v-if="routesWithHeaderAndFooterAndBanner.includes(route.name)"/>
     <UMain>
       <NuxtLayout>
         <NuxtPage/>
       </NuxtLayout>
     </UMain>
-    <USeparator v-if="routesWithHeaderAndFooter.includes(route.name)" class="h-px"/>
-    <GlobalFooter v-if="routesWithHeaderAndFooter.includes(route.name)"/>
+    <USeparator v-if="routesWithHeaderAndFooterAndBanner.includes(route.name)" class="h-px"/>
+    <GlobalFooter v-if="routesWithHeaderAndFooterAndBanner.includes(route.name)"/>
   </UApp>
 </template>
