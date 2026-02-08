@@ -25,7 +25,7 @@ const userLoaded = computed(_ => auth.initialized.value && auth.user.value)
       <ClientOnly>
         <UButton
           :to="logInLink"
-          class="lg:flex hidden cursor-pointer px-4 rounded-full"
+          class="lg:flex hidden cursor-pointer px-4 py-2 rounded-full"
           color="primary"
           variant="solid">
           {{ userLoaded ? 'Overview' : 'Log in' }}
