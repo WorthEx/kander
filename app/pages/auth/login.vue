@@ -3,6 +3,7 @@ import * as z from 'zod'
 import {useNotification} from "~/composables/useNotification.js";
 
 definePageMeta({
+  layout: 'default',
   auth: false,
 })
 
