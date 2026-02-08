@@ -14,7 +14,8 @@ useSeoMeta({
 
 <template>
   <UApp :toaster="{position: 'top-right'}">
-    <UBanner v-if="routesWithHeaderAndFooterAndBanner.includes(route.name)" close
+    <UBanner v-if="routesWithHeaderAndFooterAndBanner.includes(route.name)"
+             class="*:h-fit *:py-2 *:w-fit *:mx-auto select-none"
              title="The app is currently under active development!"/>
     <GlobalHeader v-if="routesWithHeaderAndFooterAndBanner.includes(route.name)"/>
     <UMain>
