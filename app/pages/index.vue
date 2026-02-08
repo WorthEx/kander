@@ -109,8 +109,8 @@ const isMobile = computed(_ => {
 <template>
   <UPage class="pb-20">
     <div
-      class="absolute animate-pulse animate-duration-8500
-          bg-primary w-screen h-20 inset-x-1/2 -translate-x-1/2 -top-40 rounded-full drop-shadow-2xl drop-shadow-primary blur-[20rem]"/>
+      class="absolute animate-pulse animate-duration-5000 border
+          bg-secondary w-[80%] h-25 inset-x-1/2 -translate-x-1/2 -top-40 rounded-full drop-shadow-2xl drop-shadow-primary blur-[25rem]"/>
     <UPageHero
       class="animate-fade-up animate-ease-out animate-duration-1000 *:lg:py-20"
       description="A tool making order management as effortless as you can imagine with kanban-styled boards for ur team or your precious self"
@@ -119,14 +119,15 @@ const isMobile = computed(_ => {
       <template #links>
         <div class="flex gap-2 *:w-fit max-[350px]:flex-col">
           <ClientOnly>
-            <UButton :to="logInLink" class="cursor-pointer group" label="Get started" size="xl">
+            <UButton :to="logInLink" class="cursor-pointer group rounded-full select-none" label="Get started"
+                     size="xl">
               <template #trailing>
                 <UIcon class="size-6 border group-hover:translate-x-0.5 transition-transform"
                        name="i-ri-arrow-right-s-line"/>
               </template>
             </UButton>
             <template #fallback>
-              <UButton class="cursor-pointer group" label="Get started" size="xl">
+              <UButton class="cursor-pointer group rounded-full select-none" label="Get started" size="xl">
                 <template #trailing>
                   <UIcon class="size-6 border group-hover:translate-x-0.5 transition-transform"
                          name="i-ri-arrow-right-s-line"/>

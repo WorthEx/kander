@@ -25,17 +25,17 @@ const userLoaded = computed(_ => auth.initialized.value && auth.user.value)
       <ClientOnly>
         <UButton
           :to="logInLink"
-          class="lg:flex hidden cursor-pointer px-4"
+          class="lg:flex hidden cursor-pointer px-4 rounded-full"
           color="primary"
           variant="solid">
           {{ userLoaded ? 'Overview' : 'Log in' }}
         </UButton>
         <template #fallback>
           <UButton
-            class="lg:flex hidden cursor-pointer px-4"
+            class="lg:flex hidden cursor-pointer px-2 rounded-full"
             color="primary"
             variant="solid">
-            <USkeleton class="h-4 w-16 bg-default/20 rounded-full"></USkeleton>
+            <USkeleton class="h-5 w-20 bg-default/20 rounded-full"/>
           </UButton>
         </template>
       </ClientOnly>
@@ -51,8 +51,16 @@ const userLoaded = computed(_ => auth.initialized.value && auth.user.value)
             variant="ghost">
             <span class="font-semibold text-lg">{{ userLoaded ? 'Overview' : 'Log in' }}</span>
             <UIcon :name="userLoaded ? 'i-ri-home-6-fill' : 'i-ri-door-open-fill'"
-                   class="size-7 group-hover:bg-secondary transition-colors"></UIcon>
+                   class="size-7 group-hover:bg-secondary transition-colors"/>
           </UButton>
+          <template #fallback>
+            <UButton
+              class="cursor-pointer w-full flex items-center justify-between p-6 rounded-t-xl rounded-b-none group"
+              color="neutral"
+              variant="ghost">
+              <USkeleton class="h-6 w-full rounded-full"/>
+            </UButton>
+          </template>
         </ClientOnly>
         <!--        <USeparator class="h-px"/>-->
         <!--        <UButton-->

@@ -18,6 +18,7 @@ const fields = computed(() => [{
   placeholder: 'satoshi@crypto.net',
   disabled: emailSent.value,
   required: true,
+  class: '*:py-2'
 }])
 
 const schema = z.object({
@@ -70,7 +71,7 @@ defineShortcuts({
                 color: 'primary',
                 loading,
                 disabled: emailSent,
-                class: 'cursor-pointer py-2',
+                class: 'cursor-pointer py-2 rounded-full',
                 leadingIcon: emailSent ? '' : 'i-ri-send-plane-fill'
               }"
           class="max-w-lg w-full"
