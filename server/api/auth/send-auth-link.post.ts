@@ -10,9 +10,17 @@ export default defineEventHandler(async (event) => {
     throw createError({statusCode: 400})
   }
 
+  const defaultNames = ['dinosaur', 'shrew', 'kraken', 'turtle', 'unicorn', 'wombat', 'armadillo',
+    'chinchilla', 'crow', 'goose', 'hamster', 'kiwi', 'quokka', 'raccoon', 'sheep']
+  const randomIndex = Math.floor(Math.random() * defaultNames.length)
+  const defaultAvatar = `https://ssl.gstatic.com/docs/common/profile/${defaultNames[randomIndex]}_lg.png`
   const user = await prisma.user.upsert({
     where: {email},
-    create: {email},
+    create: {
+      email,
+      fullName: `Unknown ${defaultNames[randomIndex]!.charAt(0).toUpperCase() + defaultNames[randomIndex]!.slice(1)}`,
+      avatar: defaultAvatar
+    },
     update: {}
   })
 
