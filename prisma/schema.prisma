@@ -51,8 +51,8 @@ model MagicLink {
 }
 
 model Workspace {
-  id   String @id @default(uuid())
-  name String
+  id    String @id @default(uuid())
+  title String
 
   members WorkspaceMember[]
   columns Column[]
@@ -61,8 +61,8 @@ model Workspace {
 }
 
 model Column {
-  id   String @id @default(uuid())
-  name String
+  id    String @id @default(uuid())
+  title String
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
   workspaceId String
