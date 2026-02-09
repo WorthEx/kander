@@ -1,15 +1,12 @@
-<script setup>
+<script lang="ts" setup>
 definePageMeta({
   layout: 'dashboard',
 })
 </script>
 
 <template>
-  <UDashboardPanel>
-    <template #header>
-      <UDashboardNavbar title="Overview">
-      </UDashboardNavbar>
-    </template>
+  <UDashboardPanel id="inbox-1" resizable>
+    dashboard!
   </UDashboardPanel>
 </template>
 
