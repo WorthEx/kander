@@ -90,7 +90,8 @@ onMounted(async () => {
             Workspaces
           </template>
           <template #right>
-            <UModal v-model:open="workspaceModalOpened" :close="false" title="New workspace">
+            <UModal v-model:open="workspaceModalOpened" :close="false" description="Feeling like a founder today eh?"
+                    title="New workspace">
               <DashboardHeaderButton icon="i-ri-add-fill" label="Create"/>
               <template #body>
                 <UForm :schema="newWorkspaceSchema" :state="newWorkspaceState" :validate-on="['change', 'input']"
