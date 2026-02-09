@@ -6,7 +6,7 @@ defineProps({
   },
   action: {
     type: Function,
-    required: true
+    required: false
   },
   label: {
     type: String,
@@ -16,12 +16,12 @@ defineProps({
 </script>
 
 <template>
-  <UButton class="cursor-pointer xs:px-4 px-2 py-2 rounded-full" color="primary" variant="solid" @click="action">
+  <UButton class="cursor-pointer px-4 py-2 rounded-full" color="primary" variant="solid" @click="action">
     <template #trailing>
       <UIcon :name="icon" class="size-5"/>
     </template>
     <template #default>
-      <span class="xs:block hidden">{{ label }}</span>
+      <span>{{ label }}</span>
     </template>
   </UButton>
 </template>

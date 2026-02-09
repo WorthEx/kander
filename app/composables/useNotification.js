@@ -1,6 +1,6 @@
 export const useNotification = useToastInstance => {
 
-  const error = (title = 'We have a problem!', description, icon = 'i-ri-error-warning-fill') => {
+  const error = (title = 'We have a problem', description, icon = 'i-ri-error-warning-fill') => {
     useToastInstance.add({
       title,
       description,
@@ -10,7 +10,7 @@ export const useNotification = useToastInstance => {
     })
   }
 
-  const success = (title, description, icon = 'i-ri-checkbox-circle-fill') => {
+  const success = (title = 'Success', description, icon = 'i-ri-checkbox-circle-fill') => {
     useToastInstance.add({
       title,
       description,
