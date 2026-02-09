@@ -7,12 +7,35 @@ datasource db {
   provider = "postgresql"
 }
 
+enum WorkspaceRole {
+  admin
+  manager
+}
+
 model User {
-  id         String      @id @default(uuid())
-  email      String      @unique
-  magicLinks MagicLink[]
+  id       String  @id @default(uuid())
+  email    String  @unique
+  fullName String?
+
+  magicLinks  MagicLink[]
+  memberships WorkspaceMember[]
 
   @@map("users")
+}
+
+model WorkspaceMember {
+  id      String        @id @default(uuid())
+  role    WorkspaceRole
+  isFired Boolean       @default(false)
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  @@unique([userId, workspaceId])
+  @@map("workspace_members")
 }
 
 model MagicLink {
@@ -25,4 +48,24 @@ model MagicLink {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("magic_links")
+}
+
+model Workspace {
+  id   String @id @default(uuid())
+  name String
+
+  members WorkspaceMember[]
+  columns Column[]
+
+  @@map("workspaces")
+}
+
+model Column {
+  id   String @id @default(uuid())
+  name String
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  @@map("columns")
 }
