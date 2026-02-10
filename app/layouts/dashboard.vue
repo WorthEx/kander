@@ -7,31 +7,38 @@ const items = [
   {
     label: 'Orders',
     icon: 'i-ri-dashboard-fill',
+    class: 'py-4 cursor-pointer',
     defaultOpen: true,
     children: [
       {
-        label: 'Board'
+        label: 'Board',
+        class: 'py-4 cursor-pointer'
       },
       {
-        label: 'Archive'
+        label: 'Archive',
+        class: 'py-4 cursor-pointer'
       },
     ]
   },
   {
     label: 'Employees',
     icon: 'i-ri-user-2-fill',
+    class: 'py-4 cursor-pointer'
   },
   {
     label: 'Customers',
     icon: 'i-ri-user-smile-fill',
+    class: 'py-4 cursor-pointer'
   },
   {
     label: 'Services',
     icon: 'i-ri-shopping-cart-fill',
+    class: 'py-4 cursor-pointer'
   },
   {
     label: 'Settings',
     icon: 'i-ri-settings-2-fill',
+    class: 'py-4 cursor-pointer'
   }
 ]
 
@@ -74,8 +81,11 @@ onMounted(async () => {
       <template #default="{ collapsed }">
         <UNavigationMenu
           :collapsed="collapsed"
+          :highlight="true"
           :items="items"
+          color="primary"
           orientation="vertical"
+          variant="link"
         />
       </template>
 
