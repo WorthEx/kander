@@ -6,6 +6,7 @@ export const useAuth = _ => {
     useCookie('accessToken').value = null
     useCookie('refreshToken').value = null
     user.value = null
+    navigateTo('/auth/login')
   }
 
   return {user, initialized, logout}

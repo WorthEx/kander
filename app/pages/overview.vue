@@ -1,7 +1,7 @@
 <script setup>
 import {z} from 'zod'
 
-const {user} = useAuth()
+const {user, logout} = useAuth()
 const toaster = useToast()
 const notif = useNotification(toaster)
 const workspaces = useWorkspaces()
@@ -85,6 +85,8 @@ onMounted(async () => {
             <UButton class="cursor-pointer" color="neutral" icon="i-ri-user-line" variant="link"
                      @click="_ => userEditModalOpened = true"/>
           </ProfileEditModal>
+          <UButton class="cursor-pointer" color="neutral" icon="i-ri-shut-down-line" variant="link"
+                   @click="logout"/>
         </template>
       </UDashboardNavbar>
     </template>

@@ -1,5 +1,5 @@
 <script setup>
-const {user} = useAuth()
+const {user, logout} = useAuth()
 const {cachedWorkspaces, getAll: fetchWorkspaces} = useWorkspaces()
 const route = useRoute()
 
@@ -113,6 +113,10 @@ onMounted(async () => {
           orientation="vertical"
           variant="link"
         />
+        <UButton :label="!collapsed ? 'Logout' : ''" class="mt-auto cursor-pointer gap-4" color="neutral"
+                 icon="i-ri-shut-down-line"
+                 variant="link"
+                 @click="logout"/>
       </template>
 
       <template #footer="{ collapsed }">
