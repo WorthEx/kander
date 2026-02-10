@@ -28,6 +28,7 @@ model User {
   memberships   WorkspaceMember[]
   createdOrders Order[]           @relation("OrderCreator")
   responsibleIn Order[]           @relation("OrderResponsibles")
+  chatMessages  ChatMessage[]
 
   @@map("users")
 }
@@ -104,6 +105,7 @@ model Order {
   description String?
   createdAt   DateTime      @default(now())
   priority    OrderPriority
+  chat        OrderChat?
 
   creator   User   @relation("OrderCreator", fields: [creatorId], references: [id])
   creatorId String
@@ -122,6 +124,31 @@ model Order {
   items        OrderItem[]
 
   @@map("orders")
+}
+
+model OrderChat {
+  id String @id @default(uuid())
+
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String @unique
+
+  messages ChatMessage[]
+
+  @@map("order_chats")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  chat   OrderChat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chatId String
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  @@map("chat_messages")
 }
 
 model OrderItem {
