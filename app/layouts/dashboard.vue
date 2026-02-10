@@ -3,44 +3,65 @@ const {user} = useAuth()
 const {cachedWorkspaces, getAll: fetchWorkspaces} = useWorkspaces()
 const route = useRoute()
 
-const items = [
+const navlinkClass = 'py-4 cursor-pointer gap-4'
+const items = computed(_ => [
   {
     label: 'Orders',
     icon: 'i-ri-dashboard-fill',
-    class: 'py-4 cursor-pointer',
+    class: navlinkClass,
     defaultOpen: true,
     children: [
       {
         label: 'Board',
-        class: 'py-4 cursor-pointer'
+        class: navlinkClass,
+        active: route.fullPath.includes('board'),
+        to: `/workspace/${route.params.wsId}/board`
       },
       {
         label: 'Archive',
-        class: 'py-4 cursor-pointer'
+        class: navlinkClass,
+        active: route.fullPath.includes('archive'),
+        // to: `/workspace/${route.params.wsId}/archive`
       },
-    ]
+    ],
+    active: route.fullPath.includes('board') || route.fullPath.includes('archive')
   },
   {
     label: 'Employees',
     icon: 'i-ri-user-2-fill',
-    class: 'py-4 cursor-pointer'
+    class: navlinkClass,
+    active: route.fullPath.includes('employees'),
+    // to: `/workspace/${route.params.wsId}/employees`
   },
   {
     label: 'Customers',
     icon: 'i-ri-user-smile-fill',
-    class: 'py-4 cursor-pointer'
+    class: navlinkClass,
+    active: route.fullPath.includes('customers'),
+    // to: `/workspace/${route.params.wsId}/customers`
   },
   {
     label: 'Services',
     icon: 'i-ri-shopping-cart-fill',
-    class: 'py-4 cursor-pointer'
+    class: navlinkClass,
+    active: route.fullPath.includes('services'),
+    // to: `/workspace/${route.params.wsId}/services`
+  },
+  {
+    label: 'Integration',
+    icon: 'i-ri-code-view',
+    class: navlinkClass,
+    active: route.fullPath.includes('integration'),
+    // to: `/workspace/${route.params.wsId}/integration`
   },
   {
     label: 'Settings',
     icon: 'i-ri-settings-2-fill',
-    class: 'py-4 cursor-pointer'
-  }
-]
+    class: navlinkClass,
+    active: route.fullPath.includes('settings'),
+    to: `/workspace/${route.params.wsId}/settings`
+  },
+])
 
 const userFullName = computed(() => user.value?.fullName ?? 'Unknown User')
 
@@ -81,9 +102,11 @@ onMounted(async () => {
       <template #default="{ collapsed }">
         <UNavigationMenu
           :collapsed="collapsed"
-          :highlight="true"
           :items="items"
+          class=""
           color="primary"
+          highlight
+          highlightColor="primary"
           orientation="vertical"
           variant="link"
         />
@@ -159,3 +182,7 @@ onMounted(async () => {
     </UDashboardPanel>
   </UDashboardGroup>
 </template>
+
+<style scoped>
+
+</style>
