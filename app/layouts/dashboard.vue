@@ -119,13 +119,14 @@ onMounted(async () => {
         <ClientOnly>
           <ProfileEditModal v-model:modalOpened="userEditModalOpened">
             <div
-              class="cursor-pointer flex items-center gap-2 overflow-hidden py-2 px-2 rounded-lg hover:bg-muted transition-all select-none w-full"
+              :class="!collapsed && 'px-2 hover:bg-muted'"
+              class="cursor-pointer flex items-center gap-2 overflow-hidden py-2 rounded-lg transition-colors select-none w-full"
               @click="_ => userEditModalOpened = true">
               <img v-if="user.avatar"
-                   :class="user.avatar.includes('ssl.gstatic.com/docs/common/profile') && 'light:brightness-0'"
+                   :class="[user.avatar.includes('ssl.gstatic.com/docs/common/profile') && 'light:brightness-0', collapsed ? 'size-8' : 'size-10']"
                    :src="user.avatar"
                    alt=""
-                   class="block size-9 object-cover rounded-full pointer-events-none"
+                   class="block object-cover rounded-full pointer-events-none"
                    @error="e => {
                    e.target.src='https://ssl.gstatic.com/docs/common/profile/capybara_lg.png'
                  }">
