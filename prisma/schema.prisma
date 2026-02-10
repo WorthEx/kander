@@ -12,14 +12,22 @@ enum WorkspaceRole {
   manager
 }
 
+enum OrderPriority {
+  low
+  medium
+  high
+}
+
 model User {
   id       String  @id @default(uuid())
   email    String  @unique
   fullName String?
   avatar   String?
 
-  magicLinks  MagicLink[]
-  memberships WorkspaceMember[]
+  magicLinks    MagicLink[]
+  memberships   WorkspaceMember[]
+  createdOrders Order[]           @relation("OrderCreator")
+  responsibleIn Order[]           @relation("OrderResponsibles")
 
   @@map("users")
 }
@@ -55,10 +63,27 @@ model Workspace {
   id    String @id @default(uuid())
   title String
 
-  members WorkspaceMember[]
-  columns Column[]
+  members   WorkspaceMember[]
+  columns   Column[]
+  customers Customer[]
+  services  Service[]
+  orders    Order[]
 
   @@map("workspaces")
+}
+
+model Service {
+  id         String  @id @default(uuid())
+  title      String
+  basePrice  Float
+  isArchived Boolean @default(false)
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  orderItems OrderItem[]
+
+  @@map("services")
 }
 
 model Column {
@@ -68,5 +93,73 @@ model Column {
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId String
 
+  orders Order[]
+
   @@map("columns")
+}
+
+model Order {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  createdAt   DateTime      @default(now())
+  priority    OrderPriority
+
+  creator   User   @relation("OrderCreator", fields: [creatorId], references: [id])
+  creatorId String
+
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId String
+
+  column   Column @relation(fields: [columnId], references: [id])
+  columnId String
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  responsibles User[]      @relation("OrderResponsibles")
+  links        OrderLink[]
+  items        OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id       String  @id @default(uuid())
+  isDone   Boolean @default(false)
+  price    Float
+  quantity Int
+
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String
+
+  service   Service @relation(fields: [serviceId], references: [id])
+  serviceId String
+
+  @@map("order_items")
+}
+
+model OrderLink {
+  id    String @id @default(uuid())
+  title String
+  url   String
+
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String
+
+  @@map("order_links")
+}
+
+model Customer {
+  id       String  @id @default(uuid())
+  fullName String
+  phone    String
+  address  String?
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+
+  orders Order[]
+
+  @@map("customers")
 }
