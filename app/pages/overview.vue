@@ -5,16 +5,17 @@ const {user} = useAuth()
 const toaster = useToast()
 const notif = useNotification(toaster)
 const workspaces = useWorkspaces()
-const shownWorkspaces = ref([])
 
+const shownWorkspaces = ref([])
 const workspaceModalOpened = ref(false)
 const creatingWorkspace = ref(false)
 const fetchingWorkspaces = ref(true)
+const userEditModalOpened = ref(false)
 
 const newWorkspaceSchema = z.object({
   title: z.string()
-    .min(1, "Workspace title must contain 1 to 255 symbols.")
-    .max(255, "Workspace title must contain 1 to 255 symbols."),
+    .min(1, "Workspace title must contain between 1 and 255 characters.")
+    .max(255, "Workspace title must contain between 1 and 255 characters."),
 })
 
 const newWorkspaceState = reactive({
@@ -27,7 +28,7 @@ const fetchWorkspaces = async _ => {
     await workspaces.getAll()
     shownWorkspaces.value = workspaces.cachedWorkspaces.value
   } catch {
-    notif.error("", "An issue occurred while fetching workspaces. Try again later.")
+    notif.error("An issue occurred while fetching workspaces. Try again later.")
   } finally {
     fetchingWorkspaces.value = false
   }
@@ -40,9 +41,9 @@ const createWorkspace = async event => {
     await workspaces.create(event.data.title.trim())
     await fetchWorkspaces()
     workspaceModalOpened.value = false
-    notif.success("", "A new workspace has been set up!")
+    notif.success("A new workspace has been set up!")
   } catch {
-    notif.error("", "An issue occurred while creating the workspace. Try again later.")
+    notif.error("An issue occurred while creating the workspace. Try again later.")
   } finally {
     creatingWorkspace.value = false
   }
@@ -80,6 +81,10 @@ onMounted(async () => {
         </template>
         <template #right>
           <UColorModeButton class="cursor-pointer" variant="link"/>
+          <ProfileEditModal v-model:modalOpened="userEditModalOpened">
+            <UButton class="cursor-pointer" color="neutral" icon="i-ri-user-line" variant="link"
+                     @click="_ => userEditModalOpened = true"/>
+          </ProfileEditModal>
         </template>
       </UDashboardNavbar>
     </template>
@@ -99,7 +104,6 @@ onMounted(async () => {
                   <UFormField label="Title" name="title" required>
                     <UInput v-model="newWorkspaceState.title" class="w-full"/>
                   </UFormField>
-                  <USeparator/>
                   <div
                     class="flex mt-6 justify-end max-sm:flex-col max-sm:w-full gap-2 *:cursor-pointer *:select-none *:px-4 *:py-2 *:justify-center">
                     <UButton class="rounded-lg" color="neutral" label="Cancel" variant="outline" @click="_ => {

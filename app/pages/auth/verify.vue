@@ -22,7 +22,7 @@ onMounted(async _ => {
     auth.initialized.value = true
     navigateTo('/overview')
   } catch (_) {
-    notif.error(null, 'We couldn\'t verify your token: it\'s either invalid or expired.')
+    notif.error('We couldn\'t verify your token: it\'s either invalid or expired.')
     navigateTo('/auth/login')
   }
 })

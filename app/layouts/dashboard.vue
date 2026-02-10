@@ -10,6 +10,7 @@ const items = computed(_ => [
     icon: 'i-ri-dashboard-fill',
     class: navlinkClass,
     defaultOpen: true,
+    to: `/workspace/${route.params.wsId}/board`,
     children: [
       {
         label: 'Board',
@@ -65,6 +66,8 @@ const items = computed(_ => [
 
 const userFullName = computed(() => user.value?.fullName ?? 'Unknown User')
 
+const userEditModalOpened = ref(false)
+
 // const {data} = useFetch('/api/workspaces', {
 //   immediate: true,
 //   lazy: false,
@@ -114,20 +117,24 @@ onMounted(async () => {
 
       <template #footer="{ collapsed }">
         <ClientOnly>
-          <div class="flex items-center gap-2 overflow-hidden py-2 select-none w-full">
-            <img v-if="user.avatar"
-                 :class="user.avatar.includes('ssl.gstatic.com/docs/common/profile') && 'light:brightness-0'"
-                 :src="user.avatar"
-                 alt=""
-                 class="block size-9 object-cover rounded-full pointer-events-none"
-                 @error="e => {
+          <ProfileEditModal v-model:modalOpened="userEditModalOpened">
+            <div
+              class="cursor-pointer flex items-center gap-2 overflow-hidden py-2 px-2 rounded-lg hover:bg-muted transition-all select-none w-full"
+              @click="_ => userEditModalOpened = true">
+              <img v-if="user.avatar"
+                   :class="user.avatar.includes('ssl.gstatic.com/docs/common/profile') && 'light:brightness-0'"
+                   :src="user.avatar"
+                   alt=""
+                   class="block size-9 object-cover rounded-full pointer-events-none"
+                   @error="e => {
                    e.target.src='https://ssl.gstatic.com/docs/common/profile/capybara_lg.png'
                  }">
-            <div v-if="!collapsed" class="flex flex-col">
-              <span class="text-sm text-ellipsis overflow-hidden">{{ userFullName }}</span>
-              <span class="text-xs text-dimmed text-ellipsis overflow-hidden">{{ user.email }}</span>
+              <div v-if="!collapsed" class="flex flex-col">
+                <span class="text-sm text-ellipsis overflow-hidden">{{ userFullName }}</span>
+                <span class="text-xs text-dimmed text-ellipsis overflow-hidden">{{ user.email }}</span>
+              </div>
             </div>
-          </div>
+          </ProfileEditModal>
           <template #fallback>
             <div class="flex gap-2 items-center w-full select-none">
               <USkeleton class="size-9 min-h-9 min-w-9 rounded-full"/>

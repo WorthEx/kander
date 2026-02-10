@@ -39,8 +39,8 @@ const sendAuthEmail = async (payload) => {
     emailSent.value = true
   } catch (e) {
     if (e.statusCode === 400) {
-      notif.error(null, 'Provided email is invalid.')
-    } else notif.error(null, 'Couldn\'t send you an email. Try again later.')
+      notif.error('Provided email is invalid.')
+    } else notif.error('Couldn\'t send you an email. Try again later.')
   } finally {
     loading.value = false
   }
