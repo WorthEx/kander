@@ -64,7 +64,7 @@ onMounted(async () => {
       <UDashboardNavbar :toggle="false">
         <template #leading>
           <NuxtLink
-            class="sm:hover:rotate-360 hover:scale-110 ease-in-out origin-center transition-all duration-500"
+            class="spinner hover:scale-105 active:scale-100 ease-in-out origin-center transition-all duration-200"
             to="/">
             <img alt="Kander logo" class="h-7 object-fit select-none pointer-events-none rounded-lg"
                  src="/images/kander_192.png">
@@ -117,14 +117,15 @@ onMounted(async () => {
              class="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pb-4">
           <WorkspaceCard v-for="(ws, index) in shownWorkspaces"
                          :key="ws.id"
-                         :numberOfMembers="ws._count.members" :role="ws.members[0].role"
-                         :style="{'animationDelay': `${index * 200}ms`}"
+                         :numberOfMembers="ws._count.members"
+                         :role="ws.members[0].role" :style="{'animationDelay': `${index * 200}ms`}"
                          :title="ws.title"
+                         :wsId="ws.id"
                          class="animate-fade-up animate-ease-out"/>
         </div>
         <div v-else-if="fetchingWorkspaces" class="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pb-4">
           <div v-for="(_, index) in 12" :style="{'animationDelay': `${index * 200}ms`}"
-               class="w-full h-32 bg-muted rounded-lg animate-fade-up animate-ease-out animate-once"/>
+               class="w-full h-32 bg-elevated rounded-lg animate-fade-up animate-ease-out animate-once"/>
         </div>
         <div v-else-if="!fetchingWorkspaces && shownWorkspaces.length === 0"
              class="w-full py-2 flex justify-center text-muted">
