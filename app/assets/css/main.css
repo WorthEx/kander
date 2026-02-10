@@ -71,6 +71,19 @@
       #000 var(--angle), #0000 0
     ) 50% / var(--size) 100%;
   }
+
+  .spinner:hover {
+    animation: spin 500ms ease-in-out forwards;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 }
 
 @theme {
