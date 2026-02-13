@@ -89,21 +89,23 @@ const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/works
 <template>
   <UDashboardGroup>
     <UDashboardSidebar
-      :defaultSize="15"
+      :defaultSize="12"
       :maxSize="15"
-      :minSize="15"
+      :minSize="11"
       class="group"
       collapsible
       resizable
       toggle-side="right">
       <template #header="{ collapsed }">
         <div class="flex justify-between items-center w-full gap-2">
-          <NuxtLink v-if="!collapsed"
-                    class="spinner hover:scale-105 active:scale-100 ease-in-out origin-center transition-all duration-200"
-                    to="/overview">
-            <img alt="Kander logo" class="h-7 object-fit select-none pointer-events-none rounded-lg"
-                 src="/images/kander_192.png">
-          </NuxtLink>
+          <UTooltip text="To overview">
+            <NuxtLink v-if="!collapsed"
+                      class="spinner hover:scale-105 active:scale-100 ease-in-out origin-center transition-all duration-200"
+                      to="/overview">
+              <img alt="Kander logo" class="h-7 object-fit select-none pointer-events-none rounded-lg"
+                   src="/images/kander_192.png">
+            </NuxtLink>
+          </UTooltip>
           <UDashboardSidebarCollapse class="cursor-pointer" variant="link"/>
         </div>
       </template>
