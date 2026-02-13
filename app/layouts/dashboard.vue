@@ -1,7 +1,11 @@
 <script setup>
+import {useNotification} from "~/composables/useNotification.js";
+
 const {user, logout} = useAuth()
-const {cachedWorkspaces, getAll: fetchWorkspaces} = useWorkspaces()
 const route = useRoute()
+const toaster = useToast()
+const notif = useNotification(toaster)
+const wsId = computed(() => route.params.wsId)
 
 const navlinkClass = 'py-4 cursor-pointer gap-4'
 const items = computed(_ => [
@@ -10,19 +14,19 @@ const items = computed(_ => [
     icon: 'i-ri-dashboard-fill',
     class: navlinkClass,
     defaultOpen: true,
-    to: `/workspace/${route.params.wsId}/board`,
+    to: `/workspace/${wsId.value}/board`,
     children: [
       {
         label: 'Board',
         class: navlinkClass,
         active: route.fullPath.includes('board'),
-        to: `/workspace/${route.params.wsId}/board`
+        to: `/workspace/${wsId.value}/board`
       },
       {
         label: 'Archive',
         class: navlinkClass,
         active: route.fullPath.includes('archive'),
-        // to: `/workspace/${route.params.wsId}/archive`
+        // to: `/workspace/${wsId.value}/archive`
       },
     ],
     active: route.fullPath.includes('board') || route.fullPath.includes('archive')
@@ -32,50 +36,53 @@ const items = computed(_ => [
     icon: 'i-ri-user-2-fill',
     class: navlinkClass,
     active: route.fullPath.includes('employees'),
-    // to: `/workspace/${route.params.wsId}/employees`
+    // to: `/workspace/${wsId.value}/employees`
   },
   {
     label: 'Customers',
     icon: 'i-ri-user-smile-fill',
     class: navlinkClass,
     active: route.fullPath.includes('customers'),
-    // to: `/workspace/${route.params.wsId}/customers`
+    // to: `/workspace/${wsId.value}/customers`
   },
   {
     label: 'Services',
     icon: 'i-ri-shopping-cart-fill',
     class: navlinkClass,
     active: route.fullPath.includes('services'),
-    // to: `/workspace/${route.params.wsId}/services`
+    // to: `/workspace/${wsId.value}/services`
   },
   {
     label: 'Integration',
     icon: 'i-ri-code-view',
     class: navlinkClass,
     active: route.fullPath.includes('integration'),
-    // to: `/workspace/${route.params.wsId}/integration`
+    // to: `/workspace/${wsId.value}/integration`
   },
   {
     label: 'Settings',
     icon: 'i-ri-settings-2-fill',
     class: navlinkClass,
     active: route.fullPath.includes('settings'),
-    to: `/workspace/${route.params.wsId}/settings`
+    to: `/workspace/${wsId.value}/settings`
   },
 ])
 
 const userFullName = computed(() => user.value?.fullName ?? 'Unknown User')
 
 const userEditModalOpened = ref(false)
+const workspacesPopoverOpened = ref(false)
 
-// const {data} = useFetch('/api/workspaces', {
-//   immediate: true,
-//   lazy: false,
-//   server: false
-// })
+const {data: currentWorkspace, pending: loadingWorkspace} = useFetch(_ => `/api/workspaces/${wsId.value}`, {
+  server: false,
+  onResponseError: _ => {
+    notif.error("Workspace not found!")
+    navigateTo('/overview', {replace: true})
+  }
+})
 
-onMounted(async () => {
-  await fetchWorkspaces()
+const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/workspaces/`, {
+  server: false,
 })
 
 </script>
@@ -156,35 +163,39 @@ onMounted(async () => {
       <template #header>
         <UDashboardNavbar toggle-side="right">
           <template #title>
-            <ClientOnly>
-              <!--       todo change email to workspace name       -->
-              <div class="flex gap-2 items-center">
-                <div class="font-semibold text-sm text-highlighted truncate xs:block hidden">{{ user.email }}</div>
-                <UPopover v-if="cachedWorkspaces.length > 0" arrow>
-                  <UButton class="cursor-pointer text-default/50" color="neutral" icon="i-ri-expand-up-down-line"
-                           variant="ghost"/>
-                  <template #content>
-                    <div class="p-2 max-h-64 overflow-y-auto w-64 flex flex-col gap-2 select-none">
-                      <span class="px-2 py-1 text-sm text-dimmed">Workspaces</span>
-                      <UButton v-for="ws in cachedWorkspaces" :to="`/workspace/${ws.id}/board`"
-                               class="text-sm w-full py-1 flex gap-1" color="neutral"
-                               variant="ghost">
-                        <span class="line-clamp-1">{{ ws.title }}</span>
-                        <span class="text-primary line-clamp-1">{{
-                            ws.id === route.params.wsId ? '(current)' : ''
-                          }}</span>
-                      </UButton>
-                    </div>
-                  </template>
-                </UPopover>
+            <div class="flex gap-2 items-center relative w-full">
+              <div v-if="!loadingWorkspace && currentWorkspace"
+                   class="font-semibold text-sm text-highlighted truncate w-[calc(100%-2rem)]">{{
+                  currentWorkspace.title
+                }}
               </div>
-              <template #fallback>
-                <USkeleton class="xs:h-4 xs:w-48 size-8 xs:rounded-full"/>
-              </template>
-            </ClientOnly>
+              <USkeleton v-else class="h-4 w-48 xs:rounded-full"/>
+
+              <UPopover v-if="workspaces && !loadingWorkspaces" v-model:open="workspacesPopoverOpened" arrow>
+                <UButton class="cursor-pointer text-default/50" color="neutral" icon="i-ri-expand-up-down-line"
+                         variant="ghost"/>
+                <template #content>
+                  <div class="p-2 max-h-64 overflow-y-auto w-64 flex flex-col gap-2 select-none">
+                    <span class="px-2 py-1 text-sm text-dimmed">Workspaces</span>
+                    <UButton v-for="ws in workspaces" :to="`/workspace/${ws.id}/board`"
+                             class="text-sm w-full py-1 flex gap-1"
+                             color="neutral" variant="ghost"
+                             @click="workspacesPopoverOpened = false">
+                      <span class="line-clamp-1">{{ ws.title }}</span>
+                      <span class="text-primary line-clamp-1">{{
+                          ws.id === route.params.wsId ? '(current)' : ''
+                        }}</span>
+                    </UButton>
+                  </div>
+                </template>
+              </UPopover>
+              <USkeleton v-else class="size-8 xs:rounded-lg"/>
+            </div>
           </template>
           <template #right>
-            <UColorModeButton class="cursor-pointer" variant="link"/>
+            <UTooltip text="Switch theme">
+              <UColorModeButton class="cursor-pointer" variant="link"/>
+            </UTooltip>
           </template>
         </UDashboardNavbar>
       </template>
