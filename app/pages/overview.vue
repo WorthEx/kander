@@ -80,13 +80,19 @@ onMounted(async () => {
           </ClientOnly>
         </template>
         <template #right>
-          <UColorModeButton class="cursor-pointer" variant="link"/>
+          <UTooltip text="Switch theme">
+            <UColorModeButton class="cursor-pointer" variant="link"/>
+          </UTooltip>
           <ProfileEditModal v-model:modalOpened="userEditModalOpened">
-            <UButton class="cursor-pointer" color="neutral" icon="i-ri-user-line" variant="link"
-                     @click="_ => userEditModalOpened = true"/>
+            <UTooltip text="Edit profile">
+              <UButton class="cursor-pointer" color="neutral" icon="i-ri-user-line" variant="link"
+                       @click="_ => userEditModalOpened = true"/>
+            </UTooltip>
           </ProfileEditModal>
-          <UButton class="cursor-pointer" color="neutral" icon="i-ri-shut-down-line" variant="link"
-                   @click="logout"/>
+          <UTooltip text="Logout">
+            <UButton class="cursor-pointer" color="neutral" icon="i-ri-shut-down-line" variant="link"
+                     @click="logout"/>
+          </UTooltip>
         </template>
       </UDashboardNavbar>
     </template>
