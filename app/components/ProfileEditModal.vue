@@ -77,8 +77,8 @@ onMounted(_ => {
         </div>
         <div
           class="flex mt-6 justify-end max-sm:flex-col max-sm:w-full gap-2 *:cursor-pointer *:select-none *:px-4 *:py-2 *:justify-center">
-          <UButton class="rounded-lg" color="neutral" label="Cancel" variant="outline" @click="closeModal"/>
-          <UButton :loading="editingProfile" class="rounded-lg" label="Submit" type="submit"/>
+          <UButton class="rounded-xl py-2" color="neutral" label="Cancel" variant="outline" @click="closeModal"/>
+          <UButton :loading="editingProfile" class="rounded-xl py-2" label="Submit" type="submit"/>
         </div>
       </UForm>
     </template>
