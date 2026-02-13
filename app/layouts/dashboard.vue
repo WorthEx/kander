@@ -84,14 +84,13 @@ const {data: currentWorkspace, pending: loadingWorkspace} = useFetch(_ => `/api/
 const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/workspaces/`, {
   server: false,
 })
-
 </script>
 
 <template>
   <UDashboardGroup>
     <UDashboardSidebar
-      :defaultSize="20"
-      :maxSize="20"
+      :defaultSize="15"
+      :maxSize="15"
       :minSize="15"
       class="group"
       collapsible
@@ -177,7 +176,9 @@ const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/works
                 <template #content>
                   <div class="p-2 max-h-64 overflow-y-auto w-64 flex flex-col gap-2 select-none">
                     <span class="px-2 py-1 text-sm text-dimmed">Workspaces</span>
-                    <UButton v-for="ws in workspaces" :to="`/workspace/${ws.id}/board`"
+                    <UButton v-for="ws in workspaces" :to="{
+                      route: route.name, params: { wsId: ws.id }
+                    }"
                              class="text-sm w-full py-1 flex gap-1"
                              color="neutral" variant="ghost"
                              @click="workspacesPopoverOpened = false">
