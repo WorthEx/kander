@@ -33,6 +33,7 @@ const submitEditTitle = async _ => {
   editingTitle.value = true
   try {
     await editTitle(newWorkspaceTitle.value.trim(), currentWorkspace.value.workspace.id)
+    clearNuxtState(['cachedWorkspaces'])
     await refreshNuxtData('currentWorkspace')
     await refreshNuxtData('workspaces')
     notif.success("Successfully updated workspace!")
