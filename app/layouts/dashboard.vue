@@ -8,7 +8,7 @@ const notif = useNotification(toaster)
 const wsId = computed(() => route.params.wsId)
 
 const navlinkClass = 'py-4 cursor-pointer gap-4'
-const items = computed(_ => [
+const sidebarItems = computed(_ => [
   {
     label: 'Orders',
     icon: 'i-ri-dashboard-fill',
@@ -57,14 +57,16 @@ const items = computed(_ => [
     icon: 'i-ri-code-view',
     class: navlinkClass,
     active: route.fullPath.includes('integration'),
-    // to: `/workspace/${wsId.value}/integration`
+    // to: `/workspace/${wsId.value}/integration`,
+    disabled: currentWorkspace.value?.workspaceMember?.role !== 'admin' ?? true
   },
   {
     label: 'Settings',
     icon: 'i-ri-settings-2-fill',
     class: navlinkClass,
     active: route.fullPath.includes('settings'),
-    to: `/workspace/${wsId.value}/settings`
+    to: `/workspace/${wsId.value}/settings`,
+    disabled: currentWorkspace.value?.workspaceMember?.role !== 'admin' ?? true
   },
 ])
 
@@ -113,7 +115,7 @@ const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/works
       <template #default="{ collapsed }">
         <UNavigationMenu
           :collapsed="collapsed"
-          :items="items"
+          :items="sidebarItems"
           class=""
           color="primary"
           highlight
@@ -167,7 +169,7 @@ const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/works
             <div class="flex gap-2 items-center relative w-full">
               <div v-if="!loadingWorkspace && currentWorkspace"
                    class="font-semibold text-sm text-highlighted truncate w-[calc(100%-2rem)]">{{
-                  currentWorkspace.title
+                  currentWorkspace.workspace.title
                 }}
               </div>
               <USkeleton v-else class="h-4 w-48 xs:rounded-full"/>
