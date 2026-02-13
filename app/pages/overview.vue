@@ -65,15 +65,15 @@ onMounted(async () => {
       <UDashboardNavbar :toggle="false">
         <template #leading>
           <NuxtLink
-            class="spinner hover:scale-105 active:scale-100 ease-in-out origin-center transition-all duration-200"
+            class="spinner hover:scale-105 active:scale-100 ease-in-out origin-center transition-all duration-200 xs:block hidden"
             to="/">
-            <img alt="Kander logo" class="h-7 object-fit select-none pointer-events-none rounded-lg"
+            <img alt="Kander logo" class="h-7 min-h-7 min-w-7 object-fit select-none pointer-events-none rounded-lg"
                  src="/images/kander_192.png">
           </NuxtLink>
         </template>
         <template #title>
           <ClientOnly>
-            <div class="ms-2 font-semibold text-sm text-highlighted truncate">{{ user.email }}</div>
+            <div class="xs:ms-2 font-semibold text-sm text-highlighted truncate">{{ user.email }}</div>
             <template #fallback>
               <USkeleton class="ms-2 h-4 w-48 rounded-full"/>
             </template>
@@ -98,51 +98,53 @@ onMounted(async () => {
     </template>
     <template #body>
       <DashboardContainer>
-        <DashboardHeader>
-          <template #title>
-            Workspaces
-          </template>
-          <template #right>
-            <UModal v-model:open="workspaceModalOpened" :close="false" description="Feeling like a founder today eh?"
-                    title="New workspace">
-              <DashboardHeaderButton icon="i-ri-add-fill" label="Create"/>
-              <template #body>
-                <UForm :schema="newWorkspaceSchema" :state="newWorkspaceState" :validate-on="['change', 'input']"
-                       @submit="createWorkspace">
-                  <UFormField label="Title" name="title" required>
-                    <UInput v-model="newWorkspaceState.title" class="w-full"/>
-                  </UFormField>
-                  <div
-                    class="flex mt-6 justify-end max-sm:flex-col max-sm:w-full gap-2 *:cursor-pointer *:select-none *:px-4 *:py-2 *:justify-center">
-                    <UButton class="rounded-lg" color="neutral" label="Cancel" variant="outline" @click="_ => {
+        <section>
+          <DashboardHeader>
+            <template #title>
+              Workspaces
+            </template>
+            <template #right>
+              <UModal v-model:open="workspaceModalOpened" :close="false" description="Feeling like a founder today eh?"
+                      title="New workspace">
+                <DashboardHeaderButton icon="i-ri-add-fill" label="Create"/>
+                <template #body>
+                  <UForm :schema="newWorkspaceSchema" :state="newWorkspaceState" :validate-on="['change', 'input']"
+                         @submit="createWorkspace">
+                    <UFormField label="Title" name="title" required>
+                      <UInput v-model="newWorkspaceState.title" class="w-full"/>
+                    </UFormField>
+                    <div
+                      class="flex mt-6 justify-end max-sm:flex-col max-sm:w-full gap-2 *:cursor-pointer *:select-none *:px-4 *:py-2 *:justify-center">
+                      <UButton class="rounded-lg" color="neutral" label="Cancel" variant="outline" @click="_ => {
                       workspaceModalOpened = false
                       newWorkspaceState.title = ''
                     }"/>
-                    <UButton :loading="creatingWorkspace" class="rounded-lg" label="Submit" type="submit"/>
-                  </div>
-                </UForm>
-              </template>
-            </UModal>
-          </template>
-        </DashboardHeader>
-        <div v-if="shownWorkspaces.length > 0 && !fetchingWorkspaces"
-             class="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pb-4">
-          <WorkspaceCard v-for="(ws, index) in shownWorkspaces"
-                         :key="ws.id"
-                         :numberOfMembers="ws._count.members"
-                         :role="ws.members[0].role" :style="{'animationDelay': `${index * 200}ms`}"
-                         :title="ws.title"
-                         :wsId="ws.id"
-                         class="animate-fade-up animate-ease-out"/>
-        </div>
-        <div v-else-if="fetchingWorkspaces" class="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pb-4">
-          <div v-for="(_, index) in 12" :style="{'animationDelay': `${index * 200}ms`}"
-               class="w-full h-32 bg-elevated rounded-lg animate-fade-up animate-ease-out animate-once"/>
-        </div>
-        <div v-else-if="!fetchingWorkspaces && shownWorkspaces.length === 0"
-             class="w-full py-2 flex justify-center text-muted">
-          You haven't joined the workspace yet. Maybe today is the right day to create one?
-        </div>
+                      <UButton :loading="creatingWorkspace" class="rounded-lg" label="Submit" type="submit"/>
+                    </div>
+                  </UForm>
+                </template>
+              </UModal>
+            </template>
+          </DashboardHeader>
+          <div v-if="shownWorkspaces.length > 0 && !fetchingWorkspaces"
+               class="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pb-4">
+            <WorkspaceCard v-for="(ws, index) in shownWorkspaces"
+                           :key="ws.id"
+                           :numberOfMembers="ws._count.members"
+                           :role="ws.members[0].role" :style="{'animationDelay': `${index * 200}ms`}"
+                           :title="ws.title"
+                           :wsId="ws.id"
+                           class="animate-fade-up animate-ease-out"/>
+          </div>
+          <div v-else-if="fetchingWorkspaces" class="grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 pb-4">
+            <div v-for="(_, index) in 12" :style="{'animationDelay': `${index * 200}ms`}"
+                 class="w-full h-32 bg-elevated rounded-lg animate-fade-up animate-ease-out animate-once"/>
+          </div>
+          <div v-else-if="!fetchingWorkspaces && shownWorkspaces.length === 0"
+               class="w-full py-2 flex justify-center text-muted">
+            You haven't joined the workspace yet. Maybe today is the right day to create one?
+          </div>
+        </section>
       </DashboardContainer>
     </template>
   </UDashboardPanel>
