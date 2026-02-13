@@ -10,5 +10,12 @@ export const useWorkspace = () => {
     })
   }
 
-  return {editTitle}
+  const deleteWorkspace = async wsId => {
+    await $fetch(`/api/workspaces/${wsId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    })
+  }
+
+  return {editTitle, deleteWorkspace}
 }

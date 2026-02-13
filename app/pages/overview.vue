@@ -110,15 +110,16 @@ onMounted(async () => {
                 <UForm :schema="newWorkspaceSchema" :state="newWorkspaceState" :validate-on="['change', 'input']"
                        @submit="createWorkspace">
                   <UFormField label="Title" name="title" required>
-                    <UInput v-model="newWorkspaceState.title" class="w-full"/>
+                    <UInput v-model="newWorkspaceState.title"
+                            class="[&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2 w-full"/>
                   </UFormField>
                   <div
                     class="flex mt-6 justify-end max-sm:flex-col max-sm:w-full gap-2 *:cursor-pointer *:select-none *:px-4 *:py-2 *:justify-center">
-                    <UButton class="rounded-lg" color="neutral" label="Cancel" variant="outline" @click="_ => {
+                    <UButton class=" rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline" @click="_ => {
                       workspaceModalOpened = false
                       newWorkspaceState.title = ''
                     }"/>
-                    <UButton :loading="creatingWorkspace" class="rounded-lg" label="Submit" type="submit"/>
+                    <UButton :loading="creatingWorkspace" class=" rounded-xl px-4 py-2" label="Submit" type="submit"/>
                   </div>
                 </UForm>
               </template>
