@@ -61,10 +61,10 @@ onMounted(_ => {
              :validate-on="['change', 'input']" class="space-y-4"
              @submit="submitEditProfile">
         <UFormField label="Full name" name="fullName">
-          <UInput v-model="newProfileDataState.fullName" class="w-full"/>
+          <UInput v-model="newProfileDataState.fullName" class="w-full [&>input]:rounded-xl"/>
         </UFormField>
         <UFormField label="Avatar url" name="avatar">
-          <UInput v-model="newProfileDataState.avatar" class="w-full"/>
+          <UInput v-model="newProfileDataState.avatar" class="w-full [&>input]:rounded-xl"/>
         </UFormField>
         <div class=" flex flex-col gap-1">
           <span class="text-sm">Avatar preview</span>

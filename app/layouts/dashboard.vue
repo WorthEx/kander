@@ -80,11 +80,14 @@ const {data: currentWorkspace, pending: loadingWorkspace} = useFetch(_ => `/api/
   onResponseError: _ => {
     notif.error("Workspace not found!")
     navigateTo('/overview', {replace: true})
-  }
+  },
+  key: 'currentWorkspace',
+  watch: [wsId]
 })
 
 const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/workspaces/`, {
   server: false,
+  key: 'workspaces'
 })
 </script>
 

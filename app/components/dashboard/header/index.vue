@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="flex justify-between items-center gap-2 pb-4">
+  <div class="flex justify-between items-center gap-2">
     <span class="text-xl font-semibold">
       <slot name="title"/>
     </span>
