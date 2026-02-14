@@ -126,7 +126,7 @@ const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/works
           orientation="vertical"
           variant="link"
         />
-        <UButton :label="!collapsed ? 'Logout' : ''" class="mt-auto cursor-pointer gap-4" color="neutral"
+        <UButton :label="!collapsed ? 'Logout' : ''" class="mt-auto cursor-pointer gap-4 py-4" color="neutral"
                  icon="i-ri-shut-down-line"
                  variant="link"
                  @click="logout"/>
