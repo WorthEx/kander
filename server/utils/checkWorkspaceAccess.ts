@@ -7,10 +7,11 @@ export const checkWorkspaceAccess = async (event: H3Event, wsId: string) => {
   const wsMember = await prisma.workspaceMember.findFirst({
     where: {
       userId,
-      workspaceId: wsId
+      workspaceId: wsId,
+      isFired: false
     }
   })
-  if (!wsMember) throw createError({statusCode: 401, statusText: 'You\'re not a member of this workspace.'})
+  if (!wsMember) throw createError({statusCode: 401, statusText: 'You\'re not an active member of this workspace.'})
 
   return wsMember
 }
