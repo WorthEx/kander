@@ -7,7 +7,6 @@ export default defineEventHandler(async (event) => {
     statusCode: 400,
     statusText: 'No status, role, wsMemberId or userId provided.'
   })
-  console.log(event.context.user)
 
   await checkAdminAccess(event, wsId)
 
