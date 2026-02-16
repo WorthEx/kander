@@ -66,9 +66,10 @@ model MagicLink {
 }
 
 model Workspace {
-  id     String  @id @default(uuid())
-  title  String
-  apiKey String? @unique
+  id                    String  @id @default(uuid())
+  title                 String
+  apiKey                String? @unique
+  lastAssignedManagerId String?
 
   members   WorkspaceMember[]
   columns   Column[]
@@ -113,7 +114,7 @@ model Order {
   description String?
   createdAt   DateTime      @default(now())
   priority    OrderPriority @default(medium)
-  orderSource OrderSource   @default(manual)
+  source      OrderSource   @default(manual)
 
   creator   User?   @relation("OrderCreator", fields: [creatorId], references: [id])
   creatorId String?
