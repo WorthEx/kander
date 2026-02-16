@@ -10,6 +10,7 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {addEmployee} = useEmployees()
+const workspaces = useWorkspaces()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
 
 const addEmployeeModalOpened = ref(false)
@@ -28,6 +29,7 @@ const submitAddEmployee = async _ => {
   addingEmployee.value = true
   try {
     await addEmployee(addEmployeeEmail.value, wsId.value)
+    workspaces.cachedWorkspaces.value = []
     await refreshNuxtData(`employees-${wsId.value}`)
     addEmployeeModalOpened.value = false
     notif.success("Successfully added new employee!")

@@ -16,6 +16,7 @@ const {updateEmployee} = useEmployees()
 const {copy} = useClipboard()
 const toaster = useToast()
 const notif = useNotification(toaster)
+const workspaces = useWorkspaces()
 
 const roleItems = ref([
   {
@@ -51,6 +52,7 @@ const saveEmployee = async _ => {
   savingEmployee.value = true
   try {
     await updateEmployee(statusValue.value, employeeRole.value, props.employee.id, props.employee.workspaceId)
+    workspaces.cachedWorkspaces.value = []
     editEmployeeModalOpened.value = false
     emit('update-employee')
     notif.success("Successfully updated employee!")
