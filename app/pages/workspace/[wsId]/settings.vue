@@ -18,7 +18,6 @@ const toaster = useToast()
 const notif = useNotification(toaster)
 const {editTitle, deleteWorkspace} = useWorkspace()
 const {copy} = useClipboard()
-const {getAll} = useWorkspaces()
 
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
 watch(currentWorkspace, _ => newWorkspaceTitle.value = currentWorkspace.value.workspace.title)
@@ -116,7 +115,8 @@ onMounted(_ => {
         </div>
       </div>
       <template #footer>
-        <UModal :ui="{ footer: 'justify-end gap-2' }" description="This action is a hella destructive."
+        <UModal :ui="{ footer: 'justify-end gap-2', content: 'divide-none' }"
+                description="This action is hella destructive."
                 title="Hold up...">
           <template #body>
             <p class="text-sm">You're about to delete the whole workspace and wipe all its data. This action cannot be

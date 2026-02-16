@@ -12,11 +12,12 @@ defineProps({
     type: String,
     required: true
   },
+  disabled: Boolean
 })
 </script>
 
 <template>
-  <UButton class="cursor-pointer px-4 py-2 rounded-full" color="primary" variant="solid" @click="action">
+  <UButton :disabled class="cursor-pointer px-4 py-2 rounded-full" color="primary" variant="solid" @click="action">
     <template #trailing>
       <UIcon :name="icon" class="size-5"/>
     </template>

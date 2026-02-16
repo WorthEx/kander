@@ -1,6 +1,4 @@
 <script setup>
-import {useNotification} from "~/composables/useNotification.js";
-
 const {user, logout} = useAuth()
 const route = useRoute()
 const toaster = useToast()
@@ -36,7 +34,7 @@ const sidebarItems = computed(_ => [
     icon: 'i-ri-user-2-fill',
     class: navlinkClass,
     active: route.fullPath.includes('employees'),
-    // to: `/workspace/${wsId.value}/employees`
+    to: `/workspace/${wsId.value}/employees`
   },
   {
     label: 'Customers',
@@ -75,7 +73,7 @@ const userFullName = computed(() => user.value?.fullName ?? 'Unknown User')
 const userEditModalOpened = ref(false)
 const workspacesPopoverOpened = ref(false)
 
-const {data: currentWorkspace, pending: loadingWorkspace} = useFetch(_ => `/api/workspaces/${wsId.value}`, {
+const {data: currentWorkspace, pending: loadingWorkspace} = await useLazyFetch(_ => `/api/workspaces/${wsId.value}`, {
   server: false,
   onResponseError: _ => {
     notif.error("Workspace not found!")
@@ -85,7 +83,7 @@ const {data: currentWorkspace, pending: loadingWorkspace} = useFetch(_ => `/api/
   watch: [wsId]
 })
 
-const {data: workspaces, pending: loadingWorkspaces} = useFetch(_ => `/api/workspaces/`, {
+const {data: workspaces, pending: loadingWorkspaces} = await useLazyFetch(_ => `/api/workspaces/`, {
   server: false,
   key: 'workspaces'
 })

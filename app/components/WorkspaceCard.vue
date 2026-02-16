@@ -15,7 +15,7 @@ const props = defineProps<{
     hover:ring-primary active:scale-99 cursor-pointer transition-all">
       <div class="flex flex-col">
         <span class="font-semibold">{{ title }}</span>
-        <span class="text-sm text-dimmed">{{ numberOfMembers }} {{
+        <span class="text-sm text-dimmed">{{ numberOfMembers }} active {{
             numberOfMembers === 1 ? 'member' : 'members'
           }}</span>
       </div>
