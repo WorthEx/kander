@@ -15,7 +15,8 @@ export default defineEventHandler(async (event) => {
       columns: {
         createMany: {
           data: [
-            {title: 'Backlog'},
+            // creating a system column that must never(!) be deleted
+            {title: 'Backlog', isSystem: true},
             {title: 'Under review'},
             {title: 'Payment'},
             {title: 'In progress'},
