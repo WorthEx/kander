@@ -7,6 +7,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  currentUserId: String,
   index: Number
 })
 
@@ -51,7 +52,7 @@ const handleCopyEmail = _ => {
 const saveEmployee = async _ => {
   savingEmployee.value = true
   try {
-    await updateEmployee(statusValue.value, employeeRole.value, props.employee.id, props.employee.workspaceId)
+    await updateEmployee(statusValue.value, employeeRole.value, props.employee.id, props.employee.workspaceId, props.employee.userId)
     workspaces.cachedWorkspaces.value = []
     editEmployeeModalOpened.value = false
     emit('update-employee')
@@ -128,8 +129,10 @@ const saveEmployee = async _ => {
           </div>
         </template>
         <template #default>
-          <UTooltip text="Edit employee">
-            <UButton class="cursor-pointer" color="neutral" icon="i-ri-edit-2-fill" variant="ghost"/>
+          <UTooltip
+            :text="currentUserId === employee.userId  ? 'You cannot edit your own parameters' : 'Edit employee'">
+            <UButton :disabled="currentUserId === employee.userId" class="cursor-pointer" color="neutral"
+                     icon="i-ri-edit-2-fill" variant="ghost"/>
           </UTooltip>
         </template>
         <template #footer="{close}">

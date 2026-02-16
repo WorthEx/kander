@@ -8,12 +8,12 @@ export const useEmployees = () => {
     })
   }
 
-  const updateEmployee = async (status, role, wsMemberId, wsId) => {
+  const updateEmployee = async (status, role, wsMemberId, wsId, userId) => {
     await $fetch(`/api/workspaces/${wsId}/employees`, {
       method: 'PATCH',
       credentials: 'include',
       body: {
-        wsMemberId, status, role
+        wsMemberId, status, role, userId
       }
     })
   }

@@ -131,6 +131,7 @@ watch(addEmployeeEmail, (newEmail) => {
             </thead>
             <tbody class="divide-y divide-default *:even:bg-muted">
             <EmployeeTableRow v-for="(employee, index) in shownEmployees" :key="employee.id"
+                              :currentUserId="currentWorkspace.workspaceMember.userId"
                               :employee="employee"
                               :index="index + 1"
                               :isCurrentUserAdmin="currentWorkspace.workspaceMember.role === 'admin'"
