@@ -70,6 +70,7 @@ model Workspace {
   title                 String
   apiKey                String? @unique
   lastAssignedManagerId String?
+  defaultCountryCode    String?
 
   members   WorkspaceMember[]
   columns   Column[]
@@ -177,10 +178,15 @@ model OrderLink {
 }
 
 model Customer {
-  id       String  @id @default(uuid())
-  fullName String
-  phone    String
-  address  String?
+  id           String  @id @default(uuid())
+  fullName     String
+  phone        String
+  countryCode  String
+  city         String
+  region       String?
+  addressLine1 String?
+  addressLine2 String?
+  postalCode   String?
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
   workspaceId String
