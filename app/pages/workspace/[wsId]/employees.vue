@@ -30,8 +30,9 @@ const submitAddEmployee = async _ => {
   try {
     await addEmployee(addEmployeeEmail.value, wsId.value)
     workspaces.cachedWorkspaces.value = []
-    await refreshNuxtData(`employees-${wsId.value}`)
     addEmployeeModalOpened.value = false
+    await refreshNuxtData(`employees-${wsId.value}`)
+    addEmployeeEmail.value = ''
     notif.success("Successfully added new employee!")
   } catch {
     notif.error("An issue occurred while adding new employee. Try again later.")
