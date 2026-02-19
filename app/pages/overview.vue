@@ -119,7 +119,7 @@ onMounted(async () => {
                       workspaceModalOpened = false
                       newWorkspaceState.title = ''
                     }"/>
-                    <UButton :loading="creatingWorkspace" class=" rounded-xl px-4 py-2" label="Submit" type="submit"/>
+                    <UButton :loading="creatingWorkspace" class=" rounded-xl px-4 py-2" label="Create" type="submit"/>
                   </div>
                 </UForm>
               </template>

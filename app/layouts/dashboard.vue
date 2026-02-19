@@ -41,7 +41,7 @@ const sidebarItems = computed(_ => [
     icon: 'i-ri-user-smile-fill',
     class: navlinkClass,
     active: route.fullPath.includes('customers'),
-    // to: `/workspace/${wsId.value}/customers`
+    to: `/workspace/${wsId.value}/customers`
   },
   {
     label: 'Services',
