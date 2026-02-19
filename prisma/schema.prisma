@@ -193,5 +193,6 @@ model Customer {
 
   orders Order[]
 
+  @@unique([phone, workspaceId])
   @@map("customers")
 }
