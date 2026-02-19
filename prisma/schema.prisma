@@ -157,7 +157,7 @@ model OrderItem {
   price    Float
   quantity Int
 
-  order   Order  @relation(fields: [orderId], references: [id])
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String
 
   service   Service @relation(fields: [serviceId], references: [id])
@@ -171,7 +171,7 @@ model OrderLink {
   title String
   url   String
 
-  order   Order  @relation(fields: [orderId], references: [id])
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId String
 
   @@map("order_links")
