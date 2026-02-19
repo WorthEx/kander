@@ -112,9 +112,7 @@ watch(addEmployeeEmail, (newEmail) => {
         </div>
         <div v-if="!employees || loadingEmployees"
              class="rounded-lg overflow-hidden w-full flex flex-col">
-          <!--          <USkeleton v-for="(_, index) in 8"-->
-          <!--                     :style="{'animationDelay': `${index * 100}ms`}" class="w-full h-15 rounded-none opacity-40"/>-->
-          <div v-for="(_, index) in 8" :style="{'animationDelay': `${index * 100}ms`}"
+          <div v-for="(_, index) in 8" :style="{'animationDelay': `${index * 200}ms`}"
                class="bg-muted w-full h-15 animate-fade-up animate-ease-out animate-duration-500"/>
         </div>
         <div v-else
@@ -147,7 +145,7 @@ watch(addEmployeeEmail, (newEmail) => {
         </div>
         <template #fallback>
           <div class="rounded-lg overflow-hidden w-full flex flex-col">
-            <div v-for="(_, index) in 8" :style="{'animationDelay': `${index * 100}ms`}"
+            <div v-for="(_, index) in 8" :style="{'animationDelay': `${index * 200}ms`}"
                  class="bg-muted w-full h-15 animate-fade-up animate-ease-out animate-duration-500"/>
           </div>
         </template>
