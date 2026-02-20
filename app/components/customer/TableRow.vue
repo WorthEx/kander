@@ -16,7 +16,7 @@ const handleCopyPhoneNumber = _ => {
 }
 
 const handleCopyAddress = _ => {
-  copy(props.customer.add)
+  copy(addressString.value)
   notif.info('Customer\'s address copied to clipboard!')
 }
 
