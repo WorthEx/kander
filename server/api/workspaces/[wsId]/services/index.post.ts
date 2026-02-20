@@ -1,0 +1,22 @@
+export default defineEventHandler(async (event) => {
+  checkUser(event)
+
+  const {title, basePrice} = await readBody(event)
+  if (!title || !basePrice) return createError({
+    statusCode: 400,
+    statusText: 'No title or basePrice provided.'
+  })
+
+  const wsId = getRouterParam(event, 'wsId')
+  if (!wsId) throw createError({statusCode: 400, statusText: 'Workspace ID not provided.'})
+
+  await prisma.service.create({
+    data: {
+      title,
+      basePrice,
+      workspaceId: wsId
+    }
+  })
+
+  return {ok: true}
+})

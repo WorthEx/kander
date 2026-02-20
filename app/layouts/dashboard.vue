@@ -48,7 +48,7 @@ const sidebarItems = computed(_ => [
     icon: 'i-ri-shopping-cart-fill',
     class: navlinkClass,
     active: route.fullPath.includes('services'),
-    // to: `/workspace/${wsId.value}/services`
+    to: `/workspace/${wsId.value}/services`
   },
   {
     label: 'Integration',
@@ -87,6 +87,7 @@ const {data: workspaces, pending: loadingWorkspaces} = await useLazyFetch(_ => `
   server: false,
   key: 'workspaces'
 })
+
 </script>
 
 <template>
