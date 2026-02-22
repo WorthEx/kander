@@ -76,7 +76,6 @@ model Workspace {
   columns   Column[]
   customers Customer[]
   services  Service[]
-  orders    Order[]
 
   @@map("workspaces")
 }
@@ -126,9 +125,6 @@ model Order {
 
   column   Column @relation(fields: [columnId], references: [id])
   columnId String
-
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-  workspaceId String
 
   responsibles User[]        @relation("OrderResponsibles")
   links        OrderLink[]
