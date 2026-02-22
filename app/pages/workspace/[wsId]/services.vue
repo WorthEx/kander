@@ -192,7 +192,7 @@ const shownServices = computed(() => {
                          class="size-4"/>
                 </div>
               </th>
-              <th v-if="currentWorkspace.workspaceMember.role === 'admin'" class="ps-4 pe-4">Edit</th>
+              <th v-if="currentWorkspace.workspaceMember.role === 'admin'"></th>
             </tr>
             </thead>
             <tbody class="divide-y divide-default *:even:bg-muted">
