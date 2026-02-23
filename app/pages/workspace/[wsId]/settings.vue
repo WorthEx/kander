@@ -4,7 +4,6 @@ import {useClipboard} from "@vueuse/core";
 
 definePageMeta({
   layout: 'dashboard',
-  middleware: ['02-admin']
 })
 
 const newWorkspaceTitle = ref("")
@@ -14,6 +13,7 @@ const editingTitle = ref(false)
 const wsDeleteConfirmation = ref("")
 const deletingWorkspace = ref(false)
 
+const auth = useAuth()
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {editTitle, deleteWorkspace} = useWorkspace()
@@ -28,6 +28,11 @@ const workspaceTitleSchema = z.string()
 
 const submitEditTitle = async _ => {
   if (newWorkspaceTitle.value === currentWorkspace.value.workspace.title) return
+
+  if (auth.user.value && auth.user.value.role !== 'admin') {
+    notif.info('You don\'t have permission for this operation. Please contact workspace supervisor.')
+    return
+  }
 
   editingTitle.value = true
   try {
@@ -49,6 +54,11 @@ const copyWorkspaceTitle = _ => {
 }
 
 const submitDeleteWorkspace = async _ => {
+  if (auth.user.value && auth.user.value.role !== 'admin') {
+    notif.info('You don\'t have permission for this operation. Please contact workspace supervisor.')
+    return
+  }
+
   deletingWorkspace.value = true
   try {
     await deleteWorkspace(currentWorkspace.value.workspace.id)

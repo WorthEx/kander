@@ -3,7 +3,14 @@ export default defineEventHandler(async (event) => {
   if (!wsId) throw createError({statusCode: 400, statusText: 'Workspace ID not provided.'})
 
   const workspaceMember = await checkWorkspaceAccess(event, wsId)
-  const workspace = await prisma.workspace.findUnique({where: {id: wsId}})
+  const workspace = await prisma.workspace.findUnique(
+    {
+      where: {id: wsId},
+      omit: {
+        apiKey: true
+      }
+    }
+  )
 
   return {
     workspaceMember,

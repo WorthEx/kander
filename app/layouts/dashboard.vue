@@ -55,7 +55,7 @@ const sidebarItems = computed(_ => [
     icon: 'i-ri-code-view',
     class: navlinkClass,
     active: route.fullPath.includes('integration'),
-    // to: `/workspace/${wsId.value}/integration`,
+    to: `/workspace/${wsId.value}/integration`,
     disabled: currentWorkspace.value?.workspaceMember?.role !== 'admin' ?? true
   },
   {
@@ -78,6 +78,9 @@ const {data: currentWorkspace, pending: loadingWorkspace} = await useLazyFetch(_
   onResponseError: _ => {
     notif.error("Workspace not found!")
     navigateTo('/overview', {replace: true})
+  },
+  onResponse: res => {
+    user.value.role = res.response._data.workspaceMember.role
   },
   key: 'currentWorkspace',
   watch: [wsId]
