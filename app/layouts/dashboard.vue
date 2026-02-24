@@ -183,18 +183,16 @@ const {data: workspaces, pending: loadingWorkspaces} = await useLazyFetch(_ => `
                 <UButton class="cursor-pointer text-default/50" color="neutral" icon="i-ri-expand-up-down-line"
                          variant="ghost"/>
                 <template #content>
-                  <div class="p-2 max-h-64 overflow-y-auto w-64 flex flex-col gap-2 select-none">
+                  <div class="p-2 max-h-64 overflow-y-auto w-52 flex flex-col gap-2 select-none">
                     <span class="px-2 py-1 text-sm text-dimmed">Workspaces</span>
                     <UButton v-for="ws in workspaces" :to="{
                       route: route.name, params: { wsId: ws.id }
                     }"
-                             class="text-sm w-full py-1 flex gap-1"
+                             class="text-sm w-full py-1 flex gap-4"
                              color="neutral" variant="ghost"
                              @click="workspacesPopoverOpened = false">
                       <span class="line-clamp-1">{{ ws.title }}</span>
-                      <span class="text-primary line-clamp-1">{{
-                          ws.id === route.params.wsId ? '(current)' : ''
-                        }}</span>
+                      <div v-if="ws.id === route.params.wsId" class="bg-primary size-1.5 rounded-full"/>
                     </UButton>
                   </div>
                 </template>
