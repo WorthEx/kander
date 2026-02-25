@@ -97,7 +97,7 @@ onMounted(_ => {
         Workspace settings
       </template>
     </DashboardHeader>
-    <DashboardSection>
+    <SettingsSection>
       <template #title>General</template>
       <div class="flex lg:flex-row flex-col lg:gap-4 gap-2 w-full">
         <div class="flex flex-col w-full">
@@ -115,8 +115,8 @@ onMounted(_ => {
                  class="px-6 py-2 cursor-pointer w-fit rounded-full" @click.prevent="submitEditTitle">Save
         </UButton>
       </template>
-    </DashboardSection>
-    <DashboardSection color="danger">
+    </SettingsSection>
+    <SettingsSection color="danger">
       <template #title>Danger zone</template>
       <div class="flex flex-col lg:gap-4 gap-2 w-full">
         <div class="flex flex-col w-full">
@@ -161,6 +161,6 @@ onMounted(_ => {
           </template>
         </UModal>
       </template>
-    </DashboardSection>
+    </SettingsSection>
   </DashboardContainterSm>
 </template>
