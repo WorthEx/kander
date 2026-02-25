@@ -6,7 +6,7 @@ export default defineEventHandler(async (event) => {
 
   await checkAdminAccess(event, wsId)
 
-  const apiKey = crypto.randomBytes(24).toString('hex')
+  const apiKey = 'kndr_' + crypto.randomBytes(24).toString('hex')
 
   await prisma.workspace.update({
     where: {
