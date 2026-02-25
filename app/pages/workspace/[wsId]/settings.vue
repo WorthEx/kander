@@ -20,7 +20,7 @@ const {editTitle, deleteWorkspace} = useWorkspace()
 const {copy} = useClipboard()
 
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
-watch(currentWorkspace, _ => newWorkspaceTitle.value = currentWorkspace.value.workspace.title)
+watch(currentWorkspace, _ => newWorkspaceTitle.value = currentWorkspace.value ? currentWorkspace.value.workspace.title : '')
 
 const workspaceTitleSchema = z.string()
   .min(1, "Workspace title must contain between 1 and 100 characters.")
@@ -93,11 +93,10 @@ onMounted(_ => {
 <template>
   <DashboardContainterSm>
     <DashboardHeader>
-      <template #title>
-        Workspace settings
-      </template>
+      <template #title>Settings</template>
+      <template #description>Feel free to customize your workspace just the way you like</template>
     </DashboardHeader>
-    <SettingsSection>
+    <SettingsSection v-if="currentWorkspace">
       <template #title>General</template>
       <div class="flex lg:flex-row flex-col lg:gap-4 gap-2 w-full">
         <div class="flex flex-col w-full">
@@ -116,7 +115,8 @@ onMounted(_ => {
         </UButton>
       </template>
     </SettingsSection>
-    <SettingsSection color="danger">
+    <USkeleton v-else class="w-full h-48 rounded-2xl"/>
+    <SettingsSection v-if="currentWorkspace" color="danger">
       <template #title>Danger zone</template>
       <div class="flex flex-col lg:gap-4 gap-2 w-full">
         <div class="flex flex-col w-full">
@@ -136,7 +136,7 @@ onMounted(_ => {
               <div
                 class="inline-flex gap-1 items-center text-error font-semibold hover:bg-muted cursor-pointer rounded-xl py-0.5 px-1"
                 @click="copyWorkspaceTitle">
-                <span>{{ currentWorkspace.workspace.title }}</span>
+                <span>{{ currentWorkspace?.workspace?.title }}</span>
                 <UIcon name="i-ri-file-copy-line"/>
               </div>
               below in order to confirm your intention.
@@ -162,5 +162,6 @@ onMounted(_ => {
         </UModal>
       </template>
     </SettingsSection>
+    <USkeleton v-else class="w-full h-48 rounded-2xl"/>
   </DashboardContainterSm>
 </template>
