@@ -89,7 +89,12 @@ watch(user, async newUser => {
 <template>
   <DashboardContainterSm>
     <DashboardHeader>
-      <template #title>Integration</template>
+      <template #title>
+        <div class="inline-flex gap-2 items-center">
+          <span>Integration</span>
+          <UBadge class="rounded-full" color="info" variant="subtle">Experimental</UBadge>
+        </div>
+      </template>
       <template #description>Kander provides an API for integration with your applications and chatbots.
       </template>
     </DashboardHeader>
@@ -101,7 +106,10 @@ watch(user, async newUser => {
       </div>
       <div
         class="dark:bg-elevated/20 bg-elevated/70 ring-default ring w-full rounded-xl px-2 py-2 h-fit text-sm flex gap-2 items-center">
-        <USkeleton v-if="!apiKeyFetched || actionInProgress" class="h-6 rounded-lg w-full"/>
+        <USkeleton v-if="!apiKeyFetched || actionInProgress"
+                   class="min-h-6 py-1 rounded-lg w-full flex items-center justify-center text-muted">
+          Fetching API key...
+        </USkeleton>
         <div v-else-if="!cachedApiKey || cachedApiKey?.length < 1"
              class="">You haven't generated an API key yet.
         </div>
@@ -180,7 +188,7 @@ watch(user, async newUser => {
         flex items-center justify-between gap-2 group hover:bg-elevated transition-all cursor-pointer"
           @click="handleCopyBaseUrl">
           <span class="break-all font-mono select-none">{{ baseURL }}</span>
-          <UIcon class="size-4 group-hover:opacity-100 lg:opacity-0 transition-all text-dimmed"
+          <UIcon class="size-4 group-hover:opacity-100 lg:opacity-0 transition-all text-muted"
                  name="i-ri-file-copy-line"/>
         </div>
       </UTooltip>
