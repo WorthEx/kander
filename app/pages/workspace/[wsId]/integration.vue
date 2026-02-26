@@ -87,7 +87,7 @@ watch(user, async newUser => {
 </script>
 
 <template>
-  <DashboardContainterSm>
+  <DashboardContainterSm class="lg:pb-12 pb-6">
     <DashboardHeader>
       <template #title>
         <div class="inline-flex gap-2 items-center">
@@ -95,14 +95,24 @@ watch(user, async newUser => {
           <UBadge class="rounded-full" color="info" variant="subtle">Experimental</UBadge>
         </div>
       </template>
-      <template #description>Kander provides an API for integration with your applications and chatbots.
-      </template>
+      <template #description>Kander provides an API for integration with your applications and chatbots.</template>
+      <UTooltip text="Copy base URL">
+        <div
+          class="mt-2 dark:bg-elevated/20 bg-elevated/70 ring-default ring overflow-hidden w-full rounded-xl px-3 py-2 text-sm
+        flex items-center justify-between gap-2 group hover:bg-elevated transition-all cursor-pointer"
+          @click="handleCopyBaseUrl">
+          <span class="break-all font-mono select-none">{{ baseURL }}</span>
+          <UIcon class="size-4 group-hover:opacity-100 lg:opacity-0 transition-all text-muted"
+                 name="i-ri-file-copy-line"/>
+        </div>
+      </UTooltip>
     </DashboardHeader>
 
     <section class="flex flex-col gap-4">
-      <div class="flex flex-col w-full">
+      <div class="flex flex-col gap-1 w-full">
         <span class="text-lg">API Key</span>
-        <p class="text-dimmed text-sm">Use this to authenticate requests to your workspace</p>
+        <p class="text-dimmed text-sm">For authentication purposes, all endpoints require the <span
+          class="font-mono text-primary whitespace-nowrap">X-API-KEY</span> header to be provided</p>
       </div>
       <div
         class="dark:bg-elevated/20 bg-elevated/70 ring-default ring w-full rounded-xl px-2 py-2 h-fit text-sm flex gap-2 items-center">
@@ -177,23 +187,31 @@ watch(user, async newUser => {
       </div>
     </section>
 
-    <section class="flex flex-col gap-4">
-      <div class="flex flex-col w-full">
-        <span class="text-lg">Base URL</span>
-        <p class="text-dimmed text-sm">All URLs referenced in this documentation have the following base</p>
-      </div>
-      <UTooltip text="Copy base URL">
-        <div
-          class="dark:bg-elevated/20 bg-elevated/70 ring-default ring overflow-hidden w-full rounded-xl px-3 py-2 h-fit text-sm
-        flex items-center justify-between gap-2 group hover:bg-elevated transition-all cursor-pointer"
-          @click="handleCopyBaseUrl">
-          <span class="break-all font-mono select-none">{{ baseURL }}</span>
-          <UIcon class="size-4 group-hover:opacity-100 lg:opacity-0 transition-all text-muted"
-                 name="i-ri-file-copy-line"/>
-        </div>
-      </UTooltip>
-    </section>
+    <!--    <section class="flex flex-col gap-4">-->
+    <!--      <div class="flex flex-col gap-1 w-full">-->
+    <!--        <span class="text-lg">Base URL</span>-->
+    <!--        <p class="text-dimmed text-sm">All URLs referenced in this documentation have the following base</p>-->
+    <!--      </div>-->
+    <!--      <UTooltip text="Copy base URL">-->
+    <!--        <div-->
+    <!--          class="dark:bg-elevated/20 bg-elevated/70 ring-default ring overflow-hidden w-full rounded-xl px-3 py-2 h-fit text-sm-->
+    <!--        flex items-center justify-between gap-2 group hover:bg-elevated transition-all cursor-pointer"-->
+    <!--          @click="handleCopyBaseUrl">-->
+    <!--          <span class="break-all font-mono select-none">{{ baseURL }}</span>-->
+    <!--          <UIcon class="size-4 group-hover:opacity-100 lg:opacity-0 transition-all text-muted"-->
+    <!--                 name="i-ri-file-copy-line"/>-->
+    <!--        </div>-->
+    <!--      </UTooltip>-->
+    <!--    </section>-->
 
-    <DocsSection title="Fetch all active services"/>
+    <section class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1 w-full">
+        <span class="text-lg">Endpoints</span>
+        <p class="text-dimmed text-sm">List of all available endpoints</p>
+      </div>
+      <div class="flex flex-col gap-4 w-full">
+        <ApiDocsListItem v-for="(_, index) in 3"/>
+      </div>
+    </section>
   </DashboardContainterSm>
 </template>
