@@ -113,7 +113,7 @@ model Order {
   title       String
   description String?
   createdAt   DateTime      @default(now())
-  deadline    DateTime      @db.Date
+  deadline    DateTime?     @db.Date
   priority    OrderPriority @default(medium)
   source      OrderSource   @default(manual)
 
