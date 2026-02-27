@@ -113,6 +113,16 @@ const apiDocs = computed(_ => [
         countryCode: "JP",
         city: "Tokyo"
       }
+    },
+    bodySchema: {
+      "fullName": "String",
+      "phone": "String",
+      "countryCode": "String",
+      "city": "String",
+      "region?": "String",
+      "addressLine1?": "String",
+      "addressLine2?": "String",
+      "postalCode?": "String",
     }
   },
   {
@@ -143,6 +153,18 @@ const apiDocs = computed(_ => [
           }
         ]
       }
+    },
+    bodySchema: {
+      "title": "String",
+      "description?": "String",
+      "customerId": "String",
+      "items?": [
+        {
+          price: "Float",
+          quantity: "Integer",
+          serviceId: "String"
+        }
+      ]
     }
   }
 ])
@@ -249,30 +271,13 @@ const apiDocs = computed(_ => [
       </div>
     </section>
 
-    <!--    <section class="flex flex-col gap-4">-->
-    <!--      <div class="flex flex-col gap-1 w-full">-->
-    <!--        <span class="text-lg">Base URL</span>-->
-    <!--        <p class="text-dimmed text-sm">All URLs referenced in this documentation have the following base</p>-->
-    <!--      </div>-->
-    <!--      <UTooltip text="Copy base URL">-->
-    <!--        <div-->
-    <!--          class="dark:bg-elevated/20 bg-elevated/70 ring-default ring overflow-hidden w-full rounded-xl px-3 py-2 h-fit text-sm-->
-    <!--        flex items-center justify-between gap-2 group hover:bg-elevated transition-all cursor-pointer"-->
-    <!--          @click="handleCopyBaseUrl">-->
-    <!--          <span class="break-all font-mono select-none">{{ baseUrl }}</span>-->
-    <!--          <UIcon class="size-4 group-hover:opacity-100 lg:opacity-0 transition-all text-muted"-->
-    <!--                 name="i-ri-file-copy-line"/>-->
-    <!--        </div>-->
-    <!--      </UTooltip>-->
-    <!--    </section>-->
-
     <section class="flex flex-col gap-4">
       <div class="flex flex-col gap-1 w-full">
         <span class="text-lg">Endpoints</span>
         <p class="text-dimmed text-sm">List of all available endpoints</p>
       </div>
       <div class="flex flex-col gap-4 w-full">
-        <ApiDocsListItem v-for="(item, index) in apiDocs" :key="index" :curl="item.curl"
+        <ApiDocsListItem v-for="(item, index) in apiDocs" :key="index" :bodySchema="item.bodySchema" :curl="item.curl"
                          :description="item.description" :method="item.method" :route="item.route" :title="item.title"/>
       </div>
     </section>

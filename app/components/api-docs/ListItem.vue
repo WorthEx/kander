@@ -10,6 +10,7 @@ const props = defineProps<{
   route: string,
   description: string,
   curl: any,
+  bodySchema: any,
   method: HttpMethod
 }>()
 
@@ -76,8 +77,8 @@ const formatCurlRequest = (curlString: string) => {
     </div>
 
     <template #body>
-      <section class="flex flex-col gap-4">
-        <div class="flex flex-col gap-3 rounded-xl ring ring-default p-2">
+      <div class="flex flex-col gap-4">
+        <section class="flex flex-col gap-3 rounded-xl ring ring-default p-2">
           <UTooltip text="Copy full route">
             <div
               class="flex items-center gap-3 pe-2 h-fit group cursor-pointer overflow-hidden" @click="handleCopyRoute">
@@ -92,7 +93,7 @@ const formatCurlRequest = (curlString: string) => {
             </div>
           </UTooltip>
           <USeparator/>
-          <section class="group/curl cursor-pointer" @click="handleCopyCurlRequest">
+          <div class="group/curl cursor-pointer" @click="handleCopyCurlRequest">
             <div class="ps-2 select-none">
               <pre class="pb-3 overflow-auto font-mono text-sm">{{ formatCurlRequest(curlRequest) }}</pre>
             </div>
@@ -103,9 +104,35 @@ const formatCurlRequest = (curlString: string) => {
                 class="text-muted group-hover/curl:opacity-100 opacity-0 transition-all size-3.5"
                 name="i-ri-file-copy-line"/>
             </div>
-          </section>
-        </div>
-      </section>
+          </div>
+        </section>
+
+        <section class="flex flex-col gap-3 rounded-xl ring ring-default px-3 py-2 select-none">
+          <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold py-1">Body</span>
+            <USeparator/>
+            <div v-if="bodySchema" class="text-sm flex flex-col gap-3">
+              <div v-for="parameter in Object.entries(bodySchema)" class="flex gap-2 justify-between">
+                <span class="">{{ parameter[0].replace('?', '') }}</span>
+                <USeparator/>
+                <div class="flex gap-1 *:rounded-lg *:px-2 *:py-0.5 *:bg-elevated *:dark:bg-muted">
+                  <span v-if="!(parameter[0] as string).includes('?')" class="text-primary">Required</span>
+                  <span v-if="typeof parameter[1] === 'string'" class="text-muted">{{ parameter[1] }}</span>
+                  <UModal v-else :title="`${parameter[0].replace('?', '')} schema`">
+                    <span class="text-muted cursor-pointer">{{
+                        JSON.stringify(parameter[1])[0] === '[' ? 'Array' : 'Object'
+                      }}</span>
+                    <template #body>
+                      <pre>{{ parameter[1] }}</pre>
+                    </template>
+                  </UModal>
+                </div>
+              </div>
+            </div>
+            <span v-else class="text-sm text-dimmed py-1">Not required</span>
+          </div>
+        </section>
+      </div>
     </template>
 
   </USlideover>
