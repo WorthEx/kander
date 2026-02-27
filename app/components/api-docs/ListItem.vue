@@ -63,7 +63,7 @@ const formatCurlRequest = (curlString: string) => {
 
     <div
       class="flex max-xs:flex-col overflow-hidden gap-2 justify-between ring ring-default rounded-xl w-full  cursor-pointer p-4 bg-muted/50 hover:bg-muted transition-all">
-      <div class="flex gap-2 items-center h-fit">
+      <div class="flex gap-3 items-center h-fit">
         <UBadge :color="methodColor" class="h-fit uppercase font-semibold" variant="subtle">{{ method }}</UBadge>
         <span class="text-sm">{{ title }}</span>
       </div>
@@ -92,14 +92,15 @@ const formatCurlRequest = (curlString: string) => {
             </div>
           </UTooltip>
           <USeparator/>
-          <section class="ps-2 group select-none cursor-pointer" @click="handleCopyCurlRequest">
-            <pre class="pb-3 overflow-auto font-mono text-sm">{{ formatCurlRequest(curlRequest) }}</pre>
-
+          <section class="group/curl cursor-pointer" @click="handleCopyCurlRequest">
+            <div class="ps-2 select-none">
+              <pre class="pb-3 overflow-auto font-mono text-sm">{{ formatCurlRequest(curlRequest) }}</pre>
+            </div>
             <USeparator/>
             <div class="pt-3 pb-1 pe-2 flex justify-between items-center">
-              <span class="text-xs text-dimmed group-hover:text-primary transition-all">Don't forget to insert your API key!</span>
+              <span class="text-xs text-dimmed group-hover/curl:text-primary transition-all">Don't forget to insert your API key!</span>
               <UIcon
-                class="text-muted group-hover:opacity-100 opacity-0 transition-all size-3.5"
+                class="text-muted group-hover/curl:opacity-100 opacity-0 transition-all size-3.5"
                 name="i-ri-file-copy-line"/>
             </div>
           </section>
