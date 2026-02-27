@@ -113,6 +113,30 @@ const formatCurlRequest = (curlString: string) => {
 
         <section class="flex flex-col gap-3 rounded-xl ring ring-default px-3 py-2 select-none">
           <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold py-1">Headers</span>
+            <USeparator/>
+            <div class="text-sm flex flex-col gap-3 text-nowrap">
+              <div class="flex gap-2 justify-between">
+                <span class="">X-API-KEY</span>
+                <USeparator/>
+                <div class="flex gap-1 *:rounded-lg *:px-2 *:py-0.5 *:bg-elevated *:dark:bg-muted">
+                  <span
+                    class="text-primary rounded-lg px-2 py-0.5 bg-elevated dark:bg-muted">[YOUR API KEY]</span>
+                </div>
+              </div>
+              <div class="flex gap-2 justify-between">
+                <span>Content-type</span>
+                <USeparator/>
+                <div class="flex gap-1 *:rounded-lg *:px-2 *:py-0.5 *:bg-elevated *:dark:bg-muted">
+                  <span class="text-primary rounded-lg px-2 py-0.5 bg-elevated dark:bg-muted select-text">application/json</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="flex flex-col gap-3 rounded-xl ring ring-default px-3 py-2 select-none">
+          <div class="flex flex-col gap-2">
             <span class="text-sm font-semibold py-1">Body</span>
             <USeparator/>
             <div v-if="bodySchema" class="text-sm flex flex-col gap-3">
