@@ -145,7 +145,7 @@ const apiDocs = computed(_ => [
       "addressLine2?": "String",
       "postalCode?": "String",
     },
-    status: 'tbd'
+    status: 'ready'
   },
   {
     title: 'Add new order',
