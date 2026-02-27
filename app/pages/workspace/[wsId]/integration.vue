@@ -93,6 +93,7 @@ const apiDocs = computed(_ => [
       url: `${apiBaseUrl.value}/services`,
       headers: {
         'X-API-KEY': 'API_KEY',
+        "Content-type": "application/json; charset=UTF-8"
       }
     },
     status: 'ready'
@@ -107,6 +108,7 @@ const apiDocs = computed(_ => [
       url: `${apiBaseUrl.value}/services/[id]`,
       headers: {
         'X-API-KEY': 'API_KEY',
+        "Content-type": "application/json; charset=UTF-8"
       }
     },
     pathParams: {
@@ -124,13 +126,14 @@ const apiDocs = computed(_ => [
       url: `${apiBaseUrl.value}/customers`,
       headers: {
         'X-API-KEY': 'API_KEY',
+        "Content-type": "application/json; charset=UTF-8"
       },
       body: {
         fullName: "Jane Doe",
         phone: "+77756485746",
         countryCode: "JP",
         city: "Tokyo"
-      }
+      },
     },
     bodySchema: {
       "fullName": "String",
@@ -154,6 +157,7 @@ const apiDocs = computed(_ => [
       url: `${apiBaseUrl.value}/orders`,
       headers: {
         'X-API-KEY': 'API_KEY',
+        "Content-type": "application/json; charset=UTF-8"
       },
       body: {
         title: "Spaceship 3D model",
