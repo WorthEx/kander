@@ -11,14 +11,13 @@ const route = useRoute()
 const wsId = computed(() => route.params.wsId)
 const {cachedApiKey, fetchKey, apiKeyFetched, generateKey, revokeKey} = useApiKey()
 const {copy} = useClipboard()
-const {initialized, user} = useAuth()
-const {data: currentWorkspace} = useNuxtData('currentWorkspace')
+const {user} = useAuth()
+const {apiBaseUrl} = useConstants()
 
 const keyHidden = ref(true)
 const actionInProgress = ref(false)
 const confirmRegenerateModalOpened = ref(false)
 const confirmRevokeModalOpened = ref(false)
-const baseURL = ref("https://kander.space/api/v1")
 
 const handleCopyApiKey = _ => {
   copy(cachedApiKey.value)
@@ -26,10 +25,9 @@ const handleCopyApiKey = _ => {
 }
 
 const handleCopyBaseUrl = _ => {
-  copy(baseURL.value)
+  copy(apiBaseUrl.value)
   notif.info('Base URL copied to clipboard!')
 }
-
 
 const handleGenerateKey = async _ => {
   if (user.value?.role !== 'admin') {
@@ -72,7 +70,6 @@ const accessError = _ => {
   navigateTo(`/workspace/${wsId.value}/board`)
 }
 
-
 onMounted(async _ => {
   if (user.value?.role === 'admin') {
     await fetchKey()
@@ -84,6 +81,71 @@ watch(user, async newUser => {
     await fetchKey()
   } else accessError()
 }, {deep: true})
+
+const apiDocs = computed(_ => [
+  {
+    title: 'Get all active services',
+    description: 'Use it to display available services',
+    method: 'GET',
+    route: '/services',
+    curl: {
+      method: 'GET',
+      url: `${apiBaseUrl.value}/services`,
+      headers: {
+        'X-API-KEY': 'API_KEY',
+      }
+    }
+  },
+  {
+    title: 'Add new customer',
+    description: 'Use it to save a customer for future orders',
+    method: 'POST',
+    route: '/customers',
+    curl: {
+      method: 'POST',
+      url: `${apiBaseUrl.value}/customers`,
+      headers: {
+        'X-API-KEY': 'API_KEY',
+      },
+      body: {
+        fullName: "Jane Doe",
+        phone: "+77756485746",
+        countryCode: "JP",
+        city: "Tokyo"
+      }
+    }
+  },
+  {
+    title: 'Add new order',
+    description: 'Use it to place an order with optional items',
+    method: 'POST',
+    route: '/orders',
+    curl: {
+      method: 'POST',
+      url: `${apiBaseUrl.value}/orders`,
+      headers: {
+        'X-API-KEY': 'API_KEY',
+      },
+      body: {
+        title: "Spaceship 3D model",
+        description: "A 3D model of a spaceship",
+        customerId: "5a48d232-bb95-4a99-ab11-84cf299dd3b7",
+        items: [
+          {
+            price: 4.20,
+            quantity: 6,
+            serviceId: "ed458569-37a4-4516-8747-b4aed411f5ec"
+          },
+          {
+            price: 14.88,
+            quantity: 7,
+            serviceId: "1c226d7c-5b48-4270-8332-55567b8c1f3a"
+          }
+        ]
+      }
+    }
+  }
+])
 </script>
 
 <template>
@@ -98,10 +160,10 @@ watch(user, async newUser => {
       <template #description>Kander provides an API for integration with your applications and chatbots.</template>
       <UTooltip text="Copy base URL">
         <div
-          class="mt-2 dark:bg-elevated/20 bg-elevated/70 ring-default ring overflow-hidden w-full rounded-xl px-3 py-2 text-sm
-        flex items-center justify-between gap-2 group hover:bg-elevated transition-all cursor-pointer"
+          class="mt-2 bg-muted/50 ring-default ring overflow-hidden w-full rounded-xl px-3 py-2 text-sm
+        flex items-center justify-between gap-2 group hover:bg-muted transition-all cursor-pointer"
           @click="handleCopyBaseUrl">
-          <span class="break-all font-mono select-none">{{ baseURL }}</span>
+          <span class="break-all font-mono select-none">{{ apiBaseUrl }}</span>
           <UIcon class="size-4 group-hover:opacity-100 lg:opacity-0 transition-all text-muted"
                  name="i-ri-file-copy-line"/>
         </div>
@@ -115,7 +177,7 @@ watch(user, async newUser => {
           class="font-mono text-primary whitespace-nowrap">X-API-KEY</span> header to be provided</p>
       </div>
       <div
-        class="dark:bg-elevated/20 bg-elevated/70 ring-default ring w-full rounded-xl px-2 py-2 h-fit text-sm flex gap-2 items-center">
+        class="bg-muted/50 ring-default ring w-full rounded-xl px-2 py-2 h-fit text-sm flex gap-2 items-center">
         <USkeleton v-if="!apiKeyFetched || actionInProgress"
                    class="min-h-6 py-1 rounded-lg w-full flex items-center justify-center text-muted">
           Fetching API key...
@@ -124,7 +186,7 @@ watch(user, async newUser => {
              class="">You haven't generated an API key yet.
         </div>
         <UTooltip v-else text="Copy API key">
-          <div :class="keyHidden ? 'blur-sm' : 'hover:bg-accented'"
+          <div :class="keyHidden ? 'blur-sm' : 'hover:bg-elevated/50'"
                class="py-1 px-1 rounded-lg break-all cursor-pointer font-mono transition-all select-none"
                @click="handleCopyApiKey">
             {{ cachedApiKey }}
@@ -197,7 +259,7 @@ watch(user, async newUser => {
     <!--          class="dark:bg-elevated/20 bg-elevated/70 ring-default ring overflow-hidden w-full rounded-xl px-3 py-2 h-fit text-sm-->
     <!--        flex items-center justify-between gap-2 group hover:bg-elevated transition-all cursor-pointer"-->
     <!--          @click="handleCopyBaseUrl">-->
-    <!--          <span class="break-all font-mono select-none">{{ baseURL }}</span>-->
+    <!--          <span class="break-all font-mono select-none">{{ baseUrl }}</span>-->
     <!--          <UIcon class="size-4 group-hover:opacity-100 lg:opacity-0 transition-all text-muted"-->
     <!--                 name="i-ri-file-copy-line"/>-->
     <!--        </div>-->
@@ -210,7 +272,8 @@ watch(user, async newUser => {
         <p class="text-dimmed text-sm">List of all available endpoints</p>
       </div>
       <div class="flex flex-col gap-4 w-full">
-        <ApiDocsListItem v-for="(_, index) in 3"/>
+        <ApiDocsListItem v-for="(item, index) in apiDocs" :key="index" :curl="item.curl"
+                         :description="item.description" :method="item.method" :route="item.route" :title="item.title"/>
       </div>
     </section>
   </DashboardContainterSm>
