@@ -112,7 +112,7 @@ const apiDocs = computed(_ => [
     pathParams: {
       id: "String"
     },
-    status: 'tbd'
+    status: 'ready'
   },
   {
     title: 'Add new customer',
