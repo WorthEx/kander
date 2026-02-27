@@ -98,6 +98,23 @@ const apiDocs = computed(_ => [
     status: 'ready'
   },
   {
+    title: 'Get a service by ID',
+    description: 'Use it to fetch data of a specific service by its ID',
+    method: 'GET',
+    route: '/services/[id]',
+    curl: {
+      method: 'GET',
+      url: `${apiBaseUrl.value}/services/[id]`,
+      headers: {
+        'X-API-KEY': 'API_KEY',
+      }
+    },
+    pathParams: {
+      id: "String"
+    },
+    status: 'tbd'
+  },
+  {
     title: 'Add new customer',
     description: 'Use it to save a customer for future orders',
     method: 'POST',
@@ -281,7 +298,8 @@ const apiDocs = computed(_ => [
       </div>
       <div class="flex flex-col gap-4 w-full">
         <ApiDocsListItem v-for="(item, index) in apiDocs" :key="index" :bodySchema="item.bodySchema" :curl="item.curl"
-                         :description="item.description" :method="item.method" :route="item.route" :status="item.status"
+                         :description="item.description" :method="item.method" :pathParams="item.pathParams"
+                         :route="item.route" :status="item.status"
                          :title="item.title"/>
       </div>
     </section>

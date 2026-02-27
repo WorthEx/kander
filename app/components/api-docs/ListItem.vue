@@ -8,6 +8,7 @@ const props = defineProps<{
   description: string,
   curl: any,
   bodySchema: any,
+  pathParams: any,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
   status: 'ready' | 'tbd'
 }>()
@@ -129,6 +130,24 @@ const formatCurlRequest = (curlString: string) => {
                       <pre>{{ parameter[1] }}</pre>
                     </template>
                   </UModal>
+                </div>
+              </div>
+            </div>
+            <span v-else class="text-sm text-dimmed py-1">Not required</span>
+          </div>
+        </section>
+
+        <section class="flex flex-col gap-3 rounded-xl ring ring-default px-3 py-2 select-none">
+          <div class="flex flex-col gap-2">
+            <span class="text-sm font-semibold py-1">Path parameters</span>
+            <USeparator/>
+            <div v-if="pathParams" class="text-sm flex flex-col gap-3">
+              <div v-for="parameter in Object.entries(pathParams)" class="flex gap-2 justify-between">
+                <span class="">{{ parameter[0].replace('?', '') }}</span>
+                <USeparator/>
+                <div class="flex gap-1 *:rounded-lg *:px-2 *:py-0.5 *:bg-elevated *:dark:bg-muted">
+                  <span v-if="!(parameter[0] as string).includes('?')" class="text-primary">Required</span>
+                  <span class="text-muted">{{ parameter[1] }}</span>
                 </div>
               </div>
             </div>
