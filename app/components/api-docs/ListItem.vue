@@ -2,16 +2,14 @@
 import {useClipboard} from "@vueuse/core";
 import {CurlGenerator} from "curl-generator";
 
-
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'
-
 const props = defineProps<{
   title: string,
   route: string,
   description: string,
   curl: any,
   bodySchema: any,
-  method: HttpMethod
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH',
+  status: 'ready' | 'tbd'
 }>()
 
 const {copy} = useClipboard()
@@ -63,7 +61,7 @@ const formatCurlRequest = (curlString: string) => {
   <USlideover :description :title :ui="{description: 'text-pretty', content: 'max-w-lg'}">
 
     <div
-      class="flex max-xs:flex-col overflow-hidden gap-2 justify-between ring ring-default rounded-xl w-full  cursor-pointer p-4 bg-muted/50 hover:bg-muted transition-all">
+      class="flex max-xs:flex-col overflow-hidden gap-2 justify-between ring ring-default rounded-xl cursor-pointer w-full p-4 bg-muted/50 hover:bg-muted transition-all">
       <div class="flex gap-3 items-center h-fit">
         <UBadge :color="methodColor" class="h-fit uppercase font-semibold" variant="subtle">{{ method }}</UBadge>
         <span class="text-sm">{{ title }}</span>
@@ -78,6 +76,11 @@ const formatCurlRequest = (curlString: string) => {
 
     <template #body>
       <div class="flex flex-col gap-4">
+        <UAlert v-if="status !== 'ready'" class="select-none" color="warning"
+                icon="i-ri-error-warning-fill"
+                title="This endpoint is under development and isn't ready for production!"
+                variant="solid"/>
+
         <section class="flex flex-col gap-3 rounded-xl ring ring-default p-2">
           <UTooltip text="Copy full route">
             <div

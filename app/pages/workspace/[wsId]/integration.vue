@@ -94,7 +94,8 @@ const apiDocs = computed(_ => [
       headers: {
         'X-API-KEY': 'API_KEY',
       }
-    }
+    },
+    status: 'ready'
   },
   {
     title: 'Add new customer',
@@ -123,7 +124,8 @@ const apiDocs = computed(_ => [
       "addressLine1?": "String",
       "addressLine2?": "String",
       "postalCode?": "String",
-    }
+    },
+    status: 'tbd'
   },
   {
     title: 'Add new order',
@@ -165,7 +167,8 @@ const apiDocs = computed(_ => [
           serviceId: "String"
         }
       ]
-    }
+    },
+    status: 'tbd'
   }
 ])
 </script>
@@ -278,7 +281,8 @@ const apiDocs = computed(_ => [
       </div>
       <div class="flex flex-col gap-4 w-full">
         <ApiDocsListItem v-for="(item, index) in apiDocs" :key="index" :bodySchema="item.bodySchema" :curl="item.curl"
-                         :description="item.description" :method="item.method" :route="item.route" :title="item.title"/>
+                         :description="item.description" :method="item.method" :route="item.route" :status="item.status"
+                         :title="item.title"/>
       </div>
     </section>
   </DashboardContainterSm>
