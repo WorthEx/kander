@@ -1,11 +1,11 @@
 export default defineEventHandler(async (event) => {
-  checkUser(event)
+  const wsId = getRouterParam(event, 'wsId')
+  if (!wsId) throw createError({statusCode: 400, statusText: 'Workspace ID not provided.'})
+
+  await checkWorkspaceAccess(event, wsId)
 
   const {email} = getQuery(event)
   if (!email) throw createError({statusCode: 400, statusMessage: 'No email provided.'})
-
-  const wsId = getRouterParam(event, 'wsId')
-  if (!wsId) throw createError({statusCode: 400, statusText: 'Workspace ID not provided.'})
 
   const userWithProvidedEmail = await prisma.user.findUnique({
     where: {

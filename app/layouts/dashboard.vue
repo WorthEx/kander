@@ -24,7 +24,7 @@ const sidebarItems = computed(_ => [
         label: 'Archive',
         class: navlinkClass,
         active: route.fullPath.includes('archive'),
-        // to: `/workspace/${wsId.value}/archive`
+        to: `/workspace/${wsId.value}/archive`
       },
     ],
     active: route.fullPath.includes('board') || route.fullPath.includes('archive')

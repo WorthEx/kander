@@ -1,5 +1,8 @@
 export default defineEventHandler(async (event) => {
-  checkUser(event)
+  const wsId = getRouterParam(event, 'wsId')
+  if (!wsId) throw createError({statusCode: 400, statusText: 'Workspace ID not provided.'})
+
+  await checkWorkspaceAccess(event, wsId)
 
   const {
     fullName,
@@ -15,10 +18,6 @@ export default defineEventHandler(async (event) => {
     statusCode: 400,
     statusText: 'No full name, phone number, country code or city provided.'
   })
-
-  const wsId = getRouterParam(event, 'wsId')
-  if (!wsId) throw createError({statusCode: 400, statusText: 'Workspace ID not provided.'})
-
 
   await prisma.customer.upsert({
     where: {
