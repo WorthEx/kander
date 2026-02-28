@@ -25,6 +25,7 @@ export default defineEventHandler(async (event) => {
             data: [...body.items]
           }
         },
+        source: 'api'
       },
       include: {
         items: {
