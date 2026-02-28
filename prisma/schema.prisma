@@ -71,7 +71,7 @@ model Workspace {
   apiKey                String? @unique
   lastAssignedManagerId String?
   defaultCountryCode    String?
-  defaultCurrency       String?
+  currency              String? @default("USD")
 
   members   WorkspaceMember[]
   columns   Column[]
