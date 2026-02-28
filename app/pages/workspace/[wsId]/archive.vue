@@ -123,7 +123,7 @@ const shownOrders = computed(() => {
             <tr class="*:py-3">
               <th class="ps-4">#</th>
               <th :class="sortState.key === 'title' && 'bg-muted text-primary'"
-                  class="px-4  transition-all hover:bg-muted hover:text-primary cursor-pointer"
+                  class="px-4 transition-all hover:bg-muted hover:text-primary cursor-pointer"
                   @click="toggleSort('title')">
                 <div class="flex gap-2 items-center">
                   <span>Title</span>

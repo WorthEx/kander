@@ -65,6 +65,9 @@ const {
   server: false,
   key: `services-${wsId.value}`,
   watch: [wsId],
+  getCachedData: (key, nuxtApp, _) => {
+    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+  },
 })
 
 const shownServices = computed(() => {

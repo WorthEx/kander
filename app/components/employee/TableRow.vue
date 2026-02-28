@@ -67,10 +67,10 @@ const saveEmployee = async _ => {
 
 <template>
   <tr class="*:py-4 animate-fade-up animate-ease-out animate-duration-500">
-    <td class="select-none ps-4 pe-8">
+    <td class="select-none ps-4">
       {{ index }}
     </td>
-    <td class="flex gap-4 items-center select-none pe-10">
+    <td class="flex gap-4 items-center select-none ps-4 pe-10">
       <img :class="[employee.user.avatar.includes('ssl.gstatic.com/docs/common/profile') && 'light:brightness-0']"
            :src="employee.user.avatar"
            alt=""

@@ -52,7 +52,10 @@ const {
 } = await useLazyFetch(_ => `/api/workspaces/${wsId.value}/employees`, {
   server: false,
   key: `employees-${wsId.value}`,
-  watch: [wsId]
+  watch: [wsId],
+  getCachedData: (key, nuxtApp, _) => {
+    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+  },
 })
 const shownEmployees = computed(_ => {
   if (!employees.value) return []
@@ -120,8 +123,8 @@ watch(addEmployeeEmail, (newEmail) => {
           <table class="table-auto border-collapse w-full text-sm">
             <thead class="border-b border-default bg-elevated select-none sticky top-0 z-1">
             <tr class="*:py-3">
-              <th class="ps-4 pe-8">#</th>
-              <th class="">Name</th>
+              <th class="ps-4">#</th>
+              <th class="ps-4 pe-10">Name</th>
               <th class="ps-4">Email <span class="text-dimmed font-normal text-xs">(click to copy)</span></th>
               <th class="ps-4">Role</th>
               <th class="ps-4">Status</th>

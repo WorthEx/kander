@@ -51,7 +51,7 @@ const formattedDate = computed(_ => {
     <td class="select-none ps-4">
       {{ index }}
     </td>
-    <td class="select-none ps-4 pe-4">
+    <td class="select-none px-4">
       <span class="text-sm text-nowrap">{{ order.title }}</span>
     </td>
     <td class="select-none ps-4 pe-4">
