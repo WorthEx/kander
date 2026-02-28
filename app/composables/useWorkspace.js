@@ -1,11 +1,12 @@
 export const useWorkspace = () => {
 
-  const editTitle = async (title, wsId) => {
-    await $fetch(`/api/workspaces/${wsId}/change-title`, {
-      method: 'POST',
+  const editWorkspace = async (title, currency, wsId) => {
+    await $fetch(`/api/workspaces/${wsId}`, {
+      method: 'PATCH',
       credentials: 'include',
       body: {
-        title
+        title,
+        currency
       }
     })
   }
@@ -17,5 +18,5 @@ export const useWorkspace = () => {
     })
   }
 
-  return {editTitle, deleteWorkspace}
+  return {editWorkspace, deleteWorkspace}
 }

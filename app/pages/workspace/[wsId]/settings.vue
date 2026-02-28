@@ -7,8 +7,9 @@ definePageMeta({
 })
 
 const newWorkspaceTitle = ref("")
+const newWorkspaceCurrency = ref("")
 const newWorkspaceError = ref(null)
-const editingTitle = ref(false)
+const editingWorkspace = ref(false)
 
 const wsDeleteConfirmation = ref("")
 const deletingWorkspace = ref(false)
@@ -16,27 +17,30 @@ const deletingWorkspace = ref(false)
 const auth = useAuth()
 const toaster = useToast()
 const notif = useNotification(toaster)
-const {editTitle, deleteWorkspace} = useWorkspace()
+const {editWorkspace, deleteWorkspace} = useWorkspace()
 const {copy} = useClipboard()
 
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
-watch(currentWorkspace, _ => newWorkspaceTitle.value = currentWorkspace.value ? currentWorkspace.value.workspace.title : '')
+watch(currentWorkspace, _ => {
+  newWorkspaceTitle.value = currentWorkspace.value ? currentWorkspace.value.workspace.title : ''
+  newWorkspaceCurrency.value = currentWorkspace.value ? currentWorkspace.value.workspace.currency : ''
+})
 
 const workspaceTitleSchema = z.string()
   .min(1, "Workspace title must contain between 1 and 100 characters.")
   .max(100, "Workspace title must contain between 1 and 100 characters.")
 
-const submitEditTitle = async _ => {
-  if (newWorkspaceTitle.value === currentWorkspace.value.workspace.title) return
+const submitEditWorkspace = async _ => {
+  if (newWorkspaceTitle.value === currentWorkspace.value.workspace.title && newWorkspaceCurrency.value === currentWorkspace.value.workspace.currency) return
 
   if (auth.user.value && auth.user.value.role !== 'admin') {
     notif.info('You don\'t have permission for this operation. Please contact workspace supervisor.')
     return
   }
 
-  editingTitle.value = true
+  editingWorkspace.value = true
   try {
-    await editTitle(newWorkspaceTitle.value.trim(), currentWorkspace.value.workspace.id)
+    await editWorkspace(newWorkspaceTitle.value.trim(), newWorkspaceCurrency.value, currentWorkspace.value.workspace.id)
     clearNuxtState(['cachedWorkspaces'])
     await refreshNuxtData('currentWorkspace')
     await refreshNuxtData('workspaces')
@@ -44,7 +48,7 @@ const submitEditTitle = async _ => {
   } catch {
     notif.error("An issue occurred while editing workspace. Try again later.")
   } finally {
-    editingTitle.value = false
+    editingWorkspace.value = false
   }
 }
 
@@ -86,6 +90,7 @@ watch(newWorkspaceTitle, (newTitle) => {
 onMounted(_ => {
   if (currentWorkspace.value) {
     newWorkspaceTitle.value = currentWorkspace.value.workspace.title
+    newWorkspaceCurrency.value = currentWorkspace.value.workspace.currency
   }
 })
 </script>
@@ -109,9 +114,20 @@ onMounted(_ => {
                   placeholder="My private workspace"/>
         </UFormField>
       </div>
+      <USeparator/>
+      <div class="flex lg:flex-row flex-col lg:gap-4 gap-2 w-full">
+        <div class="flex flex-col w-full">
+          <span class="text-sm">Currency</span>
+          <span class="text-sm text-dimmed">Common for all order in this workspace</span>
+        </div>
+        <UFormField :error="newWorkspaceError" class="w-full" required>
+          <USelect v-model="newWorkspaceCurrency" :disabled="!currentWorkspace" :items="currencies"
+                   class="w-full rounded-xl px-3 py-2" labelKey="name" valueKey="code"/>
+        </UFormField>
+      </div>
       <template #footer>
-        <UButton :disabled="newWorkspaceError !== null" :loading="editingTitle"
-                 class="px-6 py-2 cursor-pointer w-fit rounded-full" @click.prevent="submitEditTitle">Save
+        <UButton :disabled="newWorkspaceError !== null" :loading="editingWorkspace"
+                 class="px-6 py-2 cursor-pointer w-fit rounded-full" @click.prevent="submitEditWorkspace">Save
         </UButton>
       </template>
     </SettingsSection>
