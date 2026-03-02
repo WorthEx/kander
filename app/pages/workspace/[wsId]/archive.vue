@@ -1,6 +1,5 @@
 <script setup>
-
-import {useArchive} from "~/composables/useArchive.js";
+import {getLocalTimeZone, today} from '@internationalized/date'
 
 definePageMeta({
   layout: 'dashboard',
@@ -16,7 +15,7 @@ const toaster = useToast()
 const notif = useNotification(toaster)
 const {sortState, toggleSort} = useSort()
 const nuxtApp = useNuxtApp()
-const {deleteAllOrders} = useArchive()
+const {deleteAllOrders, deleteOrdersInRange} = useArchive()
 
 const purgeDropdownItems = ref([
   {
@@ -24,12 +23,22 @@ const purgeDropdownItems = ref([
     onSelect: _ => deleteAllModalOpened.value = true
   },
   {
-    label: 'Delete all in range'
+    label: 'Delete all in range',
+    onSelect: _ => deleteOrdersInRangeModalOpened.value = true
   }
 ])
 const searchQuery = ref('')
 const deleteAllModalOpened = ref(false)
 const deletingAllOrders = ref(false)
+const deleteOrdersInRangeModalOpened = ref(false)
+const deletingOrdersInRange = ref(false)
+const fromDateInput = useTemplateRef('fromDateInput')
+const toDateInput = useTemplateRef('toDateInput')
+
+const deleteOrdersInRangeState = shallowReactive({
+  from: today(getLocalTimeZone()),
+  to: today(getLocalTimeZone())
+})
 
 // refreshes the archive after every operation
 const onDeleteOrder = async _ => {
@@ -48,6 +57,26 @@ const handleDeleteAllOrders = async _ => {
     notif.error("An issue occurred while wiping the archive. Try again later.")
   } finally {
     deletingAllOrders.value = false
+  }
+}
+
+const handleDeleteOrdersInRange = async _ => {
+  if (!deleteOrdersInRangeState.from || !deleteOrdersInRangeState.to) {
+    notif.error("Please select a valid date range.")
+    return
+  }
+  deletingOrdersInRange.value = true
+  try {
+    await deleteOrdersInRange(wsId.value,
+      deleteOrdersInRangeState.from.toDate(getLocalTimeZone()),
+      deleteOrdersInRangeState.to.toDate(getLocalTimeZone()))
+    deleteOrdersInRangeModalOpened.value = false
+    notif.success("Successfully deleted selected orders!")
+    await onDeleteOrder()
+  } catch {
+    notif.error("An issue occurred while deleting orders. Try again later.")
+  } finally {
+    deletingOrdersInRange.value = false
   }
 }
 
@@ -102,6 +131,7 @@ const currency = computed(() => currentWorkspace.value?.workspace?.currency)
 
 <template>
   <DashboardContainer>
+    <!--  wipe archive modal  -->
     <UModal v-model:open="deleteAllModalOpened"
             :ui="{ footer: 'justify-end gap-2', content: 'divide-none', body: 'py-2 sm:py-2' }"
             description="This operation is really risky"
@@ -121,6 +151,80 @@ const currency = computed(() => currentWorkspace.value?.workspace?.currency)
                  @click="handleDeleteAllOrders"/>
       </template>
     </UModal>
+    <!--  delete orders in range modal  -->
+    <UModal v-model:open="deleteOrdersInRangeModalOpened"
+            :ui="{ footer: 'justify-end gap-2', content: 'divide-none', body: 'py-2 sm:py-2' }"
+            description="This operation is really risky"
+            title="Hold up...">
+      <template #body>
+        <div class="flex flex-col gap-4">
+          <p class="text-sm">You are completely deleting orders in this range. Subsequently, <span
+            class="text-error font-semibold">
+          these orders will not be included in any reports</span>. This action cannot
+            be undone.</p>
+
+          <UForm :state="deleteOrdersInRangeState"
+                 :validate-on="['change', 'input']" class="space-y-4"
+                 @submit="handleDeleteOrdersInRange">
+            <div
+              class="flex max-xs:flex-col max-xs:*:*:*:w-full gap-2 w-full justify-evenly">
+              <UFormField label="From">
+                <UInputDate ref="fromDateInput" v-model="deleteOrdersInRangeState.from" class="rounded-xl py-2">
+                  <template #trailing>
+                    <UPopover :content="{
+                      side: 'bottom',
+                      sideOffset: 8,
+                      align:'center'
+                    }" :reference="fromDateInput?.inputsRef[3]?.$el">
+                      <UButton
+                        class="px-0"
+                        color="neutral"
+                        icon="i-ri-calendar-fill"
+                        size="sm"
+                        variant="link"
+                      />
+                      <template #content>
+                        <UCalendar v-model="deleteOrdersInRangeState.from" class="p-2"/>
+                      </template>
+                    </UPopover>
+                  </template>
+                </UInputDate>
+              </UFormField>
+              <UFormField label="To">
+                <UInputDate ref="toDateInput" v-model="deleteOrdersInRangeState.to" class="rounded-xl py-2">
+                  <template #trailing>
+                    <UPopover :content="{
+                      side: 'bottom',
+                      sideOffset: 8,
+                      align:'center'
+                    }" :reference="toDateInput?.inputsRef[3]?.$el">
+                      <UButton
+                        class="px-0"
+                        color="neutral"
+                        icon="i-ri-calendar-fill"
+                        size="sm"
+                        variant="link"
+                      />
+                      <template #content>
+                        <UCalendar v-model="deleteOrdersInRangeState.to" class="p-2"/>
+                      </template>
+                    </UPopover>
+                  </template>
+                </UInputDate>
+              </UFormField>
+            </div>
+
+            <div
+              class="flex pb-4 pt-2 justify-end max-sm:flex-col max-sm:w-full gap-2 *:cursor-pointer *:select-none *:px-4 *:py-2 *:justify-center">
+              <UButton class="rounded-xl py-2" color="neutral" label="Cancel" variant="outline"
+                       @click="deleteOrdersInRangeModalOpened = false"/>
+              <UButton :loading="deletingOrdersInRange" class="rounded-xl py-2" color="error" label="Delete"
+                       type="submit"/>
+            </div>
+          </UForm>
+        </div>
+      </template>
+    </UModal>
     <DashboardHeader>
       <template #title>
         Order archive
@@ -134,7 +238,8 @@ const currency = computed(() => currentWorkspace.value?.workspace?.currency)
             class: '*:*:*:pe-4 *:*:*:py-2 *:*:*:cursor-pointer'
           }"
           :items="purgeDropdownItems">
-          <UButton :disabled="!currentWorkspace || !archive" class="cursor-pointer px-4 py-2 rounded-full gap-2"
+          <UButton :disabled="!currentWorkspace || !archive || archive?.length < 1"
+                   class="cursor-pointer px-4 py-2 rounded-full gap-2"
                    color="error"
                    label="Purge">
             <template #trailing>

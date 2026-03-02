@@ -14,6 +14,16 @@ export const useArchive = () => {
     })
   }
 
+  const deleteOrdersInRange = async (wsId, from, to) => {
+    await $fetch(`/api/workspaces/${wsId}/archive/range`, {
+      method: 'DELETE',
+      credentials: 'include',
+      body: {
+        from,
+        to
+      }
+    })
+  }
 
-  return {deleteOrder, deleteAllOrders}
+  return {deleteOrder, deleteAllOrders, deleteOrdersInRange}
 }
