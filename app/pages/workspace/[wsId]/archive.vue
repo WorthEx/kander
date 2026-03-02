@@ -1,5 +1,4 @@
 <script setup>
-import {useServices} from "~/composables/useServices.js";
 
 definePageMeta({
   layout: 'dashboard',
@@ -13,7 +12,6 @@ const route = useRoute()
 const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
-const {addService} = useServices()
 const {sortState, toggleSort} = useSort()
 const nuxtApp = useNuxtApp()
 
@@ -74,6 +72,8 @@ const shownOrders = computed(() => {
 
   return result
 })
+
+const currency = computed(() => currentWorkspace.value?.workspace?.currency)
 </script>
 
 <template>
@@ -162,11 +162,12 @@ const shownOrders = computed(() => {
                          class="size-4"/>
                 </div>
               </th>
-              <th class="ps-4 pe-2">Actions</th>
+              <th class="ps-4 pe-4">Actions</th>
             </tr>
             </thead>
             <tbody class="divide-y divide-default *:even:bg-muted">
             <ArchiveTableRow v-for="(order, index) in shownOrders" :key="order.id"
+                             :currency
                              :index="index + 1"
                              :order
                              :style="{'animationDelay': `${index * 100}ms`}"

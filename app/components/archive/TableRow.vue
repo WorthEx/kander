@@ -5,6 +5,10 @@ import {useClipboard} from "@vueuse/core";
 const props = defineProps({
   order: Object,
   index: Number,
+  currency: {
+    type: String,
+    required: false
+  }
 })
 const emit = defineEmits(['delete-order'])
 
@@ -51,6 +55,12 @@ const formattedDate = computed(_ => {
 
   return `${day} ${month} ${year}`
 })
+
+const priceFormatter = new Intl.NumberFormat('en-US', {
+  minimumFractionDigits: 2,
+})
+
+const formattedTotalCost = computed(_ => priceFormatter.format(props.order.totalCost))
 </script>
 
 <template>
@@ -63,7 +73,7 @@ const formattedDate = computed(_ => {
     </td>
     <td class="select-none ps-4 pe-4">
       <div
-        class="flex sm:gap-8 gap-4 w-fit items-center transition-all hover:bg-muted sm:p-2 p-1 rounded-xl group cursor-pointer"
+        class="flex sm:gap-8 gap-4 w-fit items-center group cursor-pointer"
         @click="handleCopyCustomer">
         <div class="flex flex-col gap-1">
           <span class="text-sm text-nowrap">{{ order.customerName }}</span>
@@ -73,8 +83,10 @@ const formattedDate = computed(_ => {
       </div>
     </td>
     <td class="select-none ps-4 pe-4">
-      <span class="text-sm text-nowrap">{{ order.totalCost }}</span>
-      <!--  todo: add currency symbol    -->
+      <div class="inline-flex items-end gap-1.5 text-sm">
+        <span class="text-nowrap">{{ formattedTotalCost }}</span>
+        <span class="">{{ currency }}</span>
+      </div>
     </td>
     <td class="select-none ps-4 pe-4">
       <span class="text-sm text-nowrap">{{ formattedDate }}</span>
