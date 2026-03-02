@@ -118,7 +118,7 @@ onMounted(_ => {
       <div class="flex lg:flex-row flex-col lg:gap-4 gap-2 w-full">
         <div class="flex flex-col w-full">
           <span class="text-sm">Currency</span>
-          <span class="text-sm text-dimmed">Common for all order in this workspace</span>
+          <span class="text-sm text-dimmed">Common for every order in this workspace</span>
         </div>
         <UFormField :error="newWorkspaceError" class="w-full" required>
           <USelect v-model="newWorkspaceCurrency" :disabled="!currentWorkspace" :items="currencies"

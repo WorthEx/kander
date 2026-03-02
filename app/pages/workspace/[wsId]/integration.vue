@@ -200,7 +200,7 @@ const apiDocs = computed(_ => [
       <template #title>
         <div class="inline-flex gap-2 items-center">
           <span>Integration</span>
-          <UBadge class="rounded-full" color="info" variant="subtle">Experimental</UBadge>
+          <!--          <UBadge class="rounded-full" color="info" variant="subtle">Experimental</UBadge>-->
         </div>
       </template>
       <template #description>Kander provides an API for integration with your applications and chatbots.</template>
