@@ -1,5 +1,7 @@
 <script setup>
 
+import {useArchive} from "~/composables/useArchive.js";
+
 definePageMeta({
   layout: 'dashboard',
   pageTransition: {
@@ -14,17 +16,39 @@ const toaster = useToast()
 const notif = useNotification(toaster)
 const {sortState, toggleSort} = useSort()
 const nuxtApp = useNuxtApp()
+const {deleteAllOrders} = useArchive()
 
 const purgeDropdownItems = ref([
-  {label: 'Delete all'},
-  {label: 'Delete all in range'}
+  {
+    label: 'Delete all',
+    onSelect: _ => deleteAllModalOpened.value = true
+  },
+  {
+    label: 'Delete all in range'
+  }
 ])
 const searchQuery = ref('')
+const deleteAllModalOpened = ref(false)
+const deletingAllOrders = ref(false)
 
+// refreshes the archive after every operation
 const onDeleteOrder = async _ => {
   nuxtApp.payload.data[`archive-${wsId.value}`] = undefined
   await refreshArchive()
-  console.log('refreshed')
+}
+
+const handleDeleteAllOrders = async _ => {
+  deletingAllOrders.value = true
+  try {
+    await deleteAllOrders(wsId.value)
+    deleteAllModalOpened.value = false
+    notif.success("Successfully wiped order archive!")
+    await onDeleteOrder()
+  } catch {
+    notif.error("An issue occurred while wiping the archive. Try again later.")
+  } finally {
+    deletingAllOrders.value = false
+  }
 }
 
 const {
@@ -78,6 +102,25 @@ const currency = computed(() => currentWorkspace.value?.workspace?.currency)
 
 <template>
   <DashboardContainer>
+    <UModal v-model:open="deleteAllModalOpened"
+            :ui="{ footer: 'justify-end gap-2', content: 'divide-none', body: 'py-2 sm:py-2' }"
+            description="This operation is really risky"
+            title="Hold up...">
+      <template #body>
+        <p class="text-sm">You are completely wiping order archive. Subsequently, <span
+          class="text-error font-semibold">these orders will not be included in any reports</span>. This action cannot
+          be
+          undone.</p>
+      </template>
+
+      <template #footer="{close}">
+        <UButton class="cursor-pointer rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline"
+                 @click="close"/>
+        <UButton :loading="deletingAllOrders"
+                 class="cursor-pointer rounded-xl px-4 py-2" color="error" label="Delete"
+                 @click="handleDeleteAllOrders"/>
+      </template>
+    </UModal>
     <DashboardHeader>
       <template #title>
         Order archive

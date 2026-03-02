@@ -7,5 +7,13 @@ export const useArchive = () => {
     })
   }
 
-  return {deleteOrder}
+  const deleteAllOrders = async (wsId) => {
+    await $fetch(`/api/workspaces/${wsId}/archive`, {
+      method: 'DELETE',
+      credentials: 'include',
+    })
+  }
+
+
+  return {deleteOrder, deleteAllOrders}
 }
