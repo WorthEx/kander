@@ -1,5 +1,6 @@
 <script setup>
 import {useArchive} from "~/composables/useArchive.js";
+import {useClipboard} from "@vueuse/core";
 
 const props = defineProps({
   order: Object,
@@ -12,9 +13,15 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {deleteOrder} = useArchive()
+const {copy} = useClipboard()
 
 const deleteModalOpened = ref(false)
 const deletingOrder = ref(false)
+
+const handleCopyCustomer = _ => {
+  copy(`${props.order.customerName} (${props.order.customerPhone})`)
+  notif.info('Customer data copied to clipboard!')
+}
 
 const handleDeleteOrder = async _ => {
   deletingOrder.value = true
@@ -55,9 +62,14 @@ const formattedDate = computed(_ => {
       <span class="text-sm text-nowrap">{{ order.title }}</span>
     </td>
     <td class="select-none ps-4 pe-4">
-      <div class="flex flex-col gap-2">
-        <span class="text-sm text-nowrap">{{ order.customerName }}</span>
-        <span class="text-xs text-nowrap text-dimmed">{{ order.customerPhone }}</span>
+      <div
+        class="flex sm:gap-8 gap-4 w-fit items-center transition-all hover:bg-muted sm:p-2 p-1 rounded-xl group cursor-pointer"
+        @click="handleCopyCustomer">
+        <div class="flex flex-col gap-1">
+          <span class="text-sm text-nowrap">{{ order.customerName }}</span>
+          <span class="text-xs text-nowrap text-dimmed">{{ order.customerPhone }}</span>
+        </div>
+        <UIcon class="size-4 text-muted opacity-0 group-hover:opacity-100 transition-all" name="i-ri-file-copy-line"/>
       </div>
     </td>
     <td class="select-none ps-4 pe-4">
