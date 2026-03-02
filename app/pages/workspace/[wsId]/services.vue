@@ -102,6 +102,8 @@ const shownServices = computed(() => {
 
   return result
 })
+
+const currency = computed(() => currentWorkspace.value?.workspace?.currency)
 </script>
 
 <template>
@@ -200,6 +202,7 @@ const shownServices = computed(() => {
             </thead>
             <tbody class="divide-y divide-default *:even:bg-muted">
             <ServiceTableRow v-for="(service, index) in shownServices" :key="service.id"
+                             :currency
                              :index="index + 1"
                              :isCurrentUserAdmin="currentWorkspace.workspaceMember.role === 'admin'"
                              :service

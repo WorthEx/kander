@@ -56,11 +56,7 @@ const formattedDate = computed(_ => {
   return `${day} ${month} ${year}`
 })
 
-const priceFormatter = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 2,
-})
-
-const formattedTotalCost = computed(_ => priceFormatter.format(props.order.totalCost))
+const formattedTotalCost = computed(_ => formatPrice(props.order.totalCost))
 </script>
 
 <template>
@@ -85,7 +81,7 @@ const formattedTotalCost = computed(_ => priceFormatter.format(props.order.total
     <td class="select-none ps-4 pe-4">
       <div class="inline-flex items-end gap-1.5 text-sm">
         <span class="text-nowrap">{{ formattedTotalCost }}</span>
-        <span class="">{{ currency }}</span>
+        <span class="text-dimmed">{{ currency }}</span>
       </div>
     </td>
     <td class="select-none ps-4 pe-4">

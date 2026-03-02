@@ -6,6 +6,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  currency: {
+    type: String,
+    required: false
+  }
 })
 const emit = defineEmits(['update-service'])
 
@@ -44,6 +48,7 @@ const saveService = async _ => {
   }
 }
 
+const formattedPrice = computed(_ => formatPrice(props.service.basePrice))
 </script>
 
 <template>
@@ -55,7 +60,10 @@ const saveService = async _ => {
       <span class="text-sm text-nowrap">{{ service.title }}</span>
     </td>
     <td class="select-none ps-4 pe-10">
-      <span class="text-sm text-nowrap">{{ service.basePrice }}</span>
+      <div class="inline-flex items-end gap-1.5 text-sm">
+        <span class="text-sm text-nowrap">{{ formattedPrice }}</span>
+        <span>{{ currency }}</span>
+      </div>
     </td>
     <td class="select-none ps-4 pe-4">
       <UBadge :color="service.isArchived ? 'neutral' : 'success'" :label="service.isArchived ? 'Archived' : 'Active'"
