@@ -109,8 +109,8 @@ const isMobile = computed(_ => {
 <template>
   <UPage class="pb-20">
     <div
-      class="absolute animate-pulse animate-duration-5000 border
-          bg-secondary w-[80%] h-25 inset-x-1/2 -translate-x-1/2 -top-40 rounded-full drop-shadow-2xl drop-shadow-primary blur-[25rem]"/>
+      class="absolute animate-pulse animate-duration-10000 animate-ease-in-out
+          bg-primary w-full h-30 inset-x-1/2 -translate-x-1/2 -top-40 max-xs:-top-20 rounded-full drop-shadow-2xl drop-shadow-primary blur-[30rem] max-xs:blur-[20rem]"/>
     <UPageHero
       class="animate-fade-up animate-ease-out animate-duration-1000 *:lg:py-20"
       description="A tool making order management as effortless as you can imagine with kanban-styled boards for ur team or your precious self"
