@@ -32,6 +32,9 @@ const props = defineProps({
   },
   price: {
     type: String,
+  },
+  source: {
+    type: String
   }
 })
 
@@ -96,7 +99,8 @@ const overdue = computed(() => (new Date() - props.due) <= 0)
         </div>
       </div>
       <div class="flex gap-1 flex-wrap">
-        <PriorityChip :priority/>
+        <DemoPriorityChip :priority/>
+        <DemoSourceChip :source/>
       </div>
       <!--   footer   -->
       <USeparator class="h-px mt-4"/>

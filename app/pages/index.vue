@@ -15,7 +15,8 @@ const demoList1 = ref([
     priority: Priority.Low,
     due: new Date(new Date().setDate(new Date().getDate() - 13)),
     numberOfLinks: 2,
-    price: "40 000"
+    price: "40 000",
+    source: 'api'
   },
   {
     id: 'bgfjfjg',
@@ -26,7 +27,8 @@ const demoList1 = ref([
     priority: Priority.Medium,
     due: new Date(new Date().setDate(new Date().getDate() - 6)),
     numberOfLinks: 3,
-    price: "20 000"
+    price: "20 000",
+    source: 'manual'
   },
   {
     id: 'cfgjfgj',
@@ -37,7 +39,8 @@ const demoList1 = ref([
     priority: Priority.Low,
     due: new Date(new Date().setDate(new Date().getDate() - 9)),
     numberOfLinks: 3,
-    price: "50 000"
+    price: "50 000",
+    source: 'api'
   },
 ])
 const demoList2 = ref([
@@ -50,7 +53,8 @@ const demoList2 = ref([
     priority: Priority.High,
     due: new Date(new Date().setDate(new Date().getDate() - 1)),
     numberOfLinks: 4,
-    price: "120 000"
+    price: "120 000",
+    source: 'manual'
   },
   {
     id: 'bfhkfhk',
@@ -61,7 +65,8 @@ const demoList2 = ref([
     priority: Priority.High,
     due: new Date(),
     numberOfLinks: 2,
-    price: "150 000"
+    price: "150 000",
+    source: 'api'
   },
 ])
 const demoKanban = ref([
@@ -172,7 +177,8 @@ const isMobile = computed(_ => {
                           :orderPositionCount="element.orderPositionCount"
                           :price="element.price"
                           :priority="element.priority"
-                          :progressPercent="element.progressPercent" :title="element.title"/>
+                          :progressPercent="element.progressPercent"
+                          :source="element.source" :title="element.title"/>
               </template>
             </Draggable>
           </div>
