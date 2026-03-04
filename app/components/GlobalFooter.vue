@@ -22,7 +22,7 @@
 
     <template #right>
       <div class="flex justify-center">
-        <UColorModeSelect class=""/>
+        <UColorModeSelect class="rounded-full" variant="ghost"/>
       </div>
     </template>
   </UFooter>
