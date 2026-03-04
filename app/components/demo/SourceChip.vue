@@ -10,7 +10,7 @@ const color = ref("")
 switch (props.source) {
   case 'api':
     icon.value = "i-ri-code-view"
-    color.value = "info"
+    color.value = "quinary"
     break
   case 'manual':
     icon.value = "i-ri-customer-service-2-fill"

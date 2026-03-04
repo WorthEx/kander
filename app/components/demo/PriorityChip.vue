@@ -18,7 +18,7 @@ switch (props.priority) {
     break
   default:
     icon.value = "i-ri-arrow-down-s-line"
-    color.value = "tertiary"
+    color.value = "info"
     break
 }
 </script>

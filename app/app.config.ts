@@ -3,7 +3,9 @@ export default defineAppConfig({
     colors: {
       primary: 'amber',
       secondary: 'orange',
-      tertiary: 'lime',
+      tertiary: 'yellow',
+      quaternary: 'lime',
+      quinary: 'green',
       neutral: 'neutral',
     },
   }

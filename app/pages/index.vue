@@ -151,10 +151,8 @@ const isMobile = computed(_ => {
             <div
               class="w-full ps-3 pe-2 py-3 select-none flex flex-row items-center justify-between gap-2">
               <div class="flex gap-2 items-center">
-                <div v-if="columnIndex===1" class="rounded-full ring ring-neutral-500 size-2">
-                  <div class="bg-neutral-500 w-1 h-2 rounded-s-full"></div>
-                </div>
-                <div v-else class="rounded-full ring ring-neutral-500 size-2"/>
+                <div v-if="columnIndex === 1" class="rounded-full bg-primary size-2.5"/>
+                <div v-else class="rounded-full bg-secondary size-2.5"/>
                 <span class="font-semibold text-sm text-muted">{{ column.title }}</span>
                 <div class="dark:bg-elevated/50 bg-muted rounded-lg px-2 py-0.5 text-sm font-semibold text-muted">
                   {{ column.orders.length }}

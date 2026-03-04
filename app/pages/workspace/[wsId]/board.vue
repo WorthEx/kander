@@ -5,13 +5,7 @@ definePageMeta({
 </script>
 
 <template>
-  <DashboardContainer>
-    <DashboardHeader>
-      <template #title>
-        Kanban should be displayed here
-      </template>
-    </DashboardHeader>
-  </DashboardContainer>
+  <div class="bg-muted size-full"></div>
 </template>
 
 <style scoped>

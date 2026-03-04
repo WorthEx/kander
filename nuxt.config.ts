@@ -39,6 +39,8 @@ export default defineNuxtConfig({
         'primary',
         'secondary',
         'tertiary',
+        'quaternary',
+        'quinary',
         'info',
         'success',
         'warning',
