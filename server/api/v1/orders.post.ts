@@ -13,6 +13,8 @@ export default defineEventHandler(async (event) => {
   })
   if (!systemColumn) throw createError({statusCode: 400, statusMessage: 'No system column found.'})
 
+  const assignedManagerId = await assignNextManager(wsId) // user.id of assigned manager
+
   try {
     return await prisma.order.create({
       data: {
@@ -25,6 +27,9 @@ export default defineEventHandler(async (event) => {
             data: [...body.items]
           }
         },
+        responsibles: assignedManagerId ? {
+          connect: [{id: assignedManagerId}]
+        } : {connect: []},
         source: 'api'
       },
       include: {

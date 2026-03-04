@@ -69,7 +69,7 @@ model Workspace {
   id                    String  @id @default(uuid())
   title                 String
   apiKey                String? @unique
-  lastAssignedManagerId String?
+  lastAssignedManagerId String? // User id of employee the last order was assigned to
   defaultCountryCode    String?
   currency              String? @default("USD")
 

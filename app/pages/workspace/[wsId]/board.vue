@@ -5,7 +5,12 @@ definePageMeta({
 </script>
 
 <template>
-  <div class="bg-muted size-full"></div>
+  <div class="bg-muted size-full">
+    <DashboardHeader>
+      <template #title>Board</template>
+      <template #description></template>
+    </DashboardHeader>
+  </div>
 </template>
 
 <style scoped>
