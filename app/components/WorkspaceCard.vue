@@ -11,7 +11,7 @@ const props = defineProps<{
 <template>
   <NuxtLink :to="`/workspace/${wsId}/board`">
     <div
-      class="flex flex-col gap-2 ring-1 ring-accented/80 rounded-lg p-5 bg-muted/70 select-none
+      class="flex flex-col gap-2 ring ring-default rounded-lg p-5 bg-muted/70 select-none
     hover:ring-primary active:scale-99 cursor-pointer transition-all">
       <div class="flex flex-col">
         <span class="font-semibold">{{ title }}</span>
