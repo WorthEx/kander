@@ -13,6 +13,7 @@ const toaster = useToast()
 const notif = useNotification(toaster)
 const {addService} = useServices()
 const {sortState, toggleSort} = useSort()
+const nuxtApp = useNuxtApp()
 
 
 const addModalOpened = ref(false)
@@ -43,9 +44,10 @@ const submitAddService = async event => {
       basePrice: event.data.basePrice,
     }, wsId.value)
     resetAddForm()
+    notif.success("A service has been added!")
+    nuxtApp.payload.data[`services-${wsId.value}`] = undefined
     await refreshServices()
     addModalOpened.value = false
-    notif.success("A service has been added!")
   } catch {
     notif.error("An issue occurred while adding a service. Try again later.")
   } finally {
@@ -54,6 +56,7 @@ const submitAddService = async event => {
 }
 
 const onUpdateService = async _ => {
+  nuxtApp.payload.data[`services-${wsId.value}`] = undefined
   await refreshServices()
 }
 

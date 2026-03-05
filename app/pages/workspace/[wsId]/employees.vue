@@ -12,6 +12,7 @@ const notif = useNotification(toaster)
 const {addEmployee} = useEmployees()
 const workspaces = useWorkspaces()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
+const nuxtApp = useNuxtApp()
 
 const addEmployeeModalOpened = ref(false)
 const addEmployeeError = ref(null)
@@ -31,9 +32,10 @@ const submitAddEmployee = async _ => {
     await addEmployee(addEmployeeEmail.value, wsId.value)
     workspaces.cachedWorkspaces.value = []
     addEmployeeModalOpened.value = false
-    await refreshNuxtData(`employees-${wsId.value}`)
-    addEmployeeEmail.value = ''
     notif.success("Successfully added new employee!")
+    nuxtApp.payload.data[`employees-${wsId.value}`] = undefined
+    await refreshEmployees()
+    addEmployeeEmail.value = ''
   } catch {
     notif.error("An issue occurred while adding new employee. Try again later.")
   } finally {
@@ -42,6 +44,7 @@ const submitAddEmployee = async _ => {
 }
 
 const onUpdateEmployee = async _ => {
+  nuxtApp.payload.data[`employees-${wsId.value}`] = undefined
   await refreshEmployees()
 }
 

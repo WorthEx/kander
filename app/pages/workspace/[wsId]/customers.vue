@@ -11,6 +11,7 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {addCustomer} = useCustomers()
+const nuxtApp = useNuxtApp()
 
 const addModalOpened = ref(false)
 const searchQuery = ref('')
@@ -79,9 +80,10 @@ const submitAddCustomer = async event => {
       postalCode: event.data.postalCode.trim(),
     }, wsId.value)
     resetAddForm()
-    await refreshCustomers()
     addModalOpened.value = false
     notif.success("A new customer has been added!")
+    nuxtApp.payload.data[`customers-${wsId.value}`] = undefined
+    await refreshCustomers()
   } catch {
     notif.error("An issue occurred while adding a customer. Try again later.")
   } finally {
