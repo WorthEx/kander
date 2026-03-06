@@ -118,6 +118,7 @@ model Order {
   priority    OrderPriority @default(medium)
   source      OrderSource   @default(manual)
   isArchived  Boolean       @default(false)
+  position    String?
 
   creator   User?   @relation("OrderCreator", fields: [creatorId], references: [id])
   creatorId String?
