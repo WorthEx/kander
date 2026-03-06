@@ -14,7 +14,15 @@ export default defineEventHandler(async (event) => {
         workspaceId: wsId
       }
     },
-    update: {},
+    update: {
+      fullName: body.fullName,
+      countryCode: body.countryCode,
+      city: body.city,
+      region: body.region,
+      addressLine1: body.addressLine1,
+      addressLine2: body.addressLine2,
+      postalCode: body.postalCode,
+    },
     create: {
       fullName: body.fullName,
       phone: body.phone,
