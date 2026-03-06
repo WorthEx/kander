@@ -192,6 +192,14 @@ const apiDocs = computed(_ => [
     status: 'tbd'
   }
 ])
+
+const linkItems = computed(_ => [
+  {
+    title: 'A list of countries with codes',
+    description: 'Required for new customer entity',
+    link: 'https://gist.githubusercontent.com/keeguon/2310008/raw/bdc2ce1c1e3f28f9cab5b4393c7549f38361be4e/countries.json'
+  }
+])
 </script>
 
 <template>
@@ -305,6 +313,16 @@ const apiDocs = computed(_ => [
                          :description="item.description" :method="item.method" :pathParams="item.pathParams"
                          :route="item.route" :status="item.status"
                          :title="item.title"/>
+      </div>
+    </section>
+
+    <section class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1 w-full">
+        <span class="text-lg">Links</span>
+        <p class="text-dimmed text-sm">Additional data required for some endpoints</p>
+      </div>
+      <div class="flex flex-col gap-4 w-full">
+        <LinkItem v-for="(linkItem, index) in linkItems" :key="index" :linkItem/>
       </div>
     </section>
   </DashboardContainterSm>
