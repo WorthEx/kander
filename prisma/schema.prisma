@@ -87,7 +87,7 @@ model Service {
   basePrice  Float
   isArchived Boolean @default(false)
 
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId String
 
   orderItems OrderItem[]
@@ -98,6 +98,7 @@ model Service {
 model Column {
   id       String  @id @default(uuid())
   title    String
+  position Int     @default(1)
   // There must always be only one system column for Backlog
   isSystem Boolean @default(false)
 
@@ -188,7 +189,7 @@ model Customer {
   addressLine2 String?
   postalCode   String?
 
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId String
 
   orders Order[]
