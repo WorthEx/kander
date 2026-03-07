@@ -57,5 +57,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     resendKey: '',
     jwtSecret: ''
+  },
+  nitro: {
+    experimental: {
+      websocket: true
+    }
   }
 })
