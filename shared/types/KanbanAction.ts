@@ -1,7 +1,6 @@
-export type KanbanAction = {
-  workspaceId: string
-  entityId: string,
+export interface KanbanAction {
+  entityId: string
   entity: 'column' | 'order'
-  action: 'create' | 'update' | 'delete' | 'move'
+  action: 'create' | 'update' | 'delete'
   data: any
 }
