@@ -4,17 +4,34 @@ import Draggable from 'vuedraggable'
 definePageMeta({
   layout: 'dashboard',
 })
-const {data: currentWorkspace} = useNuxtData('currentWorkspace')
+
 const route = useRoute()
 const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
-const nuxtApp = useNuxtApp()
 const {fetchOrders, loadingOrders, cachedOrderColumns} = useOrders()
+const {data: currentWorkspace} = useNuxtData('currentWorkspace')
+const {addColumn} = useColumns()
+
+const newButtonDropdownItems = computed(_ => [
+  {
+    label: 'Order',
+    onSelect: _ => newOrderSlideoverOpened.value = true
+  },
+  {
+    label: 'Column',
+    onSelect: _ => {
+      if (cachedOrderColumns.value.length === 7) {
+        notif.info("You cannot add more than 7 columns. Sorry, we're really broke.")
+        return
+      }
+      newColumnSlideoverOpened.value = true
+    },
+    disabled: currentWorkspace.value?.workspaceMember?.role !== 'admin'
+  },
+])
 
 const searchQuery = ref("")
-const newOrderSlideoverOpened = ref(false)
-const settingsSlideoverOpened = ref(false)
 const activeTab = ref('kanban')
 const tabItems = [
   {
@@ -35,9 +52,33 @@ const onlineStatus = ref('pending')
 const columnColors = ['bg-secondary outline-secondary', 'bg-primary outline-primary', 'bg-tertiary outline-tertiary', 'bg-quaternary outline-quaternary', 'bg-quinary outline-quinary']
 const searchExpanded = ref(false)
 
+const newOrderSlideoverOpened = ref(false)
+const settingsSlideoverOpened = ref(false)
+const newColumnSlideoverOpened = ref(false)
+const newColumnTitle = ref('')
+const addingColumn = ref(false)
+
 const refresh = async _ => {
   await fetchOrders(wsId.value)
 }
+
+const handleAddColumn = async _ => {
+  if (newColumnTitle.value.trim() === '') return
+  addingColumn.value = true
+  try {
+    await addColumn(newColumnTitle.value, wsId.value)
+    // todo send event to broadcast column adding
+    notif.success("Successfully added new column!")
+  } catch {
+    notif.error("An issue occurred while adding new column. Try again later.")
+  } finally {
+    addingColumn.value = true
+    newColumnTitle.value = ''
+    newColumnSlideoverOpened.value = false
+  }
+}
+
+watch(currentWorkspace, _ => console.log(currentWorkspace.value))
 
 onMounted(async _ => {
   if (wsId.value) {
@@ -58,13 +99,18 @@ const foundOrders = computed(() => {
       .map(order => order.id)
   );
 })
-
 const onlineIndicatorClasses = computed(_ => [
   onlineIndicatorColor === 'success' && 'animate-pulse',
   `bg-${onlineIndicatorColor.value}`,
 ])
 const isMobile = computed(_ => {
   if (import.meta.client) return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+})
+const getCurrencySymbol = computed(_ => {
+  if (!currentWorkspace.value) return ""
+  const currencyObject = currencies.find(currency => currency.code === currentWorkspace.value?.workspace?.currency)
+  if (!currencyObject) return currentWorkspace.value?.workspace?.currency
+  return currencyObject.symbol_native
 })
 
 watch(searchQuery, async _ => {
@@ -112,24 +158,40 @@ watch(searchQuery, async _ => {
             <div :class="onlineIndicatorClasses" class="size-2 rounded-full"/>
             <span class="uppercase text-xs text-toned ">{{ onlineStatus }}</span>
           </div>
-          <UButton class="xs:px-4 px-2.5 xs:py-2 py-2.5 rounded-xl cursor-pointer" color="primary"
-                   @click="newOrderSlideoverOpened = true">
-            <template #trailing>
-              <UIcon class="size-4.5" name="i-ri-add-fill"/>
-            </template>
-            <template #default>
-              <span class="max-xs:hidden">New</span>
-            </template>
-          </UButton>
+          <UDropdownMenu
+            :content="{
+            align: 'end',
+            side: 'bottom',
+            sideOffset: 8,
+            class: '*:*:*:pe-8 *:*:*:ps-2 *:*:*:py-2 *:*:*:cursor-pointer *:*:*:min-w-32 rounded-xl'
+          }"
+            :items="newButtonDropdownItems">
+            <UButton class="xs:px-4 px-2.5 xs:py-2 py-2.5 rounded-xl cursor-pointer" color="primary">
+              <template #trailing>
+                <UIcon class="size-4.5" name="i-ri-add-fill"/>
+              </template>
+              <template #default>
+                <span class="max-xs:hidden">New</span>
+              </template>
+            </UButton>
+          </UDropdownMenu>
         </div>
       </div>
     </header>
-    <section v-if="cachedOrderColumns && !loadingOrders" class="size-full">
+    <UAlert
+      v-if="searchQuery.length > 0"
+      :title="`Found ${foundOrders.length} orders for '${searchQuery}'`"
+      class="rounded-xl"
+      color="neutral"
+      icon="i-ri-search-2-line"
+      variant="subtle"
+    />
+    <section v-if="cachedOrderColumns && !loadingOrders && currentWorkspace" class="size-full">
       <div v-if="activeTab === 'kanban'" class="size-full">
         <div
           class="size-full xs:divide-x divide-accented/50 dark:bg-muted bg-accented/50 rounded-2xl animate-fade-up animate-ease-out flex overflow-x-auto snap-x *:snap-start snap-mandatory">
           <div v-for="(column, columnIndex) in cachedOrderColumns"
-               class="flex flex-col 2xl:min-w-1/6 2xl:w-full xl:min-w-1/4 lg:min-w-1/3 sm:min-w-1/2 min-w-full relative group">
+               class="flex flex-col 2xl:min-w-1/6 2xl:w-full xl:min-w-1/4 lg:min-w-1/3 sm:min-w-1/2 min-w-full relative group snap-always">
             <div
               class="w-full ps-4 pe-2 py-3 select-none flex flex-row items-center justify-between gap-2">
               <div class="flex gap-3 items-center">
@@ -154,6 +216,7 @@ watch(searchQuery, async _ => {
               item-key="id">
               <template #item="{element}">
                 <OrderCard :key="element.id"
+                           :currencySymbol="getCurrencySymbol"
                            :customerName="element.customer.fullName"
                            :dimmed="!foundOrders.includes(element.id) && searchQuery.length > 0"
                            :due="element.deadline" :items="element.items" :numberOfLinks="element.links.length"
@@ -188,6 +251,27 @@ watch(searchQuery, async _ => {
       <USkeleton v-for="(_, i) in 5" :style="{'animationDelay': `${i * 300}ms`}"
                  class="max-md:w-full w-1/5 max-md:h-56 h-full rounded-lg"/>
     </section>
+    <USlideover v-model:open="newColumnSlideoverOpened" title="New kanban column">
+      <template #body="{close}">
+        <UFormField label="Column title" name="title">
+          <UInput v-model="newColumnTitle" class="w-full [&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2"/>
+        </UFormField>
+        <div
+          class="flex mt-4 justify-end w-full max-sm:*:w-full gap-2 *:cursor-pointer *:select-none *:justify-center">
+          <UButton class="rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline" @click="_ => {
+                  close()
+                  newColumnTitle = ''
+                }"/>
+          <UButton :disabled="newColumnTitle.trim().length < 1" :loading="addingColumn" class="rounded-xl px-6 py-2"
+                   label="Add" @click="handleAddColumn"/>
+        </div>
+      </template>
+    </USlideover>
+    <USlideover v-model:open="newOrderSlideoverOpened" :ui="{content: 'max-w-lg'}">
+      <template #body>
+        <div class="">bruh</div>
+      </template>
+    </USlideover>
   </div>
 </template>
 
