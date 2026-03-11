@@ -2,8 +2,9 @@ import type {KanbanAction} from "#shared/types/KanbanAction";
 import type {ChatAction} from "#shared/types/ChatAction";
 
 export type WSEvent = {
-  type: 'subscribe' | 'unsubscribe' | 'kanban' | 'chat' | 'error'
+  type: 'subscribe' | 'subscribed' | 'kanban' | 'chat'
   workspaceId: string
+  timestamp: number
   data?: KanbanAction | ChatAction
-  createdAt: Date
+  userId?: string // the one who initiated the event
 }
