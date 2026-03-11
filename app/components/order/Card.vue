@@ -9,6 +9,7 @@ const props = defineProps({
   totalCost: Number,
   source: String,
   dimmed: Boolean,
+  currencySymbol: String
 })
 
 const getDate = computed(_ => {
@@ -43,7 +44,9 @@ const progressPercent = computed(() => {
         class="paper px-4 pt-4 pb-5 dark:bg-elevated/50 bg-muted hover:dark:bg-elevated hover:bg-default rounded-lg cursor-grab active:cursor-grabbing transition-colors relative
       select-none flex flex-col gap-2">
         <div class="flex justify-between items-center">
-          <span class="uppercase font-bold">{{ totalCost }}</span>
+          <span class="uppercase font-bold"><span class="text-muted/80">{{ currencySymbol }}</span> {{
+              formatPrice(totalCost)
+            }}</span>
           <UBadge v-if="overdue" class="w-fit" color="error" variant="subtle">
             <template #leading>
               <UIcon name="i-ri-flag-line"/>
