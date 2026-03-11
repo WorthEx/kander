@@ -10,9 +10,11 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const nuxtApp = useNuxtApp()
+const {fetchOrders, loadingOrders, cachedOrderColumns} = useOrders()
 
 const searchQuery = ref("")
-const newOrderModalOpened = ref(false)
+const newOrderSlideoverOpened = ref(false)
+const settingsSlideoverOpened = ref(false)
 const activeTab = ref('kanban')
 const tabItems = [
   {
@@ -31,20 +33,32 @@ const tabItems = [
 const onlineIndicatorColor = ref('warning')
 const onlineStatus = ref('pending')
 const columnColors = ['bg-secondary outline-secondary', 'bg-primary outline-primary', 'bg-tertiary outline-tertiary', 'bg-quaternary outline-quaternary', 'bg-quinary outline-quinary']
+const searchExpanded = ref(false)
 
 const refresh = async _ => {
-  await refreshOrders()
+  await fetchOrders(wsId.value)
 }
 
-const {
-  data: kanbanColumns,
-  pending: loadingOrders,
-  refresh: refreshOrders,
-} = await useLazyFetch(_ => `/api/workspaces/${wsId.value}/orders`, {
-  server: false,
-  key: `orders-${wsId.value}`,
-  watch: [wsId],
+onMounted(async _ => {
+  if (wsId.value) {
+    loadingOrders.value = true
+    await fetchOrders(wsId.value)
+    loadingOrders.value = false
+  }
 })
+const foundOrders = computed(() => {
+  if (!cachedOrderColumns.value) return [];
+
+  return cachedOrderColumns.value.flatMap(column =>
+    column.orders
+      .filter(order => {
+        return order.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+          order.customer.fullName.toLowerCase().includes(searchQuery.value.toLowerCase())
+      })
+      .map(order => order.id)
+  );
+})
+
 const onlineIndicatorClasses = computed(_ => [
   onlineIndicatorColor === 'success' && 'animate-pulse',
   `bg-${onlineIndicatorColor.value}`,
@@ -52,21 +66,28 @@ const onlineIndicatorClasses = computed(_ => [
 const isMobile = computed(_ => {
   if (import.meta.client) return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 })
+
+watch(searchQuery, async _ => {
+  searchExpanded.value = searchQuery.value.length > 0
+})
+
 </script>
 
 <template>
-  <div :class="{'h-fit': !loadingOrders && kanbanColumns?.length > 0}"
+  <div :class="{'h-fit': !loadingOrders && cachedOrderColumns?.length > 0}"
        class="flex flex-col gap-4 pb-0 size-full">
     <header class="flex max-lg:flex-col-reverse lg:justify-between gap-4 lg:items-center w-full">
       <div class="flex items-center gap-2">
         <UTabs v-model="activeTab" :content="false" :items="tabItems"
-               class="**:cursor-pointer max-lg:w-full max-lg:*:*:nth-3:w-full max-lg:*:*:nth-2:w-full" variant="link"/>
+               class="**:cursor-pointer max-lg:w-full max-lg:*:*:nth-3:w-full max-lg:*:*:nth-2:w-full *:*:ease-out"
+               variant="link"/>
       </div>
       <div class="flex w-full items-center justify-between gap-2">
         <UInput v-model="searchQuery"
                 class="w-full lg:max-w-md [&>input]:rounded-xl [&>input]:ps-10 [&>input]:pe-10 [&>input]:py-2"
                 leadingIcon="i-ri-search-line"
-                placeholder="Search..." variant="soft">
+                placeholder="Search..."
+                variant="soft">
           <template v-if="searchQuery?.length" #trailing>
             <UButton
               aria-label="Clear input"
@@ -79,20 +100,20 @@ const isMobile = computed(_ => {
             />
           </template>
         </UInput>
-        <div class="flex gap-2 items-center">
-          <UButton class="p-2.5 cursor-pointer opacity-60" color="neutral" variant="link"
-                   @click="newOrderModalOpened = true">
+        <div :class="{'max-xs:hidden': searchExpanded}" class="flex gap-2 items-center">
+          <UButton class="p-2.25 cursor-pointer opacity-60 rounded-xl" color="neutral" variant="outline"
+                   @click="settingsSlideoverOpened = true">
             <template #trailing>
               <UIcon class="size-4.5" name="i-ri-settings-2-fill"/>
             </template>
           </UButton>
           <div
-            class="px-3.5 py-3.5 xs:py-2.5 flex items-center gap-2 ring ring-default rounded-xl bg-muted/50 select-none">
+            class="px-2.25 py-2.5 flex items-center gap-2 ring ring-default rounded-xl bg-muted/50 select-none">
             <div :class="onlineIndicatorClasses" class="size-2 rounded-full"/>
-            <span class="uppercase text-xs text-toned max-xs:hidden">{{ onlineStatus }}</span>
+            <span class="uppercase text-xs text-toned ">{{ onlineStatus }}</span>
           </div>
           <UButton class="xs:px-4 px-2.5 xs:py-2 py-2.5 rounded-xl cursor-pointer" color="primary"
-                   @click="newOrderModalOpened = true">
+                   @click="newOrderSlideoverOpened = true">
             <template #trailing>
               <UIcon class="size-4.5" name="i-ri-add-fill"/>
             </template>
@@ -103,15 +124,15 @@ const isMobile = computed(_ => {
         </div>
       </div>
     </header>
-    <section v-if="kanbanColumns && !loadingOrders" class="size-full">
+    <section v-if="cachedOrderColumns && !loadingOrders" class="size-full">
       <div v-if="activeTab === 'kanban'" class="size-full">
         <div
           class="size-full xs:divide-x divide-accented/50 dark:bg-muted bg-accented/50 rounded-2xl animate-fade-up animate-ease-out flex overflow-x-auto snap-x *:snap-start snap-mandatory">
-          <div v-for="(column, columnIndex) in kanbanColumns"
-               class="flex flex-col 2xl:min-w-1/6 2xl:w-full xl:min-w-1/4 lg:min-w-1/3 sm:min-w-1/2 min-w-full">
+          <div v-for="(column, columnIndex) in cachedOrderColumns"
+               class="flex flex-col 2xl:min-w-1/6 2xl:w-full xl:min-w-1/4 lg:min-w-1/3 sm:min-w-1/2 min-w-full relative group">
             <div
-              class="w-full ps-4 pe-2 py-3 select-none flex flex-row items-center justify-between gap-2 sticky top-0">
-              <div class="flex gap-2 items-center">
+              class="w-full ps-4 pe-2 py-3 select-none flex flex-row items-center justify-between gap-2">
+              <div class="flex gap-3 items-center">
                 <div :class="[columnColors[columnIndex % columnColors.length]]"
                      class="rounded-full min-h-2 min-w-2 max-h-2 max-w-2 outline outline-offset-2"/>
                 <span class="font-semibold text-sm text-muted whitespace-nowrap">{{ column.title }}</span>
@@ -123,10 +144,10 @@ const isMobile = computed(_ => {
                        variant="link"/>
             </div>
             <Draggable
-              v-if="kanbanColumns.some(column => column.orders.length > 0)"
+              v-if="cachedOrderColumns.some(column => column.orders.length > 0)"
               v-model="column.orders"
               :disabled="isMobile"
-              class="h-full px-2 pb-2 space-y-3 no-scrollbar overflow-y-auto"
+              class="h-full px-2 pb-2 space-y-3"
               drag-class="dragged"
               ghost-class="ghost"
               group="cards"
@@ -134,14 +155,24 @@ const isMobile = computed(_ => {
               <template #item="{element}">
                 <OrderCard :key="element.id"
                            :customerName="element.customer.fullName"
+                           :dimmed="!foundOrders.includes(element.id) && searchQuery.length > 0"
                            :due="element.deadline" :items="element.items" :numberOfLinks="element.links.length"
                            :priority="element.priority" :source="element.source" :title="element.title"
                            :totalCost="element.totalCost"/>
               </template>
             </Draggable>
+            <!-- if no orders at all -->
             <div v-else class="size-full min-h-32 p-2">
               <div
-                class="size-full border-2 border-accented rounded-xl border-dashed min-h-32 grid place-content-center">
+                class="size-full outline outline-neutral-500/50 rounded-xl outline-dashed min-h-47 grid place-content-center">
+                <span class="text-dimmed/50 select-none">ᗜ˰ᗜ</span>
+              </div>
+            </div>
+            <!-- if no orders in this column but some in other ones -->
+            <div v-if="column.orders.length < 1 && cachedOrderColumns.some(column => column.orders.length > 0)"
+                 class="absolute top-12 w-full p-2">
+              <div
+                class="w-full min-h-47 outline outline-neutral-500/50 rounded-xl outline-dashed  grid place-content-center">
                 <span class="text-dimmed/50 select-none">ᗜ˰ᗜ</span>
               </div>
             </div>
@@ -153,9 +184,9 @@ const isMobile = computed(_ => {
 
       </div>
     </section>
-    <section v-else class="size-full flex max-xs:flex-col gap-2">
+    <section v-else class="size-full flex max-md:flex-col gap-2">
       <USkeleton v-for="(_, i) in 5" :style="{'animationDelay': `${i * 300}ms`}"
-                 class="max-xs:w-full w-1/5 max-xs:h-32 h-full rounded-lg"/>
+                 class="max-md:w-full w-1/5 max-md:h-56 h-full rounded-lg"/>
     </section>
   </div>
 </template>
@@ -166,9 +197,11 @@ const isMobile = computed(_ => {
 }
 
 .ghost {
-  opacity: 50%;
-  border-radius: 0.5rem;
-  border: 2px dashed var(--ui-color-neutral-500);
+  opacity: 80%;
+
+  & > * {
+    mask: none;
+  }
 }
 
 
