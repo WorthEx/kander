@@ -63,7 +63,7 @@ const overdue = computed(() => (new Date() - props.due) <= 0)
       select-none flex flex-col gap-2">
       <div class="flex justify-between items-center">
         <span class="uppercase font-bold">{{ price }}</span>
-        <UBadge v-if="todayIsDueDate" class="w-fit" color="error">
+        <UBadge v-if="todayIsDueDate" class="w-fit" color="error" variant="subtle">
           <template #leading>
             <UIcon name="i-ri-flag-line"/>
           </template>
@@ -73,22 +73,6 @@ const overdue = computed(() => (new Date() - props.due) <= 0)
           <UIcon class="text-dimmed size-3" name="i-ri-flag-line"/>
           <span>{{ getDate }}</span>
         </div>
-        <!--        <UBadge v-if="daysUntilDue < 4 && !overdue" class="w-fit text-sm" color="error">-->
-        <!--          <template #leading>-->
-        <!--            <UIcon class="size-3.5" name="i-ri-calendar-schedule-fill"/>-->
-        <!--          </template>-->
-        <!--          {{ daysUntilDue }}-->
-        <!--        </UBadge>-->
-        <!--        <UBadge v-else-if="overdue" class="w-fit text-sm" color="error">-->
-        <!--          <template #leading>-->
-        <!--            <UIcon class="size-3.5" name="i-ri-calendar-schedule-fill"/>-->
-        <!--          </template>-->
-        <!--          -{{ daysUntilDue }}-->
-        <!--        </UBadge>-->
-        <!--        <div v-else class="text-sm text-muted flex items-center gap-1">-->
-        <!--          <UIcon class="text-dimmed size-3.5" name="i-ri-calendar-schedule-fill"/>-->
-        <!--          <span>{{ daysUntilDue }}</span>-->
-        <!--        </div>-->
       </div>
       <div class="w-full">
         <span class="text-sm line-clamp-1">{{ title }}</span>

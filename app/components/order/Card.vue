@@ -42,7 +42,7 @@ const progressPercent = computed(() => {
       select-none flex flex-col gap-2">
         <div class="flex justify-between items-center">
           <span class="uppercase font-bold">{{ totalCost }}</span>
-          <UBadge v-if="overdue" class="w-fit" color="error">
+          <UBadge v-if="overdue" class="w-fit" color="error" variant="subtle">
             <template #leading>
               <UIcon name="i-ri-flag-line"/>
             </template>
@@ -65,7 +65,7 @@ const progressPercent = computed(() => {
         <!--   tags   -->
         <div class="flex gap-1 flex-wrap">
           <OrderPriorityChip :priority/>
-          <DemoSourceChip :source/>
+          <OrderSourceChip :source/>
         </div>
         <!--   footer   -->
         <USeparator class="h-px mt-4"/>

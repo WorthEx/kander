@@ -23,5 +23,5 @@ switch (props.source) {
 </script>
 
 <template>
-  <UBadge :color :icon class="w-fit capitalize" variant="subtle">{{ source }}</UBadge>
+  <UBadge :color :icon class="w-fit capitalize" variant="solid">{{ source }}</UBadge>
 </template>
