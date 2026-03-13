@@ -12,6 +12,19 @@ const notif = useNotification(toaster)
 const {fetchOrders, loadingOrders, cachedOrderColumns} = useOrders()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
 const {addColumn} = useColumns()
+const {
+  isConnected,
+  columns,
+  columnActions,
+  orderActions
+} = useKanbanWebSocket(wsId.value, async _ => {
+  if (wsId.value) {
+    loadingOrders.value = true
+    await fetchOrders(wsId.value)
+    console.log('fetched!')
+    loadingOrders.value = false
+  }
+})
 
 const newButtonDropdownItems = computed(_ => [
   {
@@ -78,15 +91,6 @@ const handleAddColumn = async _ => {
   }
 }
 
-watch(currentWorkspace, _ => console.log(currentWorkspace.value))
-
-onMounted(async _ => {
-  if (wsId.value) {
-    loadingOrders.value = true
-    await fetchOrders(wsId.value)
-    loadingOrders.value = false
-  }
-})
 const foundOrders = computed(() => {
   if (!cachedOrderColumns.value) return [];
 
