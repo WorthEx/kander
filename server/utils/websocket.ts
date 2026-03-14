@@ -6,7 +6,7 @@ export const registerPeer = (peer: Peer) => peers.add(peer)
 
 export const unregisterPeer = (peer: Peer) => peers.delete(peer)
 
-export const publishToWorkspace = async (workspaceId: string, wsEvent: WSEvent) => {
+export const publishToWorkspace = (workspaceId: string, wsEvent: WSEvent) => {
   if (peers.size < 1) return
 
   peers.forEach(p => {

@@ -189,7 +189,7 @@ const apiDocs = computed(_ => [
         }
       ]
     },
-    status: 'tbd'
+    status: 'ready'
   }
 ])
 

@@ -90,26 +90,27 @@ export default defineNuxtPlugin((nuxtApp) => {
       }
     }
 
-    // if (entity === 'order') {
-    //   switch (action) {
-    //     case 'create':
-    //       addOrder(data)
-    //       console.log('➕ Order created:', data.id)
-    //       break
-    //     case 'update':
-    //       updateOrder(id, data)
-    //       console.log('✏️ Order updated:', data.id)
-    //       break
-    //     case 'move':
-    //       moveOrder(id, data.columnId, data.position)
-    //       console.log('🔄 Order moved:', id)
-    //       break
-    //     case 'delete':
-    //       removeOrder(id)
-    //       console.log('🗑️ Order deleted:', id)
-    //       break
-    //   }
-    // }
+    if (entity === 'order') {
+      switch (action) {
+        case 'create':
+          //@ts-ignore
+          const column = cachedOrderColumns.value.find(column => column.id === data.columnId)
+          column.orders.push(data)
+          break
+        //     case 'update':
+        //       updateOrder(id, data)
+        //       console.log('✏️ Order updated:', data.id)
+        //       break
+        //     case 'move':
+        //       moveOrder(id, data.columnId, data.position)
+        //       console.log('🔄 Order moved:', id)
+        //       break
+        //     case 'delete':
+        //       removeOrder(id)
+        //       console.log('🗑️ Order deleted:', id)
+        //       break
+      }
+    }
   }
 
 

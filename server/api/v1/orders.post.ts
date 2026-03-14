@@ -1,3 +1,6 @@
+import {publishToWorkspace} from "#server/utils/websocket";
+import {LexoRank} from "lexorank";
+
 export default defineEventHandler(async (event) => {
   const wsId = await checkApiKey(event)
 
@@ -9,19 +12,34 @@ export default defineEventHandler(async (event) => {
     where: {
       workspaceId: wsId,
       isSystem: true
+    },
+    include: {
+      orders: {
+        orderBy: {
+          position: 'desc'
+        },
+        take: 1
+      }
     }
   })
   if (!systemColumn) throw createError({statusCode: 400, statusMessage: 'No system column found.'})
 
   const assignedManagerId = await assignNextManager(wsId) // user.id of assigned manager
 
+  let newOrderPosition = null
+  const lastOrder = systemColumn.orders.at(0)
+  if (lastOrder && lastOrder.position) {
+    newOrderPosition = LexoRank.parse(lastOrder.position).genNext().toString()
+  } else if (!lastOrder) newOrderPosition = LexoRank.middle().toString()
+
   try {
-    return await prisma.order.create({
+    const createdOrder = await prisma.order.create({
       data: {
         title: body.title,
         description: body.description,
         customerId: body.customerId,
         columnId: systemColumn.id,
+        position: newOrderPosition ?? null,
         items: {
           createMany: {
             data: [...body.items]
@@ -37,12 +55,31 @@ export default defineEventHandler(async (event) => {
           include: {
             service: true
           }
-        }
+        },
+        responsibles: true,
+        customer: {
+          select: {
+            id: true, fullName: true, phone: true
+          },
+        },
+        links: true,
       }
     })
+    publishToWorkspace(wsId, {
+      type: 'kanban',
+      workspaceId: wsId,
+      action: 'create',
+      entity: 'order',
+      data: {
+        ...createdOrder,
+        totalCost: createdOrder.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      }
+    })
+    return {
+      ...createdOrder,
+      totalCost: createdOrder.items.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    }
   } catch {
     throw createError({statusCode: 400, statusMessage: 'Bad request. Check if provided ID\'s are valid.'})
   }
-
-  // todo push order to kanban (websocket event bus)
 })
