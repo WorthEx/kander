@@ -11,7 +11,7 @@ const toaster = useToast()
 const notif = useNotification(toaster)
 const {loadingOrders, cachedOrderColumns} = useOrders()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
-const {addColumn} = useColumns()
+const {addColumn, removeColumn} = useColumns()
 const {$kanbanWs} = useNuxtApp()
 
 const newButtonDropdownItems = computed(_ => [
@@ -31,6 +31,33 @@ const newButtonDropdownItems = computed(_ => [
     disabled: currentWorkspace.value?.workspaceMember?.role !== 'admin'
   },
 ])
+const getColumnDropdownItems = columnId => [
+  {
+    label: 'Hide',
+    icon: 'i-ri-eye-off-fill',
+    onSelect: _ => {
+    },
+    class: 'cursor-pointer'
+  },
+  {
+    label: 'Rename',
+    icon: 'i-ri-edit-2-fill',
+    onSelect: _ => {
+    },
+    class: 'cursor-pointer'
+  },
+  {
+    label: 'Remove',
+    icon: 'i-ri-delete-bin-6-fill',
+    color: 'error',
+    onSelect: _ => {
+      columnToRemoveId.value = columnId
+      removeColumnSlideoverOpened.value = true
+    },
+    disabled: currentWorkspace.value?.workspaceMember?.role !== 'admin',
+    class: 'cursor-pointer'
+  },
+]
 
 const searchQuery = ref("")
 const activeTab = ref('kanban')
@@ -54,8 +81,27 @@ const searchExpanded = ref(false)
 const newOrderSlideoverOpened = ref(false)
 const settingsSlideoverOpened = ref(false)
 const newColumnSlideoverOpened = ref(false)
+const removeColumnSlideoverOpened = ref(false)
+
 const newColumnTitle = ref('')
+const columnToRemoveId = ref(null)
+
 const addingColumn = ref(false)
+const removingColumn = ref(false)
+
+const handleRemoveColumn = async _ => {
+  removingColumn.value = true
+  try {
+    await removeColumn(columnToRemoveId.value, wsId.value)
+    notif.success("Successfully removed column!")
+    $kanbanWs.columnActions.delete(columnToRemoveId.value)
+  } catch {
+    notif.error("An issue occurred while removing column. Try again later.")
+  } finally {
+    removingColumn.value = false
+    removeColumnSlideoverOpened.value = false
+  }
+}
 
 const handleAddColumn = async _ => {
   if (newColumnTitle.value.trim() === '') return
@@ -195,8 +241,17 @@ watch(searchQuery, async _ => {
                   {{ column.orders.length }}
                 </div>
               </div>
-              <UButton class="cursor-pointer" color="neutral" icon="i-ri-more-fill"
-                       variant="link"/>
+              <UDropdownMenu
+                :content="{
+                  align: 'end',
+                  side: 'bottom',
+                  sideOffset: 8,
+                  class: '*:*:*:pe-8 *:*:*:ps-2 *:*:*:py-2  *:*:*:min-w-32 rounded-xl'
+                }"
+                :items="getColumnDropdownItems(column.id)">
+                <UButton class="cursor-pointer" color="neutral" icon="i-ri-more-fill"
+                         variant="link"/>
+              </UDropdownMenu>
             </div>
             <Draggable
               v-if="cachedOrderColumns.some(column => column.orders.length > 0)"
@@ -263,6 +318,17 @@ watch(searchQuery, async _ => {
     <USlideover v-model:open="newOrderSlideoverOpened" :ui="{content: 'max-w-lg'}">
       <template #body>
         <div class="">bruh</div>
+      </template>
+    </USlideover>
+    <USlideover v-model:open="removeColumnSlideoverOpened"
+                title="Are you sure?">
+      <template #body="{close}">
+        <p class="text">You're about to entirely delete a column from this workspace scope.</p>
+        <div class="flex mt-4 justify-end w-full max-sm:*:w-full gap-2 *:cursor-pointer *:select-none *:justify-center">
+          <UButton class="rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline" @click="close"/>
+          <UButton :loading="removingColumn" class="rounded-xl px-6 py-2" color="error"
+                   label="Delete" @click="handleRemoveColumn"/>
+        </div>
       </template>
     </USlideover>
   </div>

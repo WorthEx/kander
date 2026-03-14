@@ -71,7 +71,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   // handle updates from other peers
   const handleServerUpdate = (event: WSEvent) => {
-    const {type, workspaceId, action, entity, data} = event
+    const {type, workspaceId, action, entity, data, entityId} = event
 
     if (entity === 'column') {
       switch (action) {
@@ -83,10 +83,10 @@ export default defineNuxtPlugin((nuxtApp) => {
         //   updateColumn(id, data)
         //   console.log('✏️ Column updated:', data.title)
         //   break
-        // case 'delete':
-        //   removeColumn(id)
-        //   console.log('🗑️ Column deleted:', id)
-        //   break
+        case 'delete':
+          //@ts-ignore
+          cachedOrderColumns.value = cachedOrderColumns.value.filter(column => column.id !== entityId)
+          break
       }
     }
 
@@ -127,9 +127,15 @@ export default defineNuxtPlugin((nuxtApp) => {
     // update: (id: string, data: any) => {
     //   sendAction('column',, id, data)
     // },
-    // delete: (id: string) => {
-    //   sendAction('column',, id)
-    // }
+    delete: (id: string) => {
+      send(JSON.stringify({
+        type: 'kanban',
+        workspaceId: workspaceId.value,
+        action: 'delete',
+        entity: 'column',
+        entityId: id
+      }))
+    }
   }
 
   // API для работы с заказами

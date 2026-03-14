@@ -11,5 +11,14 @@ export const useColumns = () => {
     return newColumn
   }
 
-  return {addColumn}
+  const removeColumn = async (columnId, wsId) => {
+    await $fetch(`/api/workspaces/${wsId}/columns`, {
+      method: 'DELETE',
+      credentials: 'include',
+      body: {columnId}
+    })
+    cachedOrderColumns.value = cachedOrderColumns.value.filter(column => column.id !== columnId)
+  }
+
+  return {addColumn, removeColumn}
 }
