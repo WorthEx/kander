@@ -184,12 +184,13 @@ watch(searchQuery, async _ => {
           class="size-full xs:divide-x divide-accented/50 dark:bg-muted bg-accented/50 rounded-2xl animate-fade-up animate-ease-out flex overflow-x-auto snap-x *:snap-start snap-mandatory">
           <div v-for="(column, columnIndex) in cachedOrderColumns"
                class="flex flex-col 2xl:min-w-1/6 2xl:w-full xl:min-w-1/4 lg:min-w-1/3 sm:min-w-1/2 min-w-full relative group snap-always">
-            <div
-              class="w-full ps-4 pe-2 py-3 select-none flex flex-row items-center justify-between gap-2">
-              <div class="flex gap-3 items-center">
+            <div class="w-full max-w-full ps-4 pe-2 py-3 select-none flex flex-row items-center justify-between gap-2">
+              <div class="flex gap-3 items-center max-w-[calc(100%-2.5rem)]">
                 <div :class="[columnColors[columnIndex % columnColors.length]]"
                      class="rounded-full min-h-2 min-w-2 max-h-2 max-w-2 outline outline-offset-2"/>
-                <span class="font-semibold text-sm text-muted whitespace-nowrap">{{ column.title }}</span>
+                <span class="font-semibold text-sm text-muted whitespace-nowrap truncate">{{
+                    column.title
+                  }}</span>
                 <div class="dark:bg-elevated/50 bg-muted rounded-lg px-2 py-0.5 text-sm font-semibold text-muted">
                   {{ column.orders.length }}
                 </div>
