@@ -27,5 +27,14 @@ export const useNotification = useToastInstance => {
     })
   }
 
-  return {error, success, info}
+  const warning = (title, icon = 'i-ri-error-warning-fill') => {
+    useToastInstance.add({
+      title,
+      icon: icon,
+      color: 'warning',
+
+    })
+  }
+
+  return {error, success, info, warning}
 }

@@ -51,6 +51,15 @@ const getColumnDropdownItems = columnId => [
     icon: 'i-ri-delete-bin-6-fill',
     color: 'error',
     onSelect: _ => {
+      const column = cachedOrderColumns.value.find(column => column.id === columnId)
+      if (column.isSystem) {
+        notif.warning('You can NEVER remove a system column. Rules are rules.')
+        return
+      }
+      if (column.orders.length > 0) {
+        notif.warning('You cannot remove a column that still has orders in it. Please remove them beforehand.')
+        return
+      }
       columnToRemoveId.value = columnId
       removeColumnSlideoverOpened.value = true
     },
