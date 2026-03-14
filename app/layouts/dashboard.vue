@@ -4,6 +4,11 @@ const route = useRoute()
 const toaster = useToast()
 const notif = useNotification(toaster)
 const wsId = computed(() => route.params.wsId)
+const {$kanbanWs} = useNuxtApp()
+
+onMounted(_ => {
+  if (wsId.value && import.meta.client) $kanbanWs.connect(wsId.value)
+})
 
 const navlinkClass = 'py-4 cursor-pointer gap-4'
 const sidebarItems = computed(_ => [

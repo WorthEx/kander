@@ -8,6 +8,7 @@ export const useColumns = () => {
       body: {title}
     })
     cachedOrderColumns.value.push(newColumn)
+    return newColumn
   }
 
   return {addColumn}

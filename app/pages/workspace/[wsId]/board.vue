@@ -9,22 +9,10 @@ const route = useRoute()
 const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
-const {fetchOrders, loadingOrders, cachedOrderColumns} = useOrders()
+const {loadingOrders, cachedOrderColumns} = useOrders()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
 const {addColumn} = useColumns()
-const {
-  isConnected,
-  columns,
-  columnActions,
-  orderActions
-} = useKanbanWebSocket(wsId.value, async _ => {
-  if (wsId.value) {
-    loadingOrders.value = true
-    await fetchOrders(wsId.value)
-    console.log('fetched!')
-    loadingOrders.value = false
-  }
-})
+const {$kanbanWs} = useNuxtApp()
 
 const newButtonDropdownItems = computed(_ => [
   {
@@ -60,8 +48,6 @@ const tabItems = [
     class: '**:w-full ring'
   }
 ]
-const onlineIndicatorColor = ref('warning')
-const onlineStatus = ref('pending')
 const columnColors = ['bg-secondary outline-secondary', 'bg-primary outline-primary', 'bg-tertiary outline-tertiary', 'bg-quaternary outline-quaternary', 'bg-quinary outline-quinary']
 const searchExpanded = ref(false)
 
@@ -71,17 +57,13 @@ const newColumnSlideoverOpened = ref(false)
 const newColumnTitle = ref('')
 const addingColumn = ref(false)
 
-const refresh = async _ => {
-  await fetchOrders(wsId.value)
-}
-
 const handleAddColumn = async _ => {
   if (newColumnTitle.value.trim() === '') return
   addingColumn.value = true
   try {
-    await addColumn(newColumnTitle.value, wsId.value)
-    // todo send event to broadcast column adding
+    const newColumn = await addColumn(newColumnTitle.value, wsId.value)
     notif.success("Successfully added new column!")
+    $kanbanWs.columnActions.create(newColumn)
   } catch {
     notif.error("An issue occurred while adding new column. Try again later.")
   } finally {
@@ -103,10 +85,14 @@ const foundOrders = computed(() => {
       .map(order => order.id)
   );
 })
-const onlineIndicatorClasses = computed(_ => [
-  onlineIndicatorColor === 'success' && 'animate-pulse',
-  `bg-${onlineIndicatorColor.value}`,
-])
+const onlineIndicatorClasses = computed(_ => {
+  const color = $kanbanWs.semanticStatus.value === 'online' ? 'success' :
+    $kanbanWs.semanticStatus.value === 'offline' ? 'error' : 'warning'
+  return [
+    $kanbanWs.semanticStatus.value === 'online' && 'animate-pulse',
+    `bg-${color}`,
+  ]
+})
 const isMobile = computed(_ => {
   if (import.meta.client) return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
 })
@@ -157,11 +143,13 @@ watch(searchQuery, async _ => {
               <UIcon class="size-4.5" name="i-ri-settings-2-fill"/>
             </template>
           </UButton>
-          <div
-            class="px-2.25 py-2.5 flex items-center gap-2 ring ring-default rounded-xl bg-muted/50 select-none">
-            <div :class="onlineIndicatorClasses" class="size-2 rounded-full"/>
-            <span class="uppercase text-xs text-toned ">{{ onlineStatus }}</span>
-          </div>
+          <ClientOnly>
+            <div
+              class="px-2.25 py-2.5 flex items-center gap-2 ring ring-default rounded-xl bg-muted/50 select-none">
+              <div :class="onlineIndicatorClasses" class="size-2 rounded-full"/>
+              <span class="uppercase text-xs text-toned ">{{ $kanbanWs.semanticStatus }}</span>
+            </div>
+          </ClientOnly>
           <UDropdownMenu
             :content="{
             align: 'end',

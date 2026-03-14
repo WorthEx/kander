@@ -1,6 +1,13 @@
 import type {Peer} from 'crossws'
 import jwt from "jsonwebtoken";
 
+type PeerContext = {
+  user?: {
+    userId: string
+    email: string
+  }
+}
+
 export default defineWebSocketHandler({
   open(peer) {
     const {jwtSecret} = useRuntimeConfig()
@@ -43,6 +50,11 @@ export default defineWebSocketHandler({
         }))
         return
       }
+
+      if (data.type === 'kanban') {
+        handleKanbanAction(peer, data)
+        return
+      }
     } catch (error) {
       console.error('WebSocket error:', error)
     }
@@ -57,109 +69,24 @@ export default defineWebSocketHandler({
   }
 })
 
-async function handleKanbanAction(peer: Peer, message: any) {
-  const {workspaceId, entity, action, id, data} = message
-
-  let result: any
+const handleKanbanAction = (peer: Peer, message: any) => {
+  const {workspaceId} = message
+  const userId = (peer.context as PeerContext).user?.userId
 
   try {
-    // ============================================
-    // ОПЕРАЦИИ С КОЛОНКАМИ
-    // ============================================
-    // if (entity === 'column') {
-    //   if (action === 'create') {
-    //     result = await prisma.kanbanColumn.create({
-    //       data: {
-    //         title: data.title,
-    //         workspaceId,
-    //         position: data.position,
-    //         createdById: data.userId
-    //       }
-    //     })
-    //   }
-    //
-    //   if (action === 'update') {
-    //     result = await prisma.kanbanColumn.update({
-    //       where: { id },
-    //       data: {
-    //         title: data.title,
-    //         position: data.position
-    //       }
-    //     })
-    //   }
-    //
-    //   if (action === 'delete') {
-    //     await prisma.kanbanColumn.delete({
-    //       where: { id }
-    //     })
-    //     result = { id }
-    //   }
-    // }
-
-    // ============================================
-    // ОПЕРАЦИИ С ЗАКАЗАМИ
-    // ============================================
-    if (entity === 'order') {
-      if (action === 'create') {
-        result = await prisma.order.create({
-          data: {
-            ...data,
-            workspaceId
-          }
-        })
-      }
-
-      if (action === 'update') {
-        result = await prisma.order.update({
-          where: {id},
-          data
-        })
-      }
-
-      if (action === 'move') {
-        result = await prisma.order.update({
-          where: {id},
-          data: {
-            columnId: data.columnId,
-            position: data.position
-          }
-        })
-      }
-
-      if (action === 'delete') {
-        await prisma.order.delete({
-          where: {id}
-        })
-        result = {id}
-      }
-    }
-
-    // ============================================
-    // BROADCAST ВСЕМ ПОДПИСЧИКАМ
-    // ============================================
     const broadcastData = {
-      type: 'kanban:update',
-      workspaceId,
-      entity,
-      action,
-      id: result?.id || id,
-      data: result
+      ...message,
+      timestamp: Date.now(),
+      userId,
     }
 
-    // Отправляем всем подписчикам организации
-    const topic = `org:${workspaceId}`
     const messageText = JSON.stringify(broadcastData)
+    peer.publish(workspaceId, messageText)
 
-    let sent = 0
-    peer.publish(topic, messageText)
-
-    console.log(`📡 Broadcast ${entity}:${action} to ${sent} clients`)
-
-  } catch (error: any) {
-    // Отправляем ошибку только инициатору
+  } catch {
     peer.send(JSON.stringify({
       type: 'error',
-      message: error.message || 'Operation failed'
+      message: 'Operation failed'
     }))
   }
 }
