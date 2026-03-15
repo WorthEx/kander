@@ -10,6 +10,11 @@ export default defineEventHandler(async (event) => {
   const numberOfColumns = await prisma.column.count({where: {workspaceId: wsId}})
   if (numberOfColumns >= 7) throw createError({statusCode: 400, statusMessage: 'Maximum number of columns reached.'})
 
+  if (title.length > 42) throw createError({
+    statusCode: 400,
+    statusMessage: 'Column title cannot be longer than 42 characters.'
+  })
+
   const columnWithMaxPosition = await prisma.column.findFirst({
     where: {
       workspaceId: wsId,

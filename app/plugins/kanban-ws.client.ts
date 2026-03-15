@@ -79,10 +79,15 @@ export default defineNuxtPlugin((nuxtApp) => {
           //@ts-ignore
           cachedOrderColumns.value.push(data)
           break
-        // case 'update':
-        //   updateColumn(id, data)
-        //   console.log('✏️ Column updated:', data.title)
-        //   break
+        case 'update':
+          //@ts-ignore
+          cachedOrderColumns.value = cachedOrderColumns.value.map(column => {
+            if (column.id === entityId) {
+              return {...column, title: data.title};
+            }
+            return column
+          })
+          break
         case 'delete':
           //@ts-ignore
           cachedOrderColumns.value = cachedOrderColumns.value.filter(column => column.id !== entityId)
@@ -125,9 +130,16 @@ export default defineNuxtPlugin((nuxtApp) => {
         data: newColumn
       }))
     },
-    // update: (id: string, data: any) => {
-    //   sendAction('column',, id, data)
-    // },
+    update: (id: string, data: any) => {
+      send(JSON.stringify({
+        type: 'kanban',
+        workspaceId: workspaceId.value,
+        action: 'update',
+        entity: 'column',
+        entityId: id,
+        data
+      }))
+    },
     delete: (id: string) => {
       send(JSON.stringify({
         type: 'kanban',

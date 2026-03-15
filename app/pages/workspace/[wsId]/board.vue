@@ -11,7 +11,7 @@ const toaster = useToast()
 const notif = useNotification(toaster)
 const {loadingOrders, cachedOrderColumns} = useOrders()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
-const {addColumn, removeColumn} = useColumns()
+const {addColumn, removeColumn, renameColumn} = useColumns()
 const {$kanbanWs} = useNuxtApp()
 
 const newButtonDropdownItems = computed(_ => [
@@ -43,8 +43,12 @@ const getColumnDropdownItems = columnId => [
     label: 'Rename',
     icon: 'i-ri-edit-2-fill',
     onSelect: _ => {
+      columnToRenameId.value = columnId
+      updatedColumnTitle.value = cachedOrderColumns.value.find(column => column.id === columnId).title
+      renameColumnSlideoverOpened.value = true
     },
-    class: 'cursor-pointer'
+    disabled: currentWorkspace.value?.workspaceMember?.role !== 'admin',
+    class: 'cursor-pointer',
   },
   {
     label: 'Remove',
@@ -91,12 +95,16 @@ const newOrderSlideoverOpened = ref(false)
 const settingsSlideoverOpened = ref(false)
 const newColumnSlideoverOpened = ref(false)
 const removeColumnSlideoverOpened = ref(false)
+const renameColumnSlideoverOpened = ref(false)
 
 const newColumnTitle = ref('')
 const columnToRemoveId = ref(null)
+const updatedColumnTitle = ref('')
+const columnToRenameId = ref(null)
 
 const addingColumn = ref(false)
 const removingColumn = ref(false)
+const renamingColumn = ref(false)
 
 const handleRemoveColumn = async _ => {
   removingColumn.value = true
@@ -122,11 +130,34 @@ const handleAddColumn = async _ => {
   } catch {
     notif.error("An issue occurred while adding new column. Try again later.")
   } finally {
-    addingColumn.value = true
+    addingColumn.value = false
     newColumnTitle.value = ''
     newColumnSlideoverOpened.value = false
   }
 }
+
+const handleRenameColumn = async _ => {
+  if (updatedColumnTitle.value.trim() === '') return
+  const column = cachedOrderColumns.value.find(column => column.id === columnToRenameId.value)
+  if (column.title === updatedColumnTitle.value) {
+    renameColumnSlideoverOpened.value = false
+    return
+  }
+
+  renamingColumn.value = true
+  try {
+    await renameColumn(columnToRenameId.value, updatedColumnTitle.value, wsId.value)
+    notif.success("Successfully renamed column!")
+    $kanbanWs.columnActions.update(columnToRenameId.value, {title: updatedColumnTitle.value})
+  } catch {
+    notif.error("An issue occurred while renaming a column. Try again later.")
+  } finally {
+    renamingColumn.value = false
+    updatedColumnTitle.value = ''
+    renameColumnSlideoverOpened.value = false
+  }
+}
+
 
 const foundOrders = computed(() => {
   if (!cachedOrderColumns.value) return [];
@@ -243,9 +274,12 @@ watch(searchQuery, async _ => {
               <div class="flex gap-3 items-center max-w-[calc(100%-2.5rem)]">
                 <div :class="[columnColors[columnIndex % columnColors.length]]"
                      class="rounded-full min-h-2 min-w-2 max-h-2 max-w-2 outline outline-offset-2"/>
-                <span class="font-semibold text-sm text-muted whitespace-nowrap truncate">{{
-                    column.title
-                  }}</span>
+                <span class="font-semibold text-sm text-muted whitespace-nowrap truncate cursor-pointer"
+                      @click="_ => {
+                        columnToRenameId = column.id
+                        updatedColumnTitle = cachedOrderColumns.find(c => c.id === column.id).title
+                        renameColumnSlideoverOpened = true
+                      }">{{ column.title }}</span>
                 <div class="dark:bg-elevated/50 bg-muted rounded-lg px-2 py-0.5 text-sm font-semibold text-muted">
                   {{ column.orders.length }}
                 </div>
@@ -311,7 +345,8 @@ watch(searchQuery, async _ => {
     <USlideover v-model:open="newColumnSlideoverOpened" title="New kanban column">
       <template #body="{close}">
         <UFormField label="Column title" name="title">
-          <UInput v-model="newColumnTitle" class="w-full [&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2"/>
+          <UInput v-model="newColumnTitle" :maxlength="42"
+                  class="w-full [&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2"/>
         </UFormField>
         <div
           class="flex mt-4 justify-end w-full max-sm:*:w-full gap-2 *:cursor-pointer *:select-none *:justify-center">
@@ -324,13 +359,7 @@ watch(searchQuery, async _ => {
         </div>
       </template>
     </USlideover>
-    <USlideover v-model:open="newOrderSlideoverOpened" :ui="{content: 'max-w-lg'}">
-      <template #body>
-        <div class="">bruh</div>
-      </template>
-    </USlideover>
-    <USlideover v-model:open="removeColumnSlideoverOpened"
-                title="Are you sure?">
+    <USlideover v-model:open="removeColumnSlideoverOpened" title="Are you sure?">
       <template #body="{close}">
         <p class="text">You're about to entirely delete a column from this workspace scope.</p>
         <div class="flex mt-4 justify-end w-full max-sm:*:w-full gap-2 *:cursor-pointer *:select-none *:justify-center">
@@ -338,6 +367,39 @@ watch(searchQuery, async _ => {
           <UButton :loading="removingColumn" class="rounded-xl px-6 py-2" color="error"
                    label="Delete" @click="handleRemoveColumn"/>
         </div>
+      </template>
+    </USlideover>
+    <USlideover v-model:open="renameColumnSlideoverOpened" title="Rename existing column">
+      <template #body="{close}">
+        <div class="flex flex-col space-y-4"><p>You're updating column's name from
+          <span
+            class="break-keep whitespace-nowrap px-1 py-0.2 rounded-md border border-primary bg-muted text-primary border-dashed">
+            {{ columnToRenameId ? cachedOrderColumns.find(c => c.id === columnToRenameId).title : '-' }}</span> to&nbsp;<span
+            class="break-keep whitespace-nowrap px-1 py-0.2 rounded-md border border-primary bg-muted text-primary border-dashed">
+            {{ updatedColumnTitle ? updatedColumnTitle : '-' }}</span>
+        </p>
+          <UFormField label="Updated title" name="updatedTitle">
+            <UInput v-model="updatedColumnTitle" :maxlength="42"
+                    class="w-full [&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2"/>
+          </UFormField>
+          <div
+            class="flex justify-end w-full max-sm:*:w-full gap-2 *:cursor-pointer *:select-none *:justify-center">
+            <UButton class="rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline" @click="_ => {
+                  close()
+                  updatedColumnTitle = ''
+                }"/>
+            <UButton
+              :disabled="updatedColumnTitle.trim().length < 1"
+              :loading="renamingColumn"
+              class="rounded-xl px-6 py-2"
+              label="Save" @click="handleRenameColumn"/>
+          </div>
+        </div>
+      </template>
+    </USlideover>
+    <USlideover v-model:open="newOrderSlideoverOpened" :ui="{content: 'max-w-lg'}">
+      <template #body>
+        <div class="">bruh</div>
       </template>
     </USlideover>
   </div>
