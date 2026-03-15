@@ -13,6 +13,7 @@ const {loadingOrders, cachedOrderColumns} = useOrders()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
 const {addColumn, removeColumn, renameColumn} = useColumns()
 const {$kanbanWs} = useNuxtApp()
+const {showColumn, hideColumn, preferences} = usePreferences()
 
 const newButtonDropdownItems = computed(_ => [
   {
@@ -33,9 +34,10 @@ const newButtonDropdownItems = computed(_ => [
 ])
 const getColumnDropdownItems = columnId => [
   {
-    label: 'Hide',
+    label: preferences.value.hiddenColumnIds.includes(columnId) ? 'Show' : 'Hide',
     icon: 'i-ri-eye-off-fill',
     onSelect: _ => {
+      preferences.value.hiddenColumnIds.includes(columnId) ? showColumn(columnId) : hideColumn(columnId)
     },
     class: 'cursor-pointer'
   },
@@ -188,6 +190,12 @@ const getCurrencySymbol = computed(_ => {
   if (!currencyObject) return currentWorkspace.value?.workspace?.currency
   return currencyObject.symbol_native
 })
+const shownColumns = computed(() => {
+  return cachedOrderColumns.value?.filter(column => !preferences.value.hiddenColumnIds.includes(column.id) || column.isSystem === true) || []
+})
+const hiddenColumns = computed(() => {
+  return cachedOrderColumns.value?.filter(column => preferences.value.hiddenColumnIds.includes(column.id) && column.isSystem !== true) || []
+})
 
 watch(searchQuery, async _ => {
   searchExpanded.value = searchQuery.value.length > 0
@@ -223,12 +231,12 @@ watch(searchQuery, async _ => {
           </template>
         </UInput>
         <div :class="{'max-xs:hidden': searchExpanded}" class="flex gap-2 items-center">
-          <UButton class="p-2.25 cursor-pointer opacity-60 rounded-xl" color="neutral" variant="outline"
-                   @click="settingsSlideoverOpened = true">
-            <template #trailing>
-              <UIcon class="size-4.5" name="i-ri-settings-2-fill"/>
-            </template>
-          </UButton>
+          <!--          <UButton class="p-2.25 cursor-pointer opacity-60 rounded-xl" color="neutral" variant="outline"-->
+          <!--                   @click="settingsSlideoverOpened = true">-->
+          <!--            <template #trailing>-->
+          <!--              <UIcon class="size-4.5" name="i-ri-settings-2-fill"/>-->
+          <!--            </template>-->
+          <!--          </UButton>-->
           <ClientOnly>
             <div
               class="px-2.25 py-2.5 flex items-center gap-2 ring ring-default rounded-xl bg-muted/50 select-none">
@@ -265,10 +273,10 @@ watch(searchQuery, async _ => {
       variant="subtle"
     />
     <section v-if="cachedOrderColumns && !loadingOrders && currentWorkspace" class="size-full">
-      <div v-if="activeTab === 'kanban'" class="size-full">
+      <div v-if="activeTab === 'kanban'" class="size-full flex gap-4">
         <div
           class="size-full xs:divide-x divide-accented/50 dark:bg-muted bg-accented/50 rounded-2xl animate-fade-up animate-ease-out flex overflow-x-auto snap-x *:snap-start snap-mandatory">
-          <div v-for="(column, columnIndex) in cachedOrderColumns"
+          <div v-for="(column, columnIndex) in shownColumns"
                class="flex flex-col 2xl:min-w-1/6 2xl:w-full xl:min-w-1/4 lg:min-w-1/3 sm:min-w-1/2 min-w-full relative group snap-always">
             <div class="w-full max-w-full ps-4 pe-2 py-3 select-none flex flex-row items-center justify-between gap-2">
               <div class="flex gap-3 items-center max-w-[calc(100%-2.5rem)]">
@@ -331,8 +339,32 @@ watch(searchQuery, async _ => {
               </div>
             </div>
           </div>
+          <div class="flex ms-auto divide-x divide-default">
+            <div v-for="(hiddenColumn, columnIndex) in hiddenColumns"
+                 class="flex flex-col py-6">
+              <div
+                class="w-full px-2 select-none flex flex-col items-center gap-4">
+                <div :class="[columnColors[columnIndex % columnColors.length]]"
+                     class="rounded-full min-h-2 min-w-2 max-h-2 max-w-2 outline outline-offset-2"/>
+                <div class="dark:bg-elevated/50 bg-muted rounded-lg px-2 py-0.5 text-sm font-semibold text-muted">
+                  {{ hiddenColumn.orders.length }}
+                </div>
+                <UDropdownMenu
+                  :content="{
+                  align: 'end',
+                  side: 'bottom',
+                  sideOffset: 8,
+                  class: '*:*:*:pe-8 *:*:*:ps-2 *:*:*:py-2  *:*:*:min-w-32 rounded-xl'
+                }"
+                  :items="getColumnDropdownItems(hiddenColumn.id)">
+                  <UButton class="cursor-pointer" color="neutral" icon="i-ri-more-fill"
+                           variant="link"/>
+                </UDropdownMenu>
+              </div>
+              <span class="[writing-mode:vertical-lr] mt-6 my-auto text-sm text-muted">{{ hiddenColumn.title }}</span>
+            </div>
+          </div>
         </div>
-
       </div>
       <div v-else-if="activeTab === 'table'" class="size-full">
 
@@ -361,7 +393,9 @@ watch(searchQuery, async _ => {
     </USlideover>
     <USlideover v-model:open="removeColumnSlideoverOpened" title="Are you sure?">
       <template #body="{close}">
-        <p class="text">You're about to entirely delete a column from this workspace scope.</p>
+        <p class="text">You're about to entirely delete column <span
+          class="break-keep whitespace-nowrap px-1 py-0.5 rounded-md border border-primary bg-muted text-primary border-dashed">
+            {{ cachedOrderColumns.find(c => c.id === columnToRemoveId).title }}</span> from this workspace scope.</p>
         <div class="flex mt-4 justify-end w-full max-sm:*:w-full gap-2 *:cursor-pointer *:select-none *:justify-center">
           <UButton class="rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline" @click="close"/>
           <UButton :loading="removingColumn" class="rounded-xl px-6 py-2" color="error"
