@@ -35,11 +35,15 @@ const newButtonDropdownItems = computed(_ => [
 const getColumnDropdownItems = columnId => [
   {
     label: preferences.value.hiddenColumnIds.includes(columnId) ? 'Show' : 'Hide',
-    icon: 'i-ri-eye-off-fill',
+    icon: preferences.value.hiddenColumnIds.includes(columnId) ? 'i-ri-eye-fill' : 'i-ri-eye-off-fill',
     onSelect: _ => {
       preferences.value.hiddenColumnIds.includes(columnId) ? showColumn(columnId) : hideColumn(columnId)
     },
-    class: 'cursor-pointer'
+    class: 'cursor-pointer',
+    disabled: (_ => {
+      const column = cachedOrderColumns.value.find(column => column.id === columnId)
+      return column.isSystem === true
+    })()
   },
   {
     label: 'Rename',
@@ -94,7 +98,6 @@ const columnColors = ['bg-secondary outline-secondary', 'bg-primary outline-prim
 const searchExpanded = ref(false)
 
 const newOrderSlideoverOpened = ref(false)
-const settingsSlideoverOpened = ref(false)
 const newColumnSlideoverOpened = ref(false)
 const removeColumnSlideoverOpened = ref(false)
 const renameColumnSlideoverOpened = ref(false)
@@ -431,7 +434,7 @@ watch(searchQuery, async _ => {
         </div>
       </template>
     </USlideover>
-    <USlideover v-model:open="newOrderSlideoverOpened" :ui="{content: 'max-w-lg'}">
+    <USlideover v-model:open="newOrderSlideoverOpened" :ui="{content: 'max-w-lg'}" title="New order">
       <template #body>
         <div class="">bruh</div>
       </template>
