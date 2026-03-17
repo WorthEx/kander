@@ -40,11 +40,11 @@ export default defineEventHandler(async (event) => {
         customerId: body.customerId,
         columnId: systemColumn.id,
         position: newOrderPosition ?? null,
-        items: {
+        items: body.items?.length > 1 ? {
           createMany: {
             data: [...body.items]
           }
-        },
+        } : {},
         responsibles: assignedManagerId ? {
           connect: [{id: assignedManagerId}]
         } : {connect: []},
