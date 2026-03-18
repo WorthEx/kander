@@ -1,5 +1,7 @@
 <script setup>
 import Draggable from 'vuedraggable'
+import {z} from "zod";
+import {CalendarDate, getLocalTimeZone, today} from '@internationalized/date'
 
 definePageMeta({
   layout: 'dashboard',
@@ -9,7 +11,7 @@ const route = useRoute()
 const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
-const {loadingOrders, cachedOrderColumns} = useOrders()
+const {loadingOrders, cachedOrderColumns, createOrder} = useOrders()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
 const {addColumn, removeColumn, renameColumn} = useColumns()
 const {$kanbanWs} = useNuxtApp()
@@ -18,7 +20,11 @@ const {showColumn, hideColumn, preferences} = usePreferences()
 const newButtonDropdownItems = computed(_ => [
   {
     label: 'Order',
-    onSelect: _ => newOrderSlideoverOpened.value = true
+    onSelect: async _ => {
+      newOrderSlideoverOpened.value = true
+      if (customerList.value?.length < 1) await fetchCustomers()
+      if (servicesList.value?.length < 1) await fetchServices()
+    }
   },
   {
     label: 'Column',
@@ -96,6 +102,10 @@ const tabItems = [
 ]
 const columnColors = ['bg-secondary outline-secondary', 'bg-primary outline-primary', 'bg-tertiary outline-tertiary', 'bg-quaternary outline-quaternary', 'bg-quinary outline-quinary']
 const searchExpanded = ref(false)
+const customerList = ref([])
+const servicesList = ref([])
+const newItemErrorState = ref(false)
+const deadlineDateInput = useTemplateRef('deadlineDateInput')
 
 const newOrderSlideoverOpened = ref(false)
 const newColumnSlideoverOpened = ref(false)
@@ -106,10 +116,73 @@ const newColumnTitle = ref('')
 const columnToRemoveId = ref(null)
 const updatedColumnTitle = ref('')
 const columnToRenameId = ref(null)
+const newOrderState = reactive({
+  title: "",
+  description: "",
+  customerId: null,
+  priority: "medium",
+  deadline: today(getLocalTimeZone()).add({days: 1}),
+  items: [],
+})
+const newItemState = reactive({
+  serviceId: null,
+  quantity: 1,
+  price: 0.00,
+})
 
 const addingColumn = ref(false)
 const removingColumn = ref(false)
 const renamingColumn = ref(false)
+const creatingOrder = ref(false)
+
+const newOrderSchema = z.object({
+  title: z.string()
+    .min(1, "Order title is required.")
+    .max(255, "Order title must contain under 255 characters."),
+  description: z.string()
+    .max(512, "Order description must contain under 512 characters.")
+    .optional(),
+  deadline: z.custom(
+    (data) => data instanceof CalendarDate,
+    {message: 'Invalid deadline date'}
+  ),
+  customerId: z.string({error: 'Customer is required.'}),
+  priority: z.enum(['low', 'medium', 'high']),
+  items: z.array(z.object({
+    serviceId: z.string({error: 'Service is required.'}),
+    quantity: z.number().min(1, "Item quantity must be greater than 0."),
+    price: z.float64().min(0.01, "Item price is required."),
+  })).nonempty("Order must have at least one item."),
+})
+
+const newItemSchema = z.object({
+  serviceId: z.string({error: 'Service is required.'}),
+  price: z.float64().min(0.01, "Price is required."),
+  quantity: z.int().min(1, "C'mon, you need at least one."),
+})
+
+const fetchCustomers = async _ => {
+  customerList.value = await $fetch(`/api/workspaces/${wsId.value}/customers`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+}
+
+const fetchServices = async _ => {
+  servicesList.value = await $fetch(`/api/workspaces/${wsId.value}/services/active`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+}
+
+const clearNewOrderState = _ => {
+  newOrderState.title = ""
+  newOrderState.description = ""
+  newOrderState.customerId = ""
+  newOrderState.priority = "medium"
+  newOrderState.deadline = today(getLocalTimeZone()).add({days: 1})
+  newOrderState.items = []
+}
 
 const handleRemoveColumn = async _ => {
   removingColumn.value = true
@@ -163,6 +236,45 @@ const handleRenameColumn = async _ => {
   }
 }
 
+const handleAddItem = _ => {
+  try {
+    newItemSchema.parse(newItemState)
+    newItemErrorState.value = false
+    newOrderState.items.push({
+      ...newItemState,
+      title: servicesList.value.find(s => s.id === newItemState.serviceId)?.title
+    })
+    newItemState.serviceId = null
+    newItemState.quantity = 1
+    newItemState.price = 0.00
+    newItemErrorState.value = false
+  } catch {
+    newItemErrorState.value = true
+  }
+}
+
+const handleRemoveItem = (itemIndex) => {
+  newOrderState.items = newOrderState.items.filter((_, i) => i !== itemIndex)
+}
+
+const handleCreateOrder = async event => {
+  if (!event.data) return
+  creatingOrder.value = true
+  console.log(event.data.deadline.toString())
+  try {
+    await createOrder({
+      ...event.data,
+      deadline: event.data.deadline.toString()
+    }, wsId.value)
+    notif.success("A new order has been placed!")
+    newOrderSlideoverOpened.value = false
+    clearNewOrderState()
+  } catch {
+    notif.error("An issue occurred while creating an order. Try again later.")
+  } finally {
+    creatingOrder.value = false
+  }
+}
 
 const foundOrders = computed(() => {
   if (!cachedOrderColumns.value) return [];
@@ -199,9 +311,29 @@ const shownColumns = computed(() => {
 const hiddenColumns = computed(() => {
   return cachedOrderColumns.value?.filter(column => preferences.value.hiddenColumnIds.includes(column.id) && column.isSystem !== true) || []
 })
+const prioritiesList = computed(_ => {
+  const values = Object.values(Priority).splice(0, Object.values(Priority).length / 2).map(p => p.toLowerCase())
+  return values.map(value => ({
+    label: value.charAt(0).toUpperCase() + value.slice(1),
+    value,
+    chip: {
+      color: value === 'low' ? 'info' :
+        value === 'medium' ? 'warning' :
+          'error',
+      label: value.charAt(0).toUpperCase() + value.slice(1),
+    }
+  }))
+})
 
 watch(searchQuery, async _ => {
   searchExpanded.value = searchQuery.value.length > 0
+})
+
+watch(_ => newItemState.serviceId, (newServiceId, oldServiceId) => {
+  // automatically fetch this service base price
+  if (oldServiceId !== newServiceId) {
+    newItemState.price = servicesList.value.find(s => s.id === newItemState.serviceId)?.basePrice || 0.00
+  }
 })
 
 </script>
@@ -435,8 +567,125 @@ watch(searchQuery, async _ => {
       </template>
     </USlideover>
     <USlideover v-model:open="newOrderSlideoverOpened" :ui="{content: 'max-w-lg'}" title="New order">
-      <template #body>
-        <div class="">bruh</div>
+      <template #body="{close}">
+        <UForm :schema="newOrderSchema" :state="newOrderState" :validate-on="['change', 'input']"
+               class="space-y-4" @submit="handleCreateOrder">
+          <UFormField label="Title" name="title" required>
+            <UInput v-model="newOrderState.title" class="[&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2 w-full"
+                    placeholder="Promotion video for Crunchyroll"/>
+          </UFormField>
+          <UFormField autoresize label="Description" name="description">
+            <UTextarea v-model="newOrderState.description" :rows="3"
+                       class="*:rounded-xl *:px-3 *:py-2 w-full"
+                       placeholder="The project is really complicated. GL HF!"/>
+          </UFormField>
+          <UFormField class="w-full" label="Customer" name="customerId" required>
+            <USelect v-model="newOrderState.customerId"
+                     :items="customerList" class="w-full rounded-xl px-3 py-2"
+                     labelKey="fullName" valueKey="id">
+              <template #default="{modelValue}">
+                <div v-if="modelValue" class="flex flex-col gap-1 text-start">
+                  <span>{{ customerList.find(c => c.id === modelValue)?.fullName }}</span>
+                  <span class="text-dimmed text-xs">{{
+                      customerList.find(c => c.id === modelValue)?.phone
+                    }}</span>
+                </div>
+                <span v-else class="text-dimmed">Select customer</span>
+              </template>
+            </USelect>
+          </UFormField>
+          <UFormField class="w-full" label="Items" name="items" required>
+            <div class="flex flex-col gap-2">
+              <section class="rounded-xl border border-default p-2 flex flex-col gap-2">
+                <UFormField label="Service" required>
+                  <USelect v-model="newItemState.serviceId" :color="newItemErrorState ? 'error' : 'primary'"
+                           :highlight="newItemErrorState"
+                           :items="servicesList" class="w-full rounded-xl px-3 py-2"
+                           labelKey="title" valueKey="id"/>
+                </UFormField>
+                <div class="w-full flex gap-2 *:basis-1/2">
+                  <UFormField label="Single service price" required>
+                    <UInputNumber v-model="newItemState.price" :color="newItemErrorState ? 'error' : 'primary'"
+                                  :format-options="{minimumFractionDigits: 2, maximumFractionDigits: 2, roundingIncrement: 1}"
+                                  :highlight="newItemErrorState"
+                                  :min="0.01"
+                                  :step="0.01"
+                                  class="[&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2 w-full **:text-center"
+                    />
+                  </UFormField>
+                  <UFormField label="Quantity of services" required>
+                    <UInputNumber v-model="newItemState.quantity" :color="newItemErrorState ? 'error' : 'primary'"
+                                  :highlight="newItemErrorState"
+                                  :min="1"
+                                  :step="1"
+                                  class="[&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2 w-full **:text-center"
+                    />
+                  </UFormField>
+                </div>
+                <UButton class="w-full justify-center cursor-pointer rounded-xl px-3 py-2" color="secondary"
+                         icon="i-ri-add-fill"
+                         label="Add"
+                         variant="soft"
+                         @click="handleAddItem"/>
+              </section>
+              <OrderFormItem v-for="(item, itemIndex) in newOrderState.items"
+                             :currencySymbol="getCurrencySymbol"
+                             :index="itemIndex"
+                             :price="item.price"
+                             :quantity="item.quantity"
+                             :serviceId="item.serviceId"
+                             :title="item.title"
+                             @remove="handleRemoveItem"/>
+            </div>
+          </UFormField>
+          <div class="w-full flex gap-2 *:basis-1/2">
+            <UFormField class="w-full" label="Priority" name="priority" required>
+              <USelect v-model="newOrderState.priority"
+                       :items="prioritiesList" class="w-full rounded-xl px-3 py-2 capitalize">
+                <template #leading="{ modelValue, ui }">
+                  <UChip
+                    v-if="modelValue"
+                    :class="ui.itemLeadingChip()"
+                    :size="ui.itemLeadingChipSize()"
+                    inset
+                    standalone
+                    v-bind="prioritiesList.find(p => p.value === modelValue)?.chip"
+                  />
+                </template>
+              </USelect>
+            </UFormField>
+            <UFormField class="w-full" label="Deadline" name="deadline" required>
+              <UInputDate ref="deadlineDateInput" v-model="newOrderState.deadline" class="rounded-xl py-2 w-full">
+                <template #trailing>
+                  <UPopover :content="{
+                      side: 'bottom',
+                      sideOffset: 8,
+                      align:'center'
+                    }" :reference="deadlineDateInput?.inputsRef[3]?.$el">
+                    <UButton
+                      class="px-0"
+                      color="neutral"
+                      icon="i-ri-calendar-fill"
+                      size="sm"
+                      variant="link"
+                    />
+                    <template #content>
+                      <UCalendar v-model="newOrderState.deadline" class="p-2"/>
+                    </template>
+                  </UPopover>
+                </template>
+              </UInputDate>
+            </UFormField>
+          </div>
+          <div
+            class="flex mt-6 justify-end *:max-sm:w-full w-full gap-2 *:cursor-pointer *:select-none *:px-4 *:py-2 *:justify-center">
+            <UButton class=" rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline" @click="_ => {
+                      close()
+                      clearNewOrderState()
+            }"/>
+            <UButton :loading="creatingOrder" class=" rounded-xl px-4 py-2" label="Create" type="submit"/>
+          </div>
+        </UForm>
       </template>
     </USlideover>
   </div>

@@ -4,7 +4,7 @@ const props = defineProps({
   items: Array,
   customerName: String,
   priority: String,
-  due: Date,
+  due: String,
   numberOfLinks: Number,
   totalCost: Number,
   source: String,
@@ -14,22 +14,20 @@ const props = defineProps({
 
 const getDate = computed(_ => {
   if (!props.due) return null
-  const day = String(props.due.getDate()).padStart(2, '0')
+  const [year, month, day] = props.due.split('-')
 
-  const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ]
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-  const month = months[props.due.getMonth()]
-  const year = props.due.getFullYear()
-
-  return `${day} ${month} ${year}`
+  return `${day} ${months[parseInt(month) - 1]} ${year}`
 })
+
 const overdue = computed(() => {
-  if (!props.due) return false
-  return (new Date() - props.due) <= 0
+  const dueDate = new Date(props.due)
+  if (!dueDate || !props.due) return false
+  return (new Date() - dueDate) > 0
 })
+
 const progressPercent = computed(() => {
   const doneItems = props.items.filter(item => item.isDone === true)
   return doneItems / props.items.length

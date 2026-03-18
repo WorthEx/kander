@@ -16,6 +16,13 @@ export const useOrders = () => {
     }
   }
 
+  const createOrder = async (order, wsId) => {
+    await $fetch(`/api/workspaces/${wsId}/orders`, {
+      method: 'POST',
+      credentials: 'include',
+      body: {...order}
+    })
+  }
 
-  return {cachedOrderColumns, loadingOrders, fetchOrders}
+  return {cachedOrderColumns, loadingOrders, fetchOrders, createOrder}
 }
