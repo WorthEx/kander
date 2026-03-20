@@ -530,7 +530,7 @@ watch(_ => newItemState.serviceId, (newServiceId, oldServiceId) => {
       <template #body="{close}">
         <p class="text">You're about to entirely delete column <span
           class="break-keep whitespace-nowrap px-1 py-0.5 rounded-md border border-primary bg-muted text-primary border-dashed">
-            {{ cachedOrderColumns.find(c => c.id === columnToRemoveId).title }}</span> from this workspace scope.</p>
+            {{ cachedOrderColumns.find(c => c.id === columnToRemoveId)?.title }}</span> from this workspace scope.</p>
         <div class="flex mt-4 justify-end w-full max-sm:*:w-full gap-2 *:cursor-pointer *:select-none *:justify-center">
           <UButton class="rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline" @click="close"/>
           <UButton :loading="removingColumn" class="rounded-xl px-6 py-2" color="error"
