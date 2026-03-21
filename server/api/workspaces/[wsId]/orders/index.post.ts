@@ -51,6 +51,7 @@ export default defineEventHandler(async (event) => {
           },
         },
         links: true,
+        creator: true
       }
     })
     const totalCost = createdOrder.items.reduce((sum, item) => sum + item.price * item.quantity, 0)

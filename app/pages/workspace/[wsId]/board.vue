@@ -2,6 +2,8 @@
 import Draggable from 'vuedraggable'
 import {z} from "zod";
 import {CalendarDate, getLocalTimeZone, today} from '@internationalized/date'
+import {LexoRank} from "lexorank";
+import {useDebounceFn} from "@vueuse/core";
 
 definePageMeta({
   layout: 'dashboard',
@@ -11,7 +13,7 @@ const route = useRoute()
 const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
-const {loadingOrders, cachedOrderColumns, createOrder} = useOrders()
+const {loadingOrders, cachedOrderColumns, createOrder, moveOrder} = useOrders()
 const {data: currentWorkspace} = useNuxtData('currentWorkspace')
 const {addColumn, removeColumn, renameColumn} = useColumns()
 const {$kanbanWs} = useNuxtApp()
@@ -276,6 +278,93 @@ const handleCreateOrder = async event => {
   }
 }
 
+const getColumnOrders = (columnId) => {
+  const columnOrders = [...cachedOrderColumns.value.find(column => column.id === columnId)?.orders]
+  if (!columnOrders) return []
+  return columnOrders
+    .sort((a, b) => {
+      try {
+        const rankA = LexoRank.parse(a.position)
+        const rankB = LexoRank.parse(b.position)
+        return rankA.compareTo(rankB)
+      } catch {
+        return 0
+      }
+    })
+}
+
+const calculateNewPosition = (orders, newIndex, movedOrderId) => {
+  const cardsWithoutMoved = orders.filter(o => o.id !== movedOrderId)
+
+  try {
+    // Case 1: First order in column or moved to first position
+    if (cardsWithoutMoved.length === 0 || newIndex === 0) {
+      if (cardsWithoutMoved.length === 0) {
+        return LexoRank.middle().toString()
+      } else {
+        const nextRank = LexoRank.parse(cardsWithoutMoved[0].position)
+        return nextRank.genPrev().toString()
+      }
+    }
+
+    // Case 2: Moved to the last position
+    if (newIndex >= cardsWithoutMoved.length) {
+      const prevRank = LexoRank.parse(cardsWithoutMoved[cardsWithoutMoved.length - 1].position)
+      return prevRank.genNext().toString()
+    }
+
+    // Case 3: Order between some others
+    const prevRank = LexoRank.parse(cardsWithoutMoved[newIndex - 1].position)
+    const nextRank = LexoRank.parse(cardsWithoutMoved[newIndex].position)
+    return prevRank.between(nextRank).toString()
+
+  } catch (error) {
+    console.error('LexoRank calculation error:', error)
+    return LexoRank.middle().toString()
+  }
+}
+
+const handleOrderMoved = (event, targetColumn) => {
+  if (event.removed) return
+  debouncedOrderMoved(event, targetColumn)
+}
+
+const debouncedOrderMoved = useDebounceFn(async (event, targetColumn) => {
+  let movedCard = null
+  let newIndex = -1
+
+  // Case 1: Moved between columns
+  if (event.added) {
+    movedCard = event.added.element
+    newIndex = event.added.newIndex
+  }
+  // Case 2: Moved within one column
+  else if (event.moved) {
+    movedCard = event.moved.element
+    newIndex = event.moved.newIndex
+  }
+
+  // Process if move confirmed
+  if (movedCard && newIndex !== -1) {
+    const targetOrders = getColumnOrders(targetColumn.id)
+    const newPosition = calculateNewPosition(targetOrders, newIndex, movedCard.id)
+    // local change
+    const order = targetColumn.orders.find(order => order.id === movedCard.id)
+    if (order) order.position = newPosition
+    // remote change
+    // console.log(`moved card id: ${movedCard.id} to column ${targetColumn.id} with position: ${newPosition}`)
+    try {
+      await moveOrder(movedCard.id, newPosition, targetColumn.id, wsId.value)
+      $kanbanWs.orderActions.move(movedCard.id, newPosition, targetColumn.id)
+    } catch {
+      notif.error("An issue occurred while board updating. Try again later.")
+    }
+  }
+}, 300, {
+  maxWait: 3000,
+})
+
+
 const foundOrders = computed(() => {
   if (!cachedOrderColumns.value) return [];
 
@@ -447,15 +536,13 @@ watch(_ => newItemState.serviceId, (newServiceId, oldServiceId) => {
               drag-class="dragged"
               ghost-class="ghost"
               group="cards"
-              item-key="id">
+              item-key="id"
+              @change="handleOrderMoved($event, column)">
               <template #item="{element}">
                 <OrderCard :key="element.id"
                            :currencySymbol="getCurrencySymbol"
-                           :customerName="element.customer.fullName"
                            :dimmed="!foundOrders.includes(element.id) && searchQuery.length > 0"
-                           :due="element.deadline" :items="element.items" :numberOfLinks="element.links.length"
-                           :priority="element.priority" :source="element.source" :title="element.title"
-                           :totalCost="element.totalCost"/>
+                           :order="element"/>
               </template>
             </Draggable>
             <!-- if no orders at all -->

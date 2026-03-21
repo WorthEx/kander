@@ -43,6 +43,7 @@ export default defineEventHandler(async (event) => {
           },
         },
         links: true,
+        creator: true
       }
     })
 

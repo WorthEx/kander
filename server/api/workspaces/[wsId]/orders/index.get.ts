@@ -24,7 +24,12 @@ export default defineEventHandler(async (event) => {
             },
           },
           links: true,
-          items: true
+          items: {
+            include: {
+              service: true
+            }
+          },
+          creator: true
         },
       },
     },

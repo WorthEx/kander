@@ -106,10 +106,39 @@ export default defineNuxtPlugin((nuxtApp) => {
         //       updateOrder(id, data)
         //       console.log('✏️ Order updated:', data.id)
         //       break
-        //     case 'move':
-        //       moveOrder(id, data.columnId, data.position)
-        //       console.log('🔄 Order moved:', id)
-        //       break
+        case 'move':
+          let movedOrder = null
+
+          // 1. Find and delete the order from its current column
+          // @ts-ignore
+          for (const column of cachedOrderColumns.value) {
+            const index = column.orders.findIndex((order: any) => order.id === entityId)
+            if (index !== -1) {
+              movedOrder = column.orders[index]
+              column.orders.splice(index, 1)
+              break
+            }
+          }
+
+          if (!movedOrder) break
+
+          // 2. Update order data
+          movedOrder.columnId = data.newColumnId
+          movedOrder.position = data.newPosition
+
+          // 3. Find the new column
+          // @ts-ignore
+          const newColumn = cachedOrderColumns.value.find(column => column.id === data.newColumnId)
+          if (!newColumn) break
+
+          // 4. Push the order
+          newColumn.orders.push(movedOrder)
+
+          // 5. Сортируем колонку по LexoRank
+          newColumn.orders.sort((a: any, b: any) =>
+            a.position.localeCompare(b.position)
+          )
+          break
         //     case 'delete':
         //       removeOrder(id)
         //       console.log('🗑️ Order deleted:', id)
@@ -151,21 +180,31 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   }
 
-  // API для работы с заказами
-  // const orderActions = {
-  //   create: (data: any) => {
-  //     sendAction('order', 'create', undefined, data)
-  //   },
-  //   update: (id: string, data: any) => {
-  //     sendAction('order', 'update', id, data)
-  //   },
-  //   move: (id: string, columnId: string, position: number) => {
-  //     sendAction('order', 'move', id, { columnId, position })
-  //   },
-  //   delete: (id: string) => {
-  //     sendAction('order', 'delete', id)
-  //   }
-  // }
+  // API for sending order events
+  const orderActions = {
+    //   create: (data: any) => {
+    //     sendAction('order', 'create', undefined, data)
+    //   },
+    //   update: (id: string, data: any) => {
+    //     sendAction('order', 'update', id, data)
+    //   },
+    move: (id: string, newPosition: string, newColumnId: string) => {
+      send(JSON.stringify({
+        type: 'kanban',
+        workspaceId: workspaceId.value,
+        action: 'move',
+        entity: 'order',
+        entityId: id,
+        data: {
+          newPosition,
+          newColumnId
+        }
+      }))
+    },
+    //   delete: (id: string) => {
+    //     sendAction('order', 'delete', id)
+    //   }
+  }
 
   const connect = (id: string) => {
     workspaceId.value = id
@@ -194,7 +233,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       kanbanWs: {
         semanticStatus,
         columnActions,
-        // orderActions,
+        orderActions,
         connect,
         disconnect,
         reconnect: open
