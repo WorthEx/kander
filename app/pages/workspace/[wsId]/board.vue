@@ -349,7 +349,10 @@ const debouncedOrderMoved = useDebounceFn(async (event, targetColumn) => {
     const newPosition = calculateNewPosition(targetOrders, newIndex, movedCard.id)
     // local change
     const order = targetColumn.orders.find(order => order.id === movedCard.id)
-    if (order) order.position = newPosition
+    if (order) {
+      order.position = newPosition
+      order.columnId = targetColumn.id
+    }
     // remote change
     // console.log(`moved card id: ${movedCard.id} to column ${targetColumn.id} with position: ${newPosition}`)
     try {
