@@ -26,7 +26,7 @@ const handleSwitchStatus = () => {
 
 <template>
   <div
-    class="flex justify-between items-center gap-2 border border-accented rounded-xl p-2 select-none bg-muted">
+    class="flex justify-between items-center gap-2 rounded-xl p-3 select-none dark:bg-muted bg-elevated/80">
     <div class="flex flex-col gap-1">
       <span class="text-sm font-bold">{{ title }}</span>
       <span class="uppercase">
