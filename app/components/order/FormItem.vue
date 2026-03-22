@@ -6,13 +6,21 @@ const props = defineProps<{
   quantity: number,
   currencySymbol: string,
   index: number
+  active?: boolean
+  done?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'remove', itemIndex: number): void
+  (e: 'switch', itemIndex: number): void
 }>()
 
 const handleRemoveItem = () => emit('remove', props.index)
+
+const handleSwitchStatus = () => {
+  if (!props.active) return
+  emit('switch', props.index)
+}
 
 </script>
 
@@ -29,6 +37,8 @@ const handleRemoveItem = () => emit('remove', props.index)
         </span>
     </div>
     <div class="flex gap-2 items-center">
+      <UButton v-if="active" :icon="done ? 'i-ri-check-fill' : null" class="cursor-pointer size-8" variant="subtle"
+               @click="handleSwitchStatus"/>
       <UButton class="cursor-pointer" color="error" icon="i-ri-delete-bin-6-fill" variant="soft"
                @click="handleRemoveItem"/>
     </div>
