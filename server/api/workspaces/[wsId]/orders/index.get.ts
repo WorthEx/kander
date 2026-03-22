@@ -18,11 +18,7 @@ export default defineEventHandler(async (event) => {
         },
         include: {
           responsibles: true,
-          customer: {
-            select: {
-              id: true, fullName: true, phone: true
-            },
-          },
+          customer: true,
           links: true,
           items: {
             include: {

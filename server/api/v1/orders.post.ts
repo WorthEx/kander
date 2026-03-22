@@ -37,11 +37,7 @@ export default defineEventHandler(async (event) => {
           }
         },
         responsibles: true,
-        customer: {
-          select: {
-            id: true, fullName: true, phone: true
-          },
-        },
+        customer: true,
         links: true,
         creator: true
       }
