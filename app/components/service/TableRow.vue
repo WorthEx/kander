@@ -72,8 +72,11 @@ const formattedPrice = computed(_ => formatPrice(props.service.basePrice))
     </td>
     <td v-if="isCurrentUserAdmin" class="select-none ps-4 pe-4">
       <UModal v-model:open="editModalOpened"
-              :ui="{ footer: 'justify-end gap-2', content: 'divide-none' }"
-              title="Edit service">
+              :ui="{ footer: 'justify-end gap-2', content: 'divide-none' }">
+        <template #title>
+          <span class="text-highlighted font-semibold">Edit service <span
+            class="text-primary">"{{ service.title }}"</span></span>
+        </template>
         <template #body>
           <div class="flex flex-col gap-4">
             <UFormField label="Base price" name="basePrice" required>
