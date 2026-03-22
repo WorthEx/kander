@@ -262,7 +262,6 @@ const handleRemoveItem = (itemIndex) => {
 const handleCreateOrder = async event => {
   if (!event.data) return
   creatingOrder.value = true
-  console.log(event.data.deadline.toString())
   try {
     await createOrder({
       ...event.data,
