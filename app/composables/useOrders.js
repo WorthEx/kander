@@ -32,5 +32,15 @@ export const useOrders = () => {
     })
   }
 
-  return {cachedOrderColumns, loadingOrders, fetchOrders, createOrder, moveOrder}
+  const addItem = async (item, orderId, wsId) => {
+    return await $fetch(`/api/workspaces/${wsId}/orders/items`, {
+      method: 'POST',
+      credentials: 'include',
+      body: {
+        item, orderId
+      }
+    })
+  }
+
+  return {cachedOrderColumns, loadingOrders, fetchOrders, createOrder, moveOrder, addItem}
 }

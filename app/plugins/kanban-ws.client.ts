@@ -97,16 +97,13 @@ export default defineNuxtPlugin((nuxtApp) => {
 
     if (entity === 'order') {
       switch (action) {
-        case 'create':
+        case 'create': {
           //@ts-ignore
           const column = cachedOrderColumns.value.find(column => column.id === data.columnId)
           column.orders.push(data)
           break
-        //     case 'update':
-        //       updateOrder(id, data)
-        //       console.log('✏️ Order updated:', data.id)
-        //       break
-        case 'move':
+        }
+        case 'move': {
           let movedOrder = null
 
           // 1. Find and delete the order from its current column
@@ -139,6 +136,17 @@ export default defineNuxtPlugin((nuxtApp) => {
             a.position.localeCompare(b.position)
           )
           break
+        }
+        case 'update': {
+          // @ts-ignore
+          const column = cachedOrderColumns.value.find(column => column.id === data.columnId)
+          if (!column) break
+          const index = column.orders.findIndex((order: any) => order.id === entityId)
+          if (index !== -1) {
+            column.orders[index] = data.newOrder
+          }
+          break
+        }
         //     case 'delete':
         //       removeOrder(id)
         //       console.log('🗑️ Order deleted:', id)
@@ -185,9 +193,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     //   create: (data: any) => {
     //     sendAction('order', 'create', undefined, data)
     //   },
-    //   update: (id: string, data: any) => {
-    //     sendAction('order', 'update', id, data)
-    //   },
     move: (id: string, newPosition: string, newColumnId: string) => {
       send(JSON.stringify({
         type: 'kanban',
@@ -198,6 +203,19 @@ export default defineNuxtPlugin((nuxtApp) => {
         data: {
           newPosition,
           newColumnId
+        }
+      }))
+    },
+    update: (id: string, columnId: string, newOrder: Object) => {
+      send(JSON.stringify({
+        type: 'kanban',
+        workspaceId: workspaceId.value,
+        action: 'update',
+        entity: 'order',
+        entityId: id,
+        data: {
+          columnId,
+          newOrder
         }
       }))
     },
