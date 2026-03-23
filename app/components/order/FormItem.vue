@@ -37,7 +37,7 @@ const handleSwitchStatus = () => {
         </span>
     </div>
     <div class="flex gap-2 items-center">
-      <UButton v-if="active" :icon="done ? 'i-ri-check-fill' : null" class="cursor-pointer size-8" variant="subtle"
+      <UButton v-if="active" :icon="done ? 'i-ri-check-fill' : null" class="cursor-pointer size-8" variant="outline"
                @click="handleSwitchStatus"/>
       <UButton class="cursor-pointer" color="error" icon="i-ri-delete-bin-6-fill" variant="soft"
                @click="handleRemoveItem"/>

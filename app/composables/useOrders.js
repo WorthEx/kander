@@ -42,5 +42,15 @@ export const useOrders = () => {
     })
   }
 
-  return {cachedOrderColumns, loadingOrders, fetchOrders, createOrder, moveOrder, addItem}
+  const removeItem = async (itemId, orderId, wsId) => {
+    return await $fetch(`/api/workspaces/${wsId}/orders/items`, {
+      method: 'DELETE',
+      credentials: 'include',
+      body: {
+        itemId, orderId
+      }
+    })
+  }
+
+  return {cachedOrderColumns, loadingOrders, fetchOrders, createOrder, moveOrder, addItem, removeItem}
 }

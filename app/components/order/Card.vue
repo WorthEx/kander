@@ -17,7 +17,7 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {copy} = useClipboard()
-const {addItem} = useOrders()
+const {addItem, removeItem} = useOrders()
 const {$kanbanWs} = useNuxtApp()
 
 const descExpanded = ref(false)
@@ -124,7 +124,6 @@ const handleAddItem = async _ => {
     $kanbanWs.orderActions.update(props.order.id, props.order.columnId, {...order})
 
     newItemState.quantity = 1
-    newItemState.price = 0.00
 
     newItemErrorState.value = false
     addItemModalOpened.value = false
@@ -137,9 +136,16 @@ const handleAddItem = async _ => {
 
 const handleRemoveItem = async itemIndex => {
   try {
-    // todo remove item from db
+    const itemToRemove = props.order.items[itemIndex]
+    if (!itemToRemove) return
+    await removeItem(itemToRemove.id, props.order.id, wsId.value)
     notif.success("Successfully updated order!")
-    // todo send ws event
+    // local change
+    const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders.find(order => order.id === props.order.id)
+    order.items.splice(itemIndex, 1)
+    order.totalCost = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0)
+    // send ws event
+    $kanbanWs.orderActions.update(props.order.id, props.order.columnId, {...order})
   } catch {
     notif.error("An issue occurred while updating order. Try again later.")
   }
@@ -314,7 +320,7 @@ watch(newItemState, newItem => {
 
             </OrderLabelled>
           </section>
-          <section class="hiddenо">
+          <section class="hidden">
             <pre>{{ order }}</pre>
           </section>
         </div>
