@@ -19,6 +19,7 @@ const notif = useNotification(toaster)
 const {copy} = useClipboard()
 const {addItem, removeItem, switchItem} = useOrders()
 const {$kanbanWs} = useNuxtApp()
+const {user} = useAuth()
 
 const descExpanded = ref(false)
 const selectedColumn = ref(null)
@@ -85,6 +86,12 @@ const customerFullAddress = computed(_ => buildAddressString(
   props.order.customer.addressLine2,
   props.order.customer.postalCode,
 ))
+
+const isResponsible = computed(_ => {
+  if (!user.value.id) return false
+  return props.order.responsibles.some(r => r.id === user.value.id)
+})
+
 
 const getColumnColor = index => columnColors[index % columnColors.length]
 
@@ -172,6 +179,10 @@ const handleCopyCustomerPhone = _ => {
   notif.success("Phone number copied to clipboard!")
 }
 
+const handleChangeColumn = async _ => {
+  console.log(selectedColumn.value)
+}
+
 watch(_ => props.order.columnId, _ => {
   selectedColumn.value = props.order.columnId
 })
@@ -223,8 +234,9 @@ watch(newItemState, newItem => {
               </OrderLabelled>
               <!--      todo: ACTUALLY change status with position recalculation        -->
               <OrderLabelled label="Status">
-                <USelect v-model="selectedColumn" :items="columnItems"
-                         class="cursor-pointer w-full rounded-xl px-3 py-2 capitalize h-fit" variant="soft">
+                <USelect v-model="selectedColumn" :disabled="!isResponsible" :items="columnItems"
+                         class="cursor-pointer w-full rounded-xl px-3 py-2 capitalize h-fit"
+                         variant="soft" @change="handleChangeColumn">
                   <template #leading="{ modelValue, ui }">
                     <UChip
                       v-if="modelValue"
@@ -263,7 +275,8 @@ watch(newItemState, newItem => {
             <OrderLabelled display label="Items">
               <div class="flex flex-col gap-2">
                 <UModal v-model:open="addItemModalOpened" :ui="{ footer: 'justify-end' }" title="New order item">
-                  <UButton class="w-full justify-center cursor-pointer rounded-xl px-3 py-2" color="secondary"
+                  <UButton :disabled="!isResponsible" class="w-full justify-center cursor-pointer rounded-xl px-3 py-2"
+                           color="secondary"
                            icon="i-ri-add-fill"
                            label="Add" variant="soft"/>
                   <template #body>
@@ -304,6 +317,7 @@ watch(newItemState, newItem => {
                   </template>
                 </UModal>
                 <OrderFormItem v-for="(item, itemIndex) in order.items" :currencySymbol="currencySymbol"
+                               :disabled="!isResponsible"
                                :done="item.isDone"
                                :index="itemIndex"
                                :price="item.price"
@@ -316,9 +330,10 @@ watch(newItemState, newItem => {
               </div>
             </OrderLabelled>
           </section>
+          <!--    responsible users for this order      -->
           <section class="flex flex-col gap-4 pb-4">
             <OrderLabelled display label="Responsibles">
-
+              
             </OrderLabelled>
           </section>
           <section class="flex flex-col gap-4 pb-4">

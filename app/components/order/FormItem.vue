@@ -8,6 +8,7 @@ const props = defineProps<{
   index: number
   active?: boolean
   done?: boolean
+  disabled?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -37,9 +38,10 @@ const handleSwitchStatus = () => {
         </span>
     </div>
     <div class="flex gap-2 items-center">
-      <UButton v-if="active" :icon="done ? 'i-ri-check-fill' : null" class="cursor-pointer size-8" variant="outline"
+      <UButton v-if="active" :disabled :icon="done ? 'i-ri-check-fill' : null" class="cursor-pointer size-8"
+               variant="outline"
                @click="handleSwitchStatus"/>
-      <UButton class="cursor-pointer" color="error" icon="i-ri-delete-bin-6-fill" variant="soft"
+      <UButton :disabled class="cursor-pointer" color="error" icon="i-ri-delete-bin-6-fill" variant="soft"
                @click="handleRemoveItem"/>
     </div>
   </div>
