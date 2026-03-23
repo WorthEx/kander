@@ -9,15 +9,15 @@ const color = ref("")
 
 switch (props.priority) {
   case 'medium':
-    icon.value = "i-ri-circle-line"
+    icon.value = "i-ri-equal-line"
     color.value = "warning"
     break
   case 'high':
-    icon.value = "i-ri-arrow-up-s-line"
+    icon.value = "i-ri-arrow-up-double-line"
     color.value = "error"
     break
   default:
-    icon.value = "i-ri-arrow-down-s-line"
+    icon.value = "i-ri-arrow-down-double-line"
     color.value = "info"
     break
 }

@@ -58,8 +58,8 @@ const overdue = computed(() => {
 })
 
 const progressPercent = computed(() => {
-  const doneItems = props.order.items.filter(item => item.isDone === true)
-  return doneItems / props.order.items.length
+  const doneItems = [...props.order.items.filter(item => item.isDone === true)]
+  return doneItems.length / props.order.items.length * 100
 })
 
 const slideoverTitle = computed(() => {
@@ -208,16 +208,8 @@ const handleChangeColumn = async _ => {
   }
 
   if (newPosition) {
-    // local change
-    // const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId)?.orders?.find(order => order.id === props.order.id)
-    // if (order) {
-    //   order.position = newPosition
-    //   order.columnId = selectedColumn.value
-    // }
-    // remote change
     try {
       await moveOrder(props.order.id, newPosition, selectedColumn.value, wsId.value, true)
-      // $kanbanWs.orderActions.move(props.order.id, newPosition, selectedColumn.value)
     } catch {
       notif.error("An issue occurred while board updating. Try again later.")
     }
@@ -419,6 +411,7 @@ watch(newItemState, newItem => {
         <div class="flex gap-1 flex-wrap">
           <OrderPriorityChip :priority="order.priority"/>
           <OrderSourceChip :source="order.source"/>
+          <OrderDoneChip :progress="progressPercent"/>
         </div>
         <!--   footer   -->
         <USeparator class="h-px mt-4"/>
