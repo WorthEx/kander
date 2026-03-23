@@ -24,11 +24,11 @@ export const useOrders = () => {
     })
   }
 
-  const moveOrder = async (orderId, newPosition, newColumnId, wsId) => {
+  const moveOrder = async (orderId, newPosition, newColumnId, wsId, publish = false) => {
     await $fetch(`/api/workspaces/${wsId}/orders/move`, {
       method: 'PATCH',
       credentials: 'include',
-      body: {orderId, newPosition, newColumnId}
+      body: {orderId, newPosition, newColumnId, publish}
     })
   }
 

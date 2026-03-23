@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
 
   await checkWorkspaceAccess(event, wsId)
 
-  const {orderId, newPosition, newColumnId} = await readBody(event)
+  const {orderId, newPosition, newColumnId, publish} = await readBody(event)
   if (!orderId || !newPosition || !newColumnId) return createError({
     statusCode: 400,
     statusText: 'No orderId or newPosition provided.'
@@ -17,16 +17,18 @@ export default defineEventHandler(async (event) => {
       columnId: newColumnId,
     }
   })
-  //
-  // publishToWorkspace(wsId, {
-  //   type: 'kanban',
-  //   workspaceId: wsId,
-  //   action: 'move',
-  //   entity: 'order',
-  //   entityId: orderId,
-  //   data: {
-  //     newPosition,
-  //     newColumnId
-  //   }
-  // })
+
+  if (publish) {
+    publishToWorkspace(wsId, {
+      type: 'kanban',
+      workspaceId: wsId,
+      action: 'move',
+      entity: 'order',
+      entityId: orderId,
+      data: {
+        newPosition,
+        newColumnId
+      }
+    })
+  }
 })

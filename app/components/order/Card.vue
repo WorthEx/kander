@@ -1,6 +1,7 @@
 <script setup>
 import {z} from "zod";
 import {useClipboard} from "@vueuse/core";
+import {LexoRank} from "lexorank";
 
 const props = defineProps({
   order: Object,
@@ -17,7 +18,7 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {copy} = useClipboard()
-const {addItem, removeItem, switchItem} = useOrders()
+const {addItem, removeItem, switchItem, moveOrder} = useOrders()
 const {$kanbanWs} = useNuxtApp()
 const {user} = useAuth()
 
@@ -180,7 +181,47 @@ const handleCopyCustomerPhone = _ => {
 }
 
 const handleChangeColumn = async _ => {
-  console.log(selectedColumn.value)
+  if (props.order.columnId === selectedColumn.value) return
+
+  const targetColumnOrders = [...cachedOrderColumns.value.find(column => column.id === props.order.columnId)?.orders]
+  if (!targetColumnOrders) return
+  targetColumnOrders.sort((a, b) => {
+    try {
+      const rankA = LexoRank.parse(a.position)
+      const rankB = LexoRank.parse(b.position)
+      return rankA.compareTo(rankB)
+    } catch {
+      return 0
+    }
+  })
+
+  let newPosition
+
+  if (targetColumnOrders.length === 0) {
+    // empty column
+    newPosition = LexoRank.middle().toString()
+  } else {
+    // non-empty column => generate LexoRank
+    const lastOrder = targetColumnOrders.at(-1)
+    const lastRank = LexoRank.parse(lastOrder.position)
+    newPosition = lastRank.genNext().toString()
+  }
+
+  if (newPosition) {
+    // local change
+    // const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId)?.orders?.find(order => order.id === props.order.id)
+    // if (order) {
+    //   order.position = newPosition
+    //   order.columnId = selectedColumn.value
+    // }
+    // remote change
+    try {
+      await moveOrder(props.order.id, newPosition, selectedColumn.value, wsId.value, true)
+      // $kanbanWs.orderActions.move(props.order.id, newPosition, selectedColumn.value)
+    } catch {
+      notif.error("An issue occurred while board updating. Try again later.")
+    }
+  }
 }
 
 watch(_ => props.order.columnId, _ => {
@@ -333,7 +374,7 @@ watch(newItemState, newItem => {
           <!--    responsible users for this order      -->
           <section class="flex flex-col gap-4 pb-4">
             <OrderLabelled display label="Responsibles">
-              
+
             </OrderLabelled>
           </section>
           <section class="flex flex-col gap-4 pb-4">
