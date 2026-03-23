@@ -12,14 +12,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'remove', itemIndex: number): void
-  (e: 'switch', itemIndex: number): void
+  (e: 'switch', itemIndex: number, done: boolean): void
 }>()
 
 const handleRemoveItem = () => emit('remove', props.index)
 
 const handleSwitchStatus = () => {
-  if (!props.active) return
-  emit('switch', props.index)
+  if (!props.active || props.done === undefined || props.done === null) return
+  emit('switch', props.index, !props.done)
 }
 
 </script>

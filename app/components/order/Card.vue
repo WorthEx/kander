@@ -17,7 +17,7 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {copy} = useClipboard()
-const {addItem, removeItem} = useOrders()
+const {addItem, removeItem, switchItem} = useOrders()
 const {$kanbanWs} = useNuxtApp()
 
 const descExpanded = ref(false)
@@ -115,7 +115,7 @@ const handleAddItem = async _ => {
   addingItem.value = true
   try {
     const createdItem = await addItem(newItemState, props.order.id, wsId.value)
-    notif.success("Successfully updated order!")
+    // notif.success("Successfully updated order!")
     // local change
     const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders.find(order => order.id === props.order.id)
     order.items.push(createdItem)
@@ -139,7 +139,7 @@ const handleRemoveItem = async itemIndex => {
     const itemToRemove = props.order.items[itemIndex]
     if (!itemToRemove) return
     await removeItem(itemToRemove.id, props.order.id, wsId.value)
-    notif.success("Successfully updated order!")
+    // notif.success("Successfully updated order!")
     // local change
     const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders.find(order => order.id === props.order.id)
     order.items.splice(itemIndex, 1)
@@ -151,11 +151,17 @@ const handleRemoveItem = async itemIndex => {
   }
 }
 
-const handleSwitchItem = async itemIndex => {
+const handleSwitchItem = async (itemIndex, done) => {
   try {
-    // todo switch item in db
-    notif.success("Successfully updated order!")
-    // todo send ws event
+    const itemToSwitch = props.order.items[itemIndex]
+    if (!itemToSwitch) return
+    await switchItem(itemToSwitch.id, props.order.id, done, wsId.value)
+    // notif.success("Successfully updated order!")
+    // local change
+    const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders.find(order => order.id === props.order.id)
+    order.items[itemIndex].isDone = done
+    // send ws event
+    $kanbanWs.orderActions.update(props.order.id, props.order.columnId, {...order})
   } catch {
     notif.error("An issue occurred while updating order. Try again later.")
   }
@@ -320,7 +326,7 @@ watch(newItemState, newItem => {
 
             </OrderLabelled>
           </section>
-          <section class="hidden">
+          <section class="hiddenk">
             <pre>{{ order }}</pre>
           </section>
         </div>

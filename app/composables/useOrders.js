@@ -52,5 +52,19 @@ export const useOrders = () => {
     })
   }
 
-  return {cachedOrderColumns, loadingOrders, fetchOrders, createOrder, moveOrder, addItem, removeItem}
+  const switchItem = async (itemId, orderId, done, wsId) => {
+    return await $fetch(`/api/workspaces/${wsId}/orders/items`, {
+      method: 'PATCH',
+      credentials: 'include',
+      body: {
+        itemId, orderId, done
+      }
+    })
+  }
+
+  return {
+    cachedOrderColumns, loadingOrders,
+    fetchOrders, createOrder, moveOrder,
+    addItem, removeItem, switchItem
+  }
 }
