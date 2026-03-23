@@ -10,22 +10,7 @@ export default defineEventHandler(async (event) => {
     statusText: 'No serviceId, quantity, price or orderId provided.'
   })
 
-  const order = await prisma.order.findUnique({
-    where: {
-      id: orderId
-    },
-    include: {
-      responsibles: true
-    }
-  })
-  if (!order) return createError({
-    statusCode: 404,
-    statusText: 'Order not found.'
-  })
-  if (!order.responsibles.some(user => user.id === userId)) return createError({
-    statusCode: 403,
-    statusText: 'User is not responsible for this order.'
-  })
+  await checkOrderAccess(orderId, userId)
 
   return prisma.orderItem.create({
     data: {
