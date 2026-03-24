@@ -88,9 +88,9 @@ const {
   server: false,
   key: `archive-${wsId.value}`,
   watch: [wsId],
-  getCachedData: (key, nuxtApp, _) => {
-    return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-  },
+  // getCachedData: (key, nuxtApp, _) => {
+  //   return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+  // },
 })
 
 const shownOrders = computed(() => {
