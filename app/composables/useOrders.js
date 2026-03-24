@@ -32,6 +32,14 @@ export const useOrders = () => {
     })
   }
 
+  const archiveOrder = async (orderId, wsId) => {
+    await $fetch(`/api/workspaces/${wsId}/orders/archive`, {
+      method: 'PATCH',
+      credentials: 'include',
+      body: {orderId}
+    })
+  }
+
   const addItem = async (item, orderId, wsId) => {
     return await $fetch(`/api/workspaces/${wsId}/orders/items`, {
       method: 'POST',
@@ -64,7 +72,7 @@ export const useOrders = () => {
 
   return {
     cachedOrderColumns, loadingOrders,
-    fetchOrders, createOrder, moveOrder,
+    fetchOrders, createOrder, moveOrder, archiveOrder,
     addItem, removeItem, switchItem
   }
 }

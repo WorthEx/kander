@@ -18,8 +18,8 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {copy} = useClipboard()
-const {addItem, removeItem, switchItem, moveOrder} = useOrders()
-const {$kanbanWs} = useNuxtApp()
+const {addItem, removeItem, switchItem, moveOrder, archiveOrder} = useOrders()
+const {$kanbanWs, payload: nuxtPayload} = useNuxtApp()
 const {user} = useAuth()
 
 const descExpanded = ref(false)
@@ -216,6 +216,22 @@ const handleChangeColumn = async _ => {
   }
 }
 
+const handleArchiveOrder = async _ => {
+  try {
+    await archiveOrder(props.order.id, wsId.value)
+    // local change
+    const columnOrders = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders
+    const orderIndex = columnOrders.findIndex(order => order.id === props.order.id)
+    if (orderIndex === -1) return
+    columnOrders.splice(orderIndex, 1)
+    // send ws event
+    $kanbanWs.orderActions.delete(props.order.id, props.order.columnId)
+  } catch (e) {
+    notif.error("An issue occurred while updating order. Try again later.")
+    console.log(e)
+  }
+}
+
 watch(_ => props.order.columnId, _ => {
   selectedColumn.value = props.order.columnId
 })
@@ -244,7 +260,7 @@ watch(newItemState, newItem => {
         <div class="flex flex-col gap-4 divide-y divide-default">
           <!--    order info      -->
           <section class="flex flex-col gap-2 pb-4">
-            <UBadge :color="overdue ? 'error' : 'info'" :label="getDeadline" class="w-fit rounded-full"
+            <UBadge :color="overdue ? 'error' : 'info'" :label="getDeadline ?? 'No deadline'" class="w-fit rounded-full"
                     variant="subtle">
               <template #leading>
                 <UIcon name="i-ri-flag-line"/>
@@ -374,8 +390,20 @@ watch(newItemState, newItem => {
 
             </OrderLabelled>
           </section>
-          <section class="hiddenk">
+          <section class="hidden">
             <pre>{{ order }}</pre>
+          </section>
+          <section class="flex justify-end gap-2 pb-4">
+            <UButton class="px-6 py-2.5 rounded-xl justify-center cursor-pointer" color="neutral" label="Close"
+                     variant="outline"
+                     @click="close"/>
+            <UButton class="px-6 py-2.5 rounded-xl justify-center gap-2 cursor-pointer" color="error"
+                     label="Archive order"
+                     @click="handleArchiveOrder">
+              <template #leading>
+                <UIcon name="i-ri-archive-2-fill"/>
+              </template>
+            </UButton>
           </section>
         </div>
       </template>

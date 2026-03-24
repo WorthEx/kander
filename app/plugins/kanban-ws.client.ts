@@ -147,10 +147,15 @@ export default defineNuxtPlugin((nuxtApp) => {
           }
           break
         }
-        //     case 'delete':
-        //       removeOrder(id)
-        //       console.log('🗑️ Order deleted:', id)
-        //       break
+        case 'delete':
+          // @ts-ignore
+          const column = cachedOrderColumns.value.find(column => column.id === data.columnId)
+          if (!column) break
+          const orderIndex = column.orders.findIndex((order: any) => order.id === entityId)
+          if (orderIndex !== -1) {
+            column.orders.splice(orderIndex, 1)
+          }
+          break
       }
     }
   }
@@ -219,9 +224,18 @@ export default defineNuxtPlugin((nuxtApp) => {
         }
       }))
     },
-    //   delete: (id: string) => {
-    //     sendAction('order', 'delete', id)
-    //   }
+    delete: (id: string, columnId: string) => {
+      send(JSON.stringify({
+        type: 'kanban',
+        workspaceId: workspaceId.value,
+        action: 'delete',
+        entity: 'order',
+        entityId: id,
+        data: {
+          columnId
+        }
+      }))
+    }
   }
 
   const connect = (id: string) => {
