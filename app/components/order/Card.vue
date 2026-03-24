@@ -324,7 +324,8 @@ watch(newItemState, newItem => {
             <OrderLabelled display label="Items">
               <div class="flex flex-col gap-2">
                 <UModal v-model:open="addItemModalOpened" :ui="{ footer: 'justify-end' }" title="New order item">
-                  <UButton :disabled="!isResponsible" class="w-full justify-center cursor-pointer rounded-xl px-3 py-2"
+                  <UButton :disabled="!isResponsible || !servicesList"
+                           class="w-full justify-center cursor-pointer rounded-xl px-3 py-2"
                            color="secondary"
                            icon="i-ri-add-fill"
                            label="Add" variant="soft"/>

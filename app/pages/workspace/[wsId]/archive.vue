@@ -40,8 +40,17 @@ const deleteOrdersInRangeState = shallowReactive({
   to: today(getLocalTimeZone())
 })
 
-// refreshes the archive after every operation
+
 const onDeleteOrder = async _ => {
+  await cleanRefreshArchive()
+}
+
+const onRestoreOrder = async _ => {
+  await cleanRefreshArchive()
+}
+
+// refreshes the archive after every operation
+const cleanRefreshArchive = async _ => {
   nuxtApp.payload.data[`archive-${wsId.value}`] = undefined
   await refreshArchive()
 }
@@ -319,6 +328,7 @@ const currency = computed(() => currentWorkspace.value?.workspace?.currency)
                              :index="index + 1"
                              :order
                              :style="{'animationDelay': `${index * 100}ms`}"
+                             @restore-order="onRestoreOrder"
                              @delete-order="onDeleteOrder"/>
             </tbody>
           </table>

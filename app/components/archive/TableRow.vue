@@ -10,13 +10,13 @@ const props = defineProps({
     required: false
   }
 })
-const emit = defineEmits(['delete-order'])
+const emit = defineEmits(['delete-order', 'restore-order'])
 
 const route = useRoute()
 const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
-const {deleteOrder} = useArchive()
+const {deleteOrder, restoreOrder} = useArchive()
 const {copy} = useClipboard()
 
 const deleteModalOpened = ref(false)
@@ -38,6 +38,16 @@ const handleDeleteOrder = async _ => {
     notif.error("An issue occurred while deleting an order. Try again later.")
   } finally {
     deletingOrder.value = false
+  }
+}
+
+const handleRestoreOrder = async _ => {
+  try {
+    await restoreOrder(wsId.value, props.order.id)
+    emit('restore-order')
+    notif.success("Successfully restored an order!")
+  } catch {
+    notif.error("An issue occurred while restoring an order. Try again later.")
   }
 }
 
@@ -88,27 +98,33 @@ const formattedTotalCost = computed(_ => formatPrice(props.order.totalCost))
       <span class="text-sm text-nowrap">{{ formattedDate }}</span>
     </td>
     <td class="select-none ps-4 pe-2">
-      <UModal v-model:open="deleteModalOpened"
-              :ui="{ footer: 'justify-end gap-2', content: 'divide-none', body: 'py-2 sm:py-2' }"
-              description="This operation is kinda risky"
-              title="Hold up...">
-        <template #body>
-          <p class="text-sm">You are completely deleting this order from the database. Subsequently, <span
-            class="text-error font-semibold">it will not be
+      <div class="flex flex-col gap-2">
+        <UModal v-model:open="deleteModalOpened"
+                :ui="{ footer: 'justify-end gap-2', content: 'divide-none', body: 'py-2 sm:py-2' }"
+                description="This operation is kinda risky"
+                title="Hold up...">
+          <template #body>
+            <p class="text-sm">You are completely deleting this order from the database. Subsequently, <span
+              class="text-error font-semibold">it will not be
             included in any reports</span>. This action cannot be undone.</p>
-        </template>
+          </template>
 
-        <template #default>
-          <ULink class="cursor-pointer text-error">Delete</ULink>
-        </template>
+          <template #default>
+            <ULink class="cursor-pointer text-error">Delete</ULink>
+          </template>
 
-        <template #footer="{close}">
-          <UButton class="cursor-pointer rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline"
-                   @click="close"/>
-          <UButton :loading="deletingOrder"
-                   class="cursor-pointer rounded-xl px-4 py-2" color="error" label="Delete" @click="handleDeleteOrder"/>
-        </template>
-      </UModal>
+          <template #footer="{close}">
+            <UButton class="cursor-pointer rounded-xl px-4 py-2" color="neutral" label="Cancel" variant="outline"
+                     @click="close"/>
+            <UButton :loading="deletingOrder"
+                     class="cursor-pointer rounded-xl px-4 py-2" color="error" label="Delete"
+                     @click="handleDeleteOrder"/>
+          </template>
+        </UModal>
+        <UButton class="cursor-pointer p-0 w-fit"
+                 color="primary" label="Restore" variant="link"
+                 @click="handleRestoreOrder"/>
+      </div>
     </td>
   </tr>
 </template>

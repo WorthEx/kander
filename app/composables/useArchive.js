@@ -25,5 +25,12 @@ export const useArchive = () => {
     })
   }
 
-  return {deleteOrder, deleteAllOrders, deleteOrdersInRange}
+  const restoreOrder = async (wsId, orderId) => {
+    await $fetch(`/api/workspaces/${wsId}/archive/${orderId}/restore`, {
+      method: 'PATCH',
+      credentials: 'include',
+    })
+  }
+
+  return {deleteOrder, deleteAllOrders, deleteOrdersInRange, restoreOrder}
 }

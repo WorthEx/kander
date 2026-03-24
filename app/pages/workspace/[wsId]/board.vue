@@ -670,6 +670,7 @@ watch(_ => newItemState.serviceId, (newServiceId, oldServiceId) => {
           </UFormField>
           <UFormField class="w-full" label="Customer" name="customerId" required>
             <USelect v-model="newOrderState.customerId"
+                     :disabled="!customerList"
                      :items="customerList" class="w-full rounded-xl px-3 py-2"
                      labelKey="fullName" valueKey="id">
               <template #default="{modelValue}">
@@ -688,6 +689,7 @@ watch(_ => newItemState.serviceId, (newServiceId, oldServiceId) => {
               <section class="rounded-xl border border-default p-2 flex flex-col gap-2">
                 <UFormField label="Service" required>
                   <USelect v-model="newItemState.serviceId" :color="newItemErrorState ? 'error' : 'primary'"
+                           :disabled="!servicesList"
                            :highlight="newItemErrorState"
                            :items="servicesList" class="w-full rounded-xl px-3 py-2"
                            labelKey="title" valueKey="id"/>
