@@ -55,6 +55,11 @@ export default defineWebSocketHandler({
         handleKanbanAction(peer, data)
         return
       }
+
+      if (data.type === 'ping') {
+        peer.send(JSON.stringify({type: 'pong'}))
+        return
+      }
     } catch (error) {
       console.error('WebSocket error:', error)
     }

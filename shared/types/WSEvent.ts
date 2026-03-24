@@ -1,5 +1,5 @@
 export type WSEvent = {
-  type: 'welcome' | 'subscribe' | 'subscribed' | 'kanban' | 'chat'
+  type: 'welcome' | 'subscribe' | 'subscribed' | 'kanban' | 'chat' | 'ping' | 'pong'
   workspaceId: string
   timestamp?: number // to know when the event was created
   entityId?: string

@@ -1,4 +1,4 @@
-import {useWebSocket} from "@vueuse/core";
+import {useIntervalFn, useWebSocket} from "@vueuse/core";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const cachedOrderColumns = useState('cachedOrderColumns')
@@ -21,7 +21,10 @@ export default defineNuxtPlugin((nuxtApp) => {
       delay: 3000,
     },
     immediate: false,
-
+    heartbeat: {
+      message: JSON.stringify({type: 'ping'}),
+      scheduler: cb => useIntervalFn(cb, 10000),
+    },
     onConnected() {
       console.log('✅ WebSocket connected')
       // Подписываемся на организацию
@@ -53,12 +56,16 @@ export default defineNuxtPlugin((nuxtApp) => {
           break
 
         case 'subscribed':
-          console.log(`Subscribed to workspace with ID of ${parsed.workspaceId}`)
+          // console.log(`Subscribed to workspace with ID of ${parsed.workspaceId}`)
           await fetchOrders(workspaceId.value) // start init board fetch only when subscribed
           break
 
         case 'kanban':
           handleServerUpdate(parsed)
+          break
+
+        case 'pong':
+          // console.log('Pong received')
           break
 
         default:
