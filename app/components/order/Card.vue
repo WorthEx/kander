@@ -124,7 +124,6 @@ const fetchEmployees = async _ => {
       exclude: currentResponsibles.join(',')
     }
   })
-  console.log(`excluding ${currentResponsibles.length}`)
 }
 
 const handleAddItem = async _ => {
