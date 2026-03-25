@@ -18,22 +18,26 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {copy} = useClipboard()
-const {addItem, removeItem, switchItem, moveOrder, archiveOrder} = useOrders()
-const {$kanbanWs, payload: nuxtPayload} = useNuxtApp()
+const {addItem, removeItem, switchItem, moveOrder, archiveOrder, addResponsible, removeResponsible} = useOrders()
+const {$kanbanWs} = useNuxtApp()
 const {user} = useAuth()
 
 const descExpanded = ref(false)
 const selectedColumn = ref(null)
 const servicesList = ref([])
+const employeeList = ref([])
 const newItemErrorState = ref(false)
 const newItemState = reactive({
   serviceId: null,
   quantity: 1,
   price: 0.00,
 })
+const newResponsibleId = ref(null)
 
 const addingItem = ref(false)
+const addingResponsible = ref(false)
 const addItemModalOpened = ref(false)
+const addResponsibleModalOpened = ref(false)
 
 const newItemSchema = z.object({
   serviceId: z.string({error: 'Service is required.'}),
@@ -96,10 +100,11 @@ const isResponsible = computed(_ => {
 
 const getColumnColor = index => columnColors[index % columnColors.length]
 
-const handleSlideoverOpened = async value => {
-  if (value) {
+const handleSlideoverOpened = async opened => {
+  if (opened) {
     selectedColumn.value = props.order.columnId
-    if (servicesList.value?.length < 1) await fetchServices()
+    await fetchServices()
+    await fetchEmployees()
   }
 }
 
@@ -108,6 +113,18 @@ const fetchServices = async _ => {
     method: 'GET',
     credentials: 'include',
   })
+}
+
+const fetchEmployees = async _ => {
+  const currentResponsibles = props.order.responsibles.map(r => r.id)
+  employeeList.value = await $fetch(`/api/workspaces/${wsId.value}/employees/active`, {
+    method: 'GET',
+    credentials: 'include',
+    query: {
+      exclude: currentResponsibles.join(',')
+    }
+  })
+  console.log(`excluding ${currentResponsibles.length}`)
 }
 
 const handleAddItem = async _ => {
@@ -232,6 +249,44 @@ const handleArchiveOrder = async _ => {
   }
 }
 
+const handleAddResponsible = async _ => {
+  addingResponsible.value = true
+  try {
+    await addResponsible(newResponsibleId.value, props.order.id, wsId.value)
+    // local change
+    const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders.find(order => order.id === props.order.id)
+    const newResponsible = employeeList.value.find(e => e.user.id === newResponsibleId.value)
+    if (!newResponsible) return
+    order.responsibles.push(newResponsible.user)
+    employeeList.value = employeeList.value.filter(e => e.user.id !== newResponsibleId.value)
+    // send ws event
+    $kanbanWs.orderActions.update(props.order.id, props.order.columnId, {...order})
+
+    newResponsibleId.value = null
+    addResponsibleModalOpened.value = false
+  } catch {
+    notif.error("An issue occurred while updating order. Try again later.")
+  } finally {
+    addingResponsible.value = false
+  }
+}
+
+const handleRemoveResponsible = async responsibleId => {
+  try {
+    await removeResponsible(responsibleId, props.order.id, wsId.value)
+    // local change
+    const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders.find(order => order.id === props.order.id)
+    order.responsibles = order.responsibles.filter(r => r.id !== responsibleId)
+    // send ws event
+    $kanbanWs.orderActions.update(props.order.id, props.order.columnId, {...order})
+
+    newResponsibleId.value = null
+    addResponsibleModalOpened.value = false
+  } catch {
+    notif.error("An issue occurred while updating order. Try again later.")
+  }
+}
+
 watch(_ => props.order.columnId, _ => {
   selectedColumn.value = props.order.columnId
 })
@@ -251,11 +306,20 @@ watch(newItemState, newItem => {
     newItemErrorState.value = true
   }
 })
+
+watch(addResponsibleModalOpened, isOpened => {
+  if (!isOpened) newResponsibleId.value = null
+})
+
+watch(_ => props.order.responsibles, async _ => {
+  await fetchEmployees()
+})
 </script>
 
 <template>
   <div>
-    <USlideover :title="slideoverTitle" :ui="{content: 'max-w-xl'}" @update:open="handleSlideoverOpened">
+    <USlideover :title="slideoverTitle" :ui="{content: 'max-w-xl'}"
+                @update:open="handleSlideoverOpened">
       <template #body="{close}">
         <div class="flex flex-col gap-4 divide-y divide-default">
           <!--    order info      -->
@@ -266,7 +330,7 @@ watch(newItemState, newItem => {
                 <UIcon name="i-ri-flag-line"/>
               </template>
             </UBadge>
-            <span class="text-2xl font-bold text-pretty">{{ order.title }}</span>
+            <span class="text-2xl font-bold text-pretty text-highlighted">{{ order.title }}</span>
             <div class="flex flex-col">
               <p :class="[(!descExpanded && order.description?.length > 200) && 'line-clamp-3']"
                  class="text-sm text-pretty">{{ order.description }}</p>
@@ -326,9 +390,8 @@ watch(newItemState, newItem => {
                 <UModal v-model:open="addItemModalOpened" :ui="{ footer: 'justify-end' }" title="New order item">
                   <UButton :disabled="!isResponsible || !servicesList"
                            class="w-full justify-center cursor-pointer rounded-xl px-3 py-2"
-                           color="secondary"
-                           icon="i-ri-add-fill"
-                           label="Add" variant="soft"/>
+                           color="neutral"
+                           icon="i-ri-add-fill" variant="soft"/>
                   <template #body>
                     <div class="flex flex-col gap-2">
                       <UFormField label="Service" required>
@@ -383,9 +446,56 @@ watch(newItemState, newItem => {
           <!--    responsible users for this order      -->
           <section class="flex flex-col gap-4 pb-4">
             <OrderLabelled display label="Responsibles">
-
+              <div class="flex flex-col gap-2">
+                <UModal v-model:open="addResponsibleModalOpened" :ui="{ footer: 'justify-end' }"
+                        title="Add responsible">
+                  <UButton :disabled="!isResponsible || !servicesList"
+                           class="w-full justify-center cursor-pointer rounded-xl px-3 py-2"
+                           color="neutral"
+                           icon="i-ri-add-fill" variant="soft"/>
+                  <template #body>
+                    <UFormField label="Employee" required>
+                      <USelect v-model="newResponsibleId"
+                               :items="employeeList" class="w-full rounded-xl px-3 py-2"
+                               labelKey="user.fullName" valueKey="user.id"/>
+                    </UFormField>
+                  </template>
+                  <template #footer="{close: closeAddResponsibleModal}">
+                    <UButton class="cursor-pointer rounded-xl px-4 py-2" color="neutral" label="Cancel"
+                             variant="outline"
+                             @click="closeAddResponsibleModal"/>
+                    <UButton :disabled="!newResponsibleId" :loading="addingResponsible"
+                             class="cursor-pointer rounded-xl px-4 py-2" label="Add"
+                             leading-icon="i-ri-add-fill" @click="handleAddResponsible"/>
+                  </template>
+                </UModal>
+                <div
+                  v-for="responsible in order.responsibles"
+                  class="flex items-center justify-between overflow-hidden p-3 dark:bg-muted bg-elevated/80 rounded-xl">
+                  <div class="flex items-center gap-3">
+                    <img
+                      :class="[responsible.avatar.includes('ssl.gstatic.com/docs/common/profile') && 'light:brightness-0']"
+                      :src="responsible.avatar"
+                      alt=""
+                      class="block object-cover rounded-full pointer-events-none size-8"
+                      @error="e => { e.target.src='https://ssl.gstatic.com/docs/common/profile/capybara_lg.png' }">
+                    <div class="flex flex-col overflow-hidden">
+                      <span class="truncate text-highlighted">{{ responsible.fullName }}
+                        <span v-if="responsible.id === user.id" class="text-primary">(You)</span>
+                      </span>
+                      <span class="truncate text-muted/80">{{ responsible.email }}</span>
+                    </div>
+                  </div>
+                  <UButton v-if="responsible.id !== user.id" :disabled="!isResponsible || responsible.id === user.id"
+                           class="cursor-pointer"
+                           color="error"
+                           icon="i-ri-delete-bin-6-fill" variant="soft"
+                           @click="handleRemoveResponsible(responsible.id)"/>
+                </div>
+              </div>
             </OrderLabelled>
           </section>
+          <!--    attached links      -->
           <section class="flex flex-col gap-4 pb-4">
             <OrderLabelled display label="Links">
 
@@ -394,12 +504,12 @@ watch(newItemState, newItem => {
           <section class="hidden">
             <pre>{{ order }}</pre>
           </section>
-          <section class="flex justify-end gap-2 pb-4">
+          <section class="flex justify-end gap-2">
             <UButton class="px-6 py-2.5 rounded-xl justify-center cursor-pointer" color="neutral" label="Close"
-                     variant="outline"
+                     variant="ghost"
                      @click="close"/>
-            <UButton class="px-6 py-2.5 rounded-xl justify-center gap-2 cursor-pointer" color="error"
-                     label="Archive order"
+            <UButton :disabled="!isResponsible" class="px-6 py-2.5 rounded-xl justify-center gap-2 cursor-pointer"
+                     color="error" label="Archive order"
                      @click="handleArchiveOrder">
               <template #leading>
                 <UIcon name="i-ri-archive-2-fill"/>

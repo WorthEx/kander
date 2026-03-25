@@ -40,6 +40,22 @@ export const useOrders = () => {
     })
   }
 
+  const addResponsible = async (responsibleId, orderId, wsId) => {
+    await $fetch(`/api/workspaces/${wsId}/orders/responsibles`, {
+      method: 'POST',
+      credentials: 'include',
+      body: {orderId, responsibleId}
+    })
+  }
+
+  const removeResponsible = async (responsibleId, orderId, wsId) => {
+    await $fetch(`/api/workspaces/${wsId}/orders/responsibles`, {
+      method: 'DELETE',
+      credentials: 'include',
+      body: {orderId, responsibleId}
+    })
+  }
+
   const addItem = async (item, orderId, wsId) => {
     return await $fetch(`/api/workspaces/${wsId}/orders/items`, {
       method: 'POST',
@@ -72,7 +88,7 @@ export const useOrders = () => {
 
   return {
     cachedOrderColumns, loadingOrders,
-    fetchOrders, createOrder, moveOrder, archiveOrder,
+    fetchOrders, createOrder, moveOrder, archiveOrder, addResponsible, removeResponsible,
     addItem, removeItem, switchItem
   }
 }
