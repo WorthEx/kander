@@ -86,9 +86,31 @@ export const useOrders = () => {
     })
   }
 
+  const attachLink = async (title, url, orderId, wsId) => {
+    return await $fetch(`/api/workspaces/${wsId}/orders/links`, {
+      method: 'POST',
+      credentials: 'include',
+      body: {
+        title, url, orderId
+      }
+    })
+  }
+
+  const removeLink = async (linkId, orderId, wsId) => {
+    return await $fetch(`/api/workspaces/${wsId}/orders/links`, {
+      method: 'DELETE',
+      credentials: 'include',
+      body: {
+        linkId, orderId
+      }
+    })
+  }
+
   return {
     cachedOrderColumns, loadingOrders,
-    fetchOrders, createOrder, moveOrder, archiveOrder, addResponsible, removeResponsible,
-    addItem, removeItem, switchItem
+    fetchOrders, createOrder, moveOrder, archiveOrder,
+    addResponsible, removeResponsible,
+    addItem, removeItem, switchItem,
+    attachLink, removeLink
   }
 }

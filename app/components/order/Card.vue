@@ -18,7 +18,12 @@ const wsId = computed(() => route.params.wsId)
 const toaster = useToast()
 const notif = useNotification(toaster)
 const {copy} = useClipboard()
-const {addItem, removeItem, switchItem, moveOrder, archiveOrder, addResponsible, removeResponsible} = useOrders()
+const {
+  addItem, removeItem, switchItem,
+  moveOrder, archiveOrder,
+  addResponsible, removeResponsible,
+  attachLink, removeLink
+} = useOrders()
 const {$kanbanWs} = useNuxtApp()
 const {user} = useAuth()
 
@@ -33,11 +38,17 @@ const newItemState = reactive({
   price: 0.00,
 })
 const newResponsibleId = ref(null)
+const newLinkState = reactive({
+  title: '',
+  url: ''
+})
 
 const addingItem = ref(false)
 const addingResponsible = ref(false)
+const attachingLink = ref(false)
 const addItemModalOpened = ref(false)
 const addResponsibleModalOpened = ref(false)
+const attachLinkModalOpened = ref(false)
 
 const newItemSchema = z.object({
   serviceId: z.string({error: 'Service is required.'}),
@@ -96,7 +107,6 @@ const isResponsible = computed(_ => {
   if (!user.value.id) return false
   return props.order.responsibles.some(r => r.id === user.value.id)
 })
-
 
 const getColumnColor = index => columnColors[index % columnColors.length]
 
@@ -281,6 +291,39 @@ const handleRemoveResponsible = async responsibleId => {
 
     newResponsibleId.value = null
     addResponsibleModalOpened.value = false
+  } catch {
+    notif.error("An issue occurred while updating order. Try again later.")
+  }
+}
+
+const handleAttachLink = async _ => {
+  attachingLink.value = true
+  try {
+    const createdLink = await attachLink(newLinkState.title, newLinkState.url, props.order.id, wsId.value)
+    // local change
+    const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders.find(order => order.id === props.order.id)
+    order.links.push(createdLink)
+    // send ws event
+    $kanbanWs.orderActions.update(props.order.id, props.order.columnId, {...order})
+
+    newLinkState.title = ''
+    newLinkState.url = ''
+    attachLinkModalOpened.value = false
+  } catch {
+    notif.error("An issue occurred while updating order. Try again later.")
+  } finally {
+    attachingLink.value = false
+  }
+}
+
+const handleRemoveLink = async linkId => {
+  try {
+    await removeLink(linkId, props.order.id, wsId.value)
+    // local change
+    const order = cachedOrderColumns.value.find(column => column.id === props.order.columnId).orders.find(order => order.id === props.order.id)
+    order.links = order.links.filter(l => l.id !== linkId)
+    // send ws event
+    $kanbanWs.orderActions.update(props.order.id, props.order.columnId, {...order})
   } catch {
     notif.error("An issue occurred while updating order. Try again later.")
   }
@@ -497,12 +540,60 @@ watch(_ => props.order.responsibles, async _ => {
           <!--    attached links      -->
           <section class="flex flex-col gap-4 pb-4">
             <OrderLabelled display label="Links">
-
+              <div class="flex flex-col gap-2">
+                <UModal v-model:open="attachLinkModalOpened" :ui="{ footer: 'justify-end' }"
+                        title="Attach link">
+                  <UButton :disabled="!isResponsible"
+                           class="w-full justify-center cursor-pointer rounded-xl px-3 py-2"
+                           color="neutral"
+                           icon="i-ri-add-fill" variant="soft"/>
+                  <template #body>
+                    <div class="flex flex-col gap-4">
+                      <UFormField label="Link title" required>
+                        <UInput v-model="newLinkState.title" :maxLength="255"
+                                class="w-full [&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2"
+                                placeholder="Rickroll">
+                        </UInput>
+                        <template #hint>
+                          <div :class="[newLinkState.title?.length >= 255 ? 'text-error' : 'text-muted']"
+                               class="text-xs tabular-nums">
+                            {{ newLinkState.title?.length }}/{{ 255 }}
+                          </div>
+                        </template>
+                      </UFormField>
+                      <UFormField label="External URL" required>
+                        <UInput v-model="newLinkState.url" :maxLength="2048"
+                                class="w-full [&>input]:rounded-xl [&>input]:px-3 [&>input]:py-2"
+                                placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"/>
+                        <template #hint>
+                          <div :class="[newLinkState.url?.length >= 2048 ? 'text-error' : 'text-muted']"
+                               class="text-xs tabular-nums">
+                            {{ newLinkState.url?.length }}/{{ 2048 }}
+                          </div>
+                        </template>
+                      </UFormField>
+                    </div>
+                  </template>
+                  <template #footer="{close: attachLinkModal}">
+                    <UButton class="cursor-pointer rounded-xl px-4 py-2" color="neutral" label="Cancel"
+                             variant="outline"
+                             @click="attachLinkModal"/>
+                    <UButton :disabled="!isResponsible || !newLinkState.url || !newLinkState.title"
+                             :loading="attachingLink"
+                             class="cursor-pointer rounded-xl px-4 py-2" label="Add"
+                             leading-icon="i-ri-add-fill" @click="handleAttachLink"/>
+                  </template>
+                </UModal>
+                <OrderLink v-for="link in order.links" :id="link.id" :key="link.id" :isResponsible
+                           :link="link.url" :title="link.title" @remove="handleRemoveLink"/>
+              </div>
             </OrderLabelled>
           </section>
+          <!--     order json     -->
           <section class="hidden">
             <pre>{{ order }}</pre>
           </section>
+          <!--    just buttons     -->
           <section class="flex justify-end gap-2">
             <UButton class="px-6 py-2.5 rounded-xl justify-center cursor-pointer" color="neutral" label="Close"
                      variant="ghost"
