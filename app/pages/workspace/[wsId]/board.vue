@@ -95,12 +95,12 @@ const tabItems = [
     value: 'kanban',
     class: '**:w-full ring'
   },
-  {
-    label: 'Table',
-    icon: 'i-ri-table-view',
-    value: 'table',
-    class: '**:w-full ring'
-  }
+  // {
+  //   label: 'Table',
+  //   icon: 'i-ri-table-view',
+  //   value: 'table',
+  //   class: '**:w-full ring'
+  // }
 ]
 const columnColors = ['bg-secondary outline-secondary', 'bg-primary outline-primary', 'bg-tertiary outline-tertiary', 'bg-quaternary outline-quaternary', 'bg-quinary outline-quinary']
 const searchExpanded = ref(false)
