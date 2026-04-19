@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
         customerId: body.customerId,
         columnId: systemColumnId,
         position: newOrderPosition ?? null,
-        items: body.items?.length > 1 ? {
+        items: body.items?.length > 0 ? {
           createMany: {
             data: [...body.items]
           }
