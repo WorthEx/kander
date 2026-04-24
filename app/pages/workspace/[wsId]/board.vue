@@ -433,11 +433,11 @@ watch(_ => newItemState.serviceId, (newServiceId, oldServiceId) => {
   <div :class="{'h-fit': !loadingOrders && cachedOrderColumns?.length > 0}"
        class="flex flex-col gap-4 pb-0 size-full">
     <header class="flex max-lg:flex-col-reverse lg:justify-between gap-4 lg:items-center w-full">
-      <div class="flex items-center gap-2">
-        <UTabs v-model="activeTab" :content="false" :items="tabItems"
-               class="**:cursor-pointer max-lg:w-full max-lg:*:*:nth-3:w-full max-lg:*:*:nth-2:w-full *:*:ease-out"
-               variant="link"/>
-      </div>
+      <!--      <div class="flex items-center gap-2">-->
+      <!--        <UTabs v-model="activeTab" :content="false" :items="tabItems"-->
+      <!--               class="**:cursor-pointer max-lg:w-full max-lg:*:*:nth-3:w-full max-lg:*:*:nth-2:w-full *:*:ease-out"-->
+      <!--               variant="link"/>-->
+      <!--      </div>-->
       <div class="flex w-full items-center justify-between gap-2">
         <UInput v-model="searchQuery"
                 class="w-full lg:max-w-md [&>input]:rounded-xl [&>input]:ps-10 [&>input]:pe-10 [&>input]:py-2"

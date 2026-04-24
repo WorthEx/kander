@@ -23,16 +23,25 @@ const sidebarItems = computed(_ => [
         label: 'Board',
         class: navlinkClass,
         active: route.fullPath.includes('board'),
-        to: `/workspace/${wsId.value}/board`
+        to: `/workspace/${wsId.value}/board`,
+        icon: 'i-ri-table-fill',
       },
       {
         label: 'Archive',
         class: navlinkClass,
         active: route.fullPath.includes('archive'),
-        to: `/workspace/${wsId.value}/archive`
+        to: `/workspace/${wsId.value}/archive`,
+        icon: 'i-ri-archive-2-fill',
+      },
+      {
+        label: 'Analytics',
+        class: navlinkClass,
+        active: route.fullPath.includes('analytics'),
+        to: `/workspace/${wsId.value}/analytics`,
+        icon: 'i-ri-pie-chart-fill',
       },
     ],
-    active: route.fullPath.includes('board') || route.fullPath.includes('archive')
+    active: route.fullPath.includes('board') || route.fullPath.includes('archive') || route.fullPath.includes('analytics')
   },
   {
     label: 'Employees',
