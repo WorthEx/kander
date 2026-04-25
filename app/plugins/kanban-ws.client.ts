@@ -1,4 +1,4 @@
-import {useIntervalFn, useWebSocket} from "@vueuse/core";
+import {until, useIntervalFn, useWebSocket} from "@vueuse/core";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const cachedOrderColumns = useState('cachedOrderColumns')
@@ -245,8 +245,16 @@ export default defineNuxtPlugin((nuxtApp) => {
     }
   }
 
-  const connect = (id: string) => {
+  const connect = async (id: string) => {
     workspaceId.value = id
+    if (status.value === 'OPEN' || status.value === 'CONNECTING') {
+      console.log('Closing existing connection...')
+      close()
+
+      // ✅ Ждём tick и открываем
+      await until(status).toBe('CLOSED', {timeout: 2000})
+    }
+    console.log(`Opening connection to workspace ${id}...`)
     open()
   }
 
