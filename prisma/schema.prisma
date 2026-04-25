@@ -180,7 +180,7 @@ model OrderLink {
 }
 
 model Customer {
-  id           String  @id @default(uuid())
+  id           String   @id @default(uuid())
   fullName     String
   phone        String
   countryCode  String
@@ -189,6 +189,7 @@ model Customer {
   addressLine1 String?
   addressLine2 String?
   postalCode   String?
+  createdAt    DateTime @default(now())
 
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   workspaceId String
