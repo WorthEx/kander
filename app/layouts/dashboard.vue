@@ -6,8 +6,10 @@ const notif = useNotification(toaster)
 const wsId = computed(() => route.params.wsId)
 const {$kanbanWs} = useNuxtApp()
 
-onMounted(_ => {
-  if (wsId.value && import.meta.client) $kanbanWs.connect(wsId.value)
+onMounted(async _ => {
+  if (wsId.value && import.meta.client) {
+    await $kanbanWs.connect(wsId.value)
+  }
 })
 
 const navlinkClass = 'py-4 cursor-pointer gap-4'
@@ -86,6 +88,10 @@ const userFullName = computed(() => user.value?.fullName ?? 'Unknown User')
 
 const userEditModalOpened = ref(false)
 const workspacesPopoverOpened = ref(false)
+
+const reconnectWs = async wsId => {
+  await $kanbanWs.connect(wsId)
+}
 
 const {data: currentWorkspace, pending: loadingWorkspace} = await useLazyFetch(_ => `/api/workspaces/${wsId.value}`, {
   server: false,
@@ -200,11 +206,14 @@ const {data: workspaces, pending: loadingWorkspaces} = await useLazyFetch(_ => `
                   <div class="p-2 max-h-64 overflow-y-auto w-52 flex flex-col gap-2 select-none">
                     <span class="px-2 py-1 text-sm text-dimmed">Workspaces</span>
                     <UButton v-for="ws in workspaces" :to="{
-                      route: route.name, params: { wsId: ws.id }
+                         route: route.name, params: { wsId: ws.id }
                     }"
                              class="text-sm w-full py-1 flex gap-4"
                              color="neutral" variant="ghost"
-                             @click="workspacesPopoverOpened = false">
+                             @click="async _ => {
+                               workspacesPopoverOpened = false
+                               await reconnectWs(ws.id)
+                             }">
                       <span class="line-clamp-1">{{ ws.title }}</span>
                       <div v-if="ws.id === route.params.wsId" class="bg-primary size-1.5 rounded-full"/>
                     </UButton>
