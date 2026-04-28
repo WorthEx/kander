@@ -3,8 +3,18 @@
 const props = defineProps<{
   title: string,
   description?: string,
-  tint: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary' | undefined
+  tint: 'primary' | 'secondary' | 'tertiary' | 'quaternary' | 'quinary' | undefined,
+  icon?: string
 }>()
+
+const iconClass = {
+  'primary': 'text-primary',
+  'secondary': 'text-secondary',
+  'tertiary': 'text-tertiary',
+  'quaternary': 'text-quaternary',
+  'quinary': 'text-quinary',
+  'inverted': 'text-inverted',
+}
 
 const pinColorClass = {
   'primary': 'bg-primary',
@@ -33,7 +43,12 @@ const gradientClass = {
       </div>
     </template>
     <div :class="tint ? gradientClass[tint] : gradientClass['inverted']"
-         class="flex flex-col xs:gap-4 gap-2 w-full xs:px-4 px-3 rounded-xl bg-linear-to-br from-30% ring ring-default/50 select-none cursor-pointer transition-colors">
+         class="flex flex-col xs:gap-4 gap-2 w-full xs:px-4 px-3 rounded-xl bg-linear-to-br from-30% ring ring-default/50 select-none cursor-pointer transition-colors relative overflow-hidden">
+      <div
+        class="lg:hidden absolute -right-8 -rotate-15 top-1/2 -translate-y-[43%] -z-1 dark:opacity-25 opacity-15">
+        <UIcon v-if="icon" :class="tint ? iconClass[tint] : iconClass['inverted']" :name="icon"
+               class="size-40"/>
+      </div>
       <div class="flex flex-col pt-4">
         <div class="flex gap-2 justify-between items-center">
           <div class="inline-flex items-center gap-2 text-muted">
