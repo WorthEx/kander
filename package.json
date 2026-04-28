@@ -19,6 +19,7 @@
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@vueuse/core": "^14.2.0",
+    "chart.js": "^4.5.1",
     "curl-generator": "^0.5.0",
     "exceljs": "^4.4.0",
     "jsonwebtoken": "^9.0.3",
@@ -30,6 +31,7 @@
     "resend": "^6.9.1",
     "tailwindcss": "^4.1.18",
     "tailwindcss-animated": "^2.0.0",
+    "vue-chartjs": "^5.3.3",
     "vuedraggable": "^4.1.0",
     "zod": "^4.3.6"
   },

@@ -10,7 +10,7 @@ export default defineEventHandler(async (event) => {
   const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59)
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
 
-  const [allItems, thisMonthItems, lastMonthItems, allOrders, thisMonthOrders, allCustomers, newCustomers, popularService] = await Promise.all([
+  const [allItems, thisMonthItems, lastMonthItems, allOrders, thisMonthOrders, allCustomers, newCustomers] = await Promise.all([
     // Все позиции для выручки
     prisma.orderItem.findMany({
       where: {
@@ -49,15 +49,6 @@ export default defineEventHandler(async (event) => {
 
     // Новые клиенты за 30 дней — по createdAt самого Customer
     prisma.customer.count({where: {workspaceId: wsId, createdAt: {gte: thirtyDaysAgo}}}),
-
-    // Самая популярная услуга
-    prisma.orderItem.groupBy({
-      by: ['serviceId'],
-      where: {order: {column: {workspaceId: wsId}}},
-      _count: {id: true},
-      orderBy: {_count: {id: 'desc'}},
-      take: 1,
-    }),
   ])
 
   const totalRevenue = allItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
