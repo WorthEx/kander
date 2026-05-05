@@ -32,7 +32,10 @@ export default defineEventHandler(async (event) => {
     const items = await prisma.orderItem.findMany({
       where: {
         order: {
-          createdAt: {gte: startOfYear, lte: endOfYear}
+          createdAt: {gte: startOfYear, lte: endOfYear},
+          column: {
+            workspaceId: wsId
+          }
         }
       },
       include: {
