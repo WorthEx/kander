@@ -16,6 +16,10 @@ doing.
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
 
+<br />
+
+<img src="public/images/kander_landing.png" alt="Kander landing page with a kanban board preview" width="900" />
+
 </div>
 
 ---
@@ -54,6 +58,8 @@ It is built for studios, agencies, workshops and any small team that sells servi
 
 ### 📊 Analytics
 
+<img src="public/images/kander_statistics.png" alt="Analytics page: stat blocks, monthly revenue and bestsellers" width="900" />
+
 - Key stats at a glance
 - Monthly revenue chart (year to date)
 - Bestsellers bar chart
@@ -62,6 +68,8 @@ It is built for studios, agencies, workshops and any small team that sells servi
 ### 🔌 Public API
 
 Connect your website, landing page or bot and let orders land on the board by themselves.
+
+<img src="public/images/kander_integration.png" alt="Integration page with API key and endpoints" width="900" />
 
 - Per-workspace API key (generate and revoke in settings)
 - Ready-to-use request examples (cURL) in the Integration page
