@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/images/kander_512.png" style="border-radius: 6rem; corner-shape: squircle" alt="Kander" width="240" />
+<img src="public/images/kander_192.png" style="border-radius: 6rem; corner-shape: squircle" alt="Kander" width="128" />
 
 ### Order management for small and medium businesses, on a Kanban board.
 
